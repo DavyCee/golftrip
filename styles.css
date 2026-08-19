@@ -63,3 +63,30 @@ main {
     padding: 8px 0;
     border-bottom: 1px solid #374151;
 }
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #111827;
+    color: white;
+    border: 1px solid #374151;
+    border-radius: 8px;
+}
+
+.handicap-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #374151;
+}
+
+.handicap-name {
+    flex: 2;
+}
+
+.handicap-hi,
+.handicap-ch {
+    flex: 1;
+    text-align: right;
+}
