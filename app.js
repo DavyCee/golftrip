@@ -7,6 +7,30 @@ const COURSE_CSV =
 const SETTINGS_CSV =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSfjxQddO15BxkKKZYF9WFg-LcGJsPqaffUnR_W8g3T76h95n78ipqNoSPIHoqsO40LSaAW5NpVO9C3/pub?gid=659463649&single=true&output=csv';
 
+let settings = {};
+
+async function loadSettings() {
+
+    const response = await fetch(SETTINGS_CSV);
+    const text = await response.text();
+
+    const rows = text.split('\n').slice(1);
+
+    rows.forEach(row => {
+
+        if (!row.trim()) return;
+
+        const cols = row.split(',');
+
+        settings[cols[0].trim()] = cols[1].trim();
+    });
+
+    if (settings['Event Name']) {
+        document.querySelector('h1').textContent =
+            `🏌️ ${settings['Event Name']}`;
+    }
+}
+
 function renderSchedule() {
 
     const html = `
@@ -158,8 +182,73 @@ async function buildLeaderboard() {
     document.getElementById('leaderboard').innerHTML = html;
 }
 
-renderSchedule();
-loadPlayers();
-loadCourses();
-loadTeams();
-buildLeaderboard();
+async function loadHandicaps() {
+
+    const response = await fetch(PLAYER_CSV);
+    const text = await response.text();
+
+    const rows = text.split('\n').slice(1);
+
+    const selectedCourse =
+        document.getElementById('courseSelect').value;
+
+    const slopes = {
+        'Vale do Lobo Royal': 129,
+        'Pinhal': 136,
+        'Vale do Lobo Ocean': 133
+    };
+
+    const slope = slopes[selectedCourse];
+
+    let html = `
+        <div class="handicap-row">
+            <strong class="handicap-name">Player</strong>
+            <strong class="handicap-hi">HI</strong>
+            <strong class="handicap-ch">CH</strong>
+        </div>
+    `;
+
+    rows.forEach(row => {
+
+        if (!row.trim()) return;
+
+        const cols = row.split(',');
+
+        const player = cols[0];
+        const hi = parseFloat(cols[1]);
+
+        const courseHandicap =
+            Math.round((hi * slope) / 113);
+
+        html += `
+            <div class="handicap-row">
+                <div class="handicap-name">${player}</div>
+                <div class="handicap-hi">${hi}</div>
+                <div class="handicap-ch">${courseHandicap}</div>
+            </div>
+        `;
+    });
+
+    document.getElementById('handicapTable').innerHTML = html;
+}
+
+async function initialise() {
+
+    await loadSettings();
+
+    renderSchedule();
+
+    loadPlayers();
+
+    loadTeams();
+
+    buildLeaderboard();
+
+    loadHandicaps();
+
+    document
+        .getElementById('courseSelect')
+        .addEventListener('change', loadHandicaps);
+}
+
+initialise();
