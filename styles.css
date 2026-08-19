@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111827;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 2rem;
+    background: #1f2937;
+    border-bottom: 2px solid gold;
+}
+
+h1 {
+    color: gold;
+    margin-bottom: 0.5rem;
+}
+
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+}
+
+.card {
+    background: #1f2937;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+}
+
+.player {
+    padding: 8px;
+    border-bottom: 1px solid #374151;
+}
+
+.course {
+    padding: 8px;
+    border-bottom: 1px solid #374151;
+}
