@@ -173,20 +173,19 @@ async function loadPlayers() {
 
         const cols = row.split(',');
 
-        const player = cols[0];
-        const handicap = cols[1];
-        const team = cols[2];
-
         html += `
             <div class="player">
-                <strong>${player}</strong>
-                | HI ${handicap}
-                | ${team}
+                <strong>${cols[0]}</strong>
+                | HI ${cols[1]}
+                | ${cols[2]}
             </div>
         `;
     });
 
-    async function loadTeams() {
+    document.getElementById('players').innerHTML = html;
+}
+
+async function loadTeams() {
 
     const response = await fetch(PLAYER_CSV);
     const text = await response.text();
@@ -202,15 +201,12 @@ async function loadPlayers() {
 
         const cols = row.split(',');
 
-        const player = cols[0];
-        const team = cols[2];
-
-        if (team === 'North') {
-            north += `<div class="team-player">${player}</div>`;
+        if (cols[2] === 'North') {
+            north += `<div class="team-player">${cols[0]}</div>`;
         }
 
-        if (team === 'South') {
-            south += `<div class="team-player">${player}</div>`;
+        if (cols[2] === 'South') {
+            south += `<div class="team-player">${cols[0]}</div>`;
         }
 
     });
@@ -226,9 +222,6 @@ async function loadPlayers() {
             ${south}
         </div>
     `;
-}
-
-    document.getElementById('players').innerHTML = html;
 }
 
 async function loadCourses() {
@@ -344,34 +337,36 @@ const slope =
 
     rows.forEach(row => {
 
-        if (!row.trim()) return;
+    if (!row.trim()) return;
 
-        const cols = row.split(',');
+    const cols = row.split(',');
 
-        const player = cols[0];
-        const hi = parseFloat(cols[1]);
+    const player = cols[0];
+    const hi = parseFloat(cols[1]);
 
-       const allowance =
-    parseFloat(settings['Stableford Allowance']) / 100;
+    const allowance =
+        parseFloat(settings['Stableford Allowance']) / 100;
 
-const courseHandicap =
-    Math.round((hi * slope) / 113);
+    const courseHandicap =
+        Math.round((hi * slope) / 113);
 
-const playingHandicap =
-    Math.round(courseHandicap * allowance);
+    const playingHandicap =
+        Math.round(courseHandicap * allowance);
 
     html += `
-    <div class="handicap-row">
-        <div class="handicap-name">${player}</div>
-        <div class="handicap-hi">${hi.toFixed(1)}</div>
-        <div class="handicap-ch">${courseHandicap}</div>
-        <div class="handicap-ph">${playingHandicap}</div>
-    </div>
-`;
-    
+        <div class="handicap-row">
+            <div class="handicap-name">${player}</div>
+            <div class="handicap-hi">${hi.toFixed(1)}</div>
+            <div class="handicap-ch">${courseHandicap}</div>
+            <div class="handicap-ph">${playingHandicap}</div>
+        </div>
+    `;
 
-    document.getElementById('handicapTable').innerHTML = html;
-}
+});   
+
+document.getElementById('handicapTable').innerHTML = html;
+
+}     
 
 async function initialise() {
 
