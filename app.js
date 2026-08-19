@@ -18,6 +18,7 @@ const ROUND3_CSV =
 
 let settings = {};
 let courseData = {};
+let leaderboard = {};
 
 async function loadSettings() {
 
@@ -278,6 +279,42 @@ async function buildLeaderboard() {
         `;
 
         position++;
+    });
+
+    document.getElementById('leaderboard').innerHTML = html;
+}
+
+function renderLeaderboard() {
+
+    const players =
+        Object.entries(leaderboard)
+            .sort((a, b) => b[1].total - a[1].total);
+
+    let html = '';
+
+    let lastScore = null;
+    let position = 0;
+
+    players.forEach(([player, data], index) => {
+
+        if (data.total !== lastScore) {
+            position = index + 1;
+            lastScore = data.total;
+        }
+
+        html += `
+            <div class="leaderboard-row">
+                ${position}. ${player}
+                <br>
+                R1: ${data.r1}
+                |
+                R2: ${data.r2}
+                |
+                R3: ${data.r3}
+                |
+                Total: ${data.total}
+            </div>
+        `;
     });
 
     document.getElementById('leaderboard').innerHTML = html;
