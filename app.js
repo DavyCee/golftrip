@@ -368,7 +368,7 @@ const playingHandicap =
         <div class="handicap-ph">${playingHandicap}</div>
     </div>
 `;
-    `;
+    
 
     document.getElementById('handicapTable').innerHTML = html;
 }
