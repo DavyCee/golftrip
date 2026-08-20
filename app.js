@@ -376,7 +376,7 @@ async function calculateRound(csvUrl, courseName) {
 
     const rows = text.split('\n');
 
-    const header = rows[0].split(',');
+    const header = rows[1].split(',');
 
     const slope = courseData[courseName].slope;
 
@@ -395,7 +395,7 @@ async function calculateRound(csvUrl, courseName) {
 
         let totalPoints = 0;
 
-        for (let row = 1; row <= 18; row++) {
+        for (let row = 2; row <= 19; row++) {
 
             const cols = rows[row].split(',');
 
