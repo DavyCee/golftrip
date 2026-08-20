@@ -19,6 +19,7 @@ const ROUND3_CSV =
 let settings = {};
 let courseData = {};
 let leaderboard = {};
+let playerHandicaps = {};
 
 async function loadSettings() {
 
@@ -368,11 +369,72 @@ document.getElementById('handicapTable').innerHTML = html;
 
 }     
 
+async function calculateRound(csvUrl, courseName) {
+
+    const response = await fetch(csvUrl);
+    const text = await response.text();
+
+    const rows = text.split('\n');
+
+    const header = rows[0].split(',');
+
+    const slope = courseData[courseName].slope;
+
+    const roundScores = {};
+
+    for (let playerCol = 3; playerCol < header.length; playerCol++) {
+
+        const player = header[playerCol]?.trim();
+
+        if (!player) continue;
+
+        const hi = playerHandicaps[player];
+
+        const courseHandicap =
+            Math.round((hi * slope) / 113);
+
+        let totalPoints = 0;
+
+        for (let row = 1; row <= 18; row++) {
+
+            const cols = rows[row].split(',');
+
+            const par =
+                parseInt(cols[1]);
+
+            const strokeIndex =
+                parseInt(cols[2]);
+
+            const gross =
+                parseInt(cols[playerCol]);
+
+            if (isNaN(gross)) continue;
+
+            const shots =
+                shotsReceived(
+                    courseHandicap,
+                    strokeIndex
+                );
+
+            const netScore =
+                gross - shots;
+
+            totalPoints +=
+                stablefordPoints(
+                    par,
+                    netScore
+                );
+        }
+
+        roundScores[player] = totalPoints;
+    }
+
+    return roundScores;
+}
+
 async function calculateRound1Leaderboard() {
 
     leaderboard = {};
-
-    // Load player handicaps
 
     const playerResponse =
         await fetch(PLAYER_CSV);
@@ -383,7 +445,7 @@ async function calculateRound1Leaderboard() {
     const playerRows =
         playerText.split('\n').slice(1);
 
-    const handicaps = {};
+    playerHandicaps = {};
 
     playerRows.forEach(row => {
 
@@ -391,11 +453,58 @@ async function calculateRound1Leaderboard() {
 
         const cols = row.split(',');
 
-        handicaps[cols[0]] =
+        const player = cols[0];
+
+        playerHandicaps[player] =
             parseFloat(cols[1]);
+
+        leaderboard[player] = {
+            r1: 0,
+            r2: 0,
+            r3: 0,
+            total: 0
+        };
 
     });
 
+    const r1 =
+        await calculateRound(
+            ROUND1_CSV,
+            'Vale do Lobo Royal'
+        );
+
+    const r2 =
+        await calculateRound(
+            ROUND2_CSV,
+            'Pinhal'
+        );
+
+    const r3 =
+        await calculateRound(
+            ROUND3_CSV,
+            'Vale do Lobo Ocean'
+        );
+
+    Object.keys(leaderboard).forEach(player => {
+
+        leaderboard[player].r1 =
+            r1[player] || 0;
+
+        leaderboard[player].r2 =
+            r2[player] || 0;
+
+        leaderboard[player].r3 =
+            r3[player] || 0;
+
+        leaderboard[player].total =
+            leaderboard[player].r1 +
+            leaderboard[player].r2 +
+            leaderboard[player].r3;
+
+    });
+
+    renderLeaderboard();
+}
     // Load Round 1 scores
 
     const scoreResponse =
@@ -468,17 +577,26 @@ async function calculateRound1Leaderboard() {
     renderRound1Leaderboard();
 }
 
-function renderRound1Leaderboard() {
+function renderLeaderboard() {
 
     const players =
         Object.entries(leaderboard)
             .sort(
                 (a, b) =>
-                b[1].r1 - a[1].r1
+                b[1].total - a[1].total
             );
 
     let html = `
-        <h3>Stableford Leaderboard</h3>
+        <h3>Individual Stableford</h3>
+        <table class="leaderboard-table">
+            <tr>
+                <th>Pos</th>
+                <th>Player</th>
+                <th>R1</th>
+                <th>R2</th>
+                <th>R3</th>
+                <th>Total</th>
+            </tr>
     `;
 
     let lastScore = null;
@@ -486,24 +604,26 @@ function renderRound1Leaderboard() {
 
     players.forEach(([player, data], index) => {
 
-        if (data.r1 !== lastScore) {
+        if (data.total !== lastScore) {
             position = index + 1;
-            lastScore = data.r1;
+            lastScore = data.total;
         }
 
         html += `
-            <div class="leaderboard-row">
-                <strong>${position}</strong>
-                ${player}
-                -
-                ${data.r1} pts
-            </div>
+            <tr>
+                <td>${position}</td>
+                <td>${player}</td>
+                <td>${data.r1}</td>
+                <td>${data.r2}</td>
+                <td>${data.r3}</td>
+                <td><strong>${data.total}</strong></td>
+            </tr>
         `;
     });
 
-    document.getElementById(
-        'leaderboard'
-    ).innerHTML = html;
+    html += '</table>';
+
+    document.getElementById('leaderboard').innerHTML = html;
 }
 
 function shotsReceived(courseHandicap, strokeIndex) {
