@@ -505,78 +505,7 @@ async function calculateRound1Leaderboard() {
 
     renderLeaderboard();
 }
-    // Load Round 1 scores
-
-    const scoreResponse =
-        await fetch(ROUND1_CSV);
-
-    const scoreText =
-        await scoreResponse.text();
-
-    const rows =
-        scoreText.split('\n');
-
-    const header =
-        rows[1].split(',');
-
-    const slope =
-        courseData['Vale do Lobo Royal'].slope;
-
-    for (let playerCol = 3; playerCol < header.length; playerCol++) {
-
-        const player =
-            header[playerCol]?.trim();
-
-        if (!player) continue;
-
-        const hi =
-            handicaps[player];
-
-        const courseHandicap =
-            Math.round((hi * slope) / 113);
-
-        let totalPoints = 0;
-
-        for (let row = 2; row <= 19; row++) {
-
-            const cols =
-                rows[row].split(',');
-
-            const par =
-                parseInt(cols[1]);
-
-            const strokeIndex =
-                parseInt(cols[2]);
-
-            const gross =
-                parseInt(cols[playerCol]);
-
-            if (isNaN(gross)) continue;
-
-            const shots =
-                shotsReceived(
-                    courseHandicap,
-                    strokeIndex
-                );
-
-            const netScore =
-                gross - shots;
-
-            totalPoints +=
-                stablefordPoints(
-                    par,
-                    netScore
-                );
-        }
-
-        leaderboard[player] = {
-            r1: totalPoints
-        };
-    }
-
-    renderRound1Leaderboard();
-}
-
+    
 function renderLeaderboard() {
 
     const players =
