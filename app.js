@@ -368,6 +368,174 @@ document.getElementById('handicapTable').innerHTML = html;
 
 }     
 
+async function calculateRound1Leaderboard() {
+
+    leaderboard = {};
+
+    // Load player handicaps
+
+    const playerResponse =
+        await fetch(PLAYER_CSV);
+
+    const playerText =
+        await playerResponse.text();
+
+    const playerRows =
+        playerText.split('\n').slice(1);
+
+    const handicaps = {};
+
+    playerRows.forEach(row => {
+
+        if (!row.trim()) return;
+
+        const cols = row.split(',');
+
+        handicaps[cols[0]] =
+            parseFloat(cols[1]);
+
+    });
+
+    // Load Round 1 scores
+
+    const scoreResponse =
+        await fetch(ROUND1_CSV);
+
+    const scoreText =
+        await scoreResponse.text();
+
+    const rows =
+        scoreText.split('\n');
+
+    const header =
+        rows[1].split(',');
+
+    const slope =
+        courseData['Vale do Lobo Royal'].slope;
+
+    for (let playerCol = 3; playerCol < header.length; playerCol++) {
+
+        const player =
+            header[playerCol]?.trim();
+
+        if (!player) continue;
+
+        const hi =
+            handicaps[player];
+
+        const courseHandicap =
+            Math.round((hi * slope) / 113);
+
+        let totalPoints = 0;
+
+        for (let row = 2; row <= 19; row++) {
+
+            const cols =
+                rows[row].split(',');
+
+            const par =
+                parseInt(cols[1]);
+
+            const strokeIndex =
+                parseInt(cols[2]);
+
+            const gross =
+                parseInt(cols[playerCol]);
+
+            if (isNaN(gross)) continue;
+
+            const shots =
+                shotsReceived(
+                    courseHandicap,
+                    strokeIndex
+                );
+
+            const netScore =
+                gross - shots;
+
+            totalPoints +=
+                stablefordPoints(
+                    par,
+                    netScore
+                );
+        }
+
+        leaderboard[player] = {
+            r1: totalPoints
+        };
+    }
+
+    renderRound1Leaderboard();
+}
+
+function renderRound1Leaderboard() {
+
+    const players =
+        Object.entries(leaderboard)
+            .sort(
+                (a, b) =>
+                b[1].r1 - a[1].r1
+            );
+
+    let html = `
+        <h3>Stableford Leaderboard</h3>
+    `;
+
+    let lastScore = null;
+    let position = 0;
+
+    players.forEach(([player, data], index) => {
+
+        if (data.r1 !== lastScore) {
+            position = index + 1;
+            lastScore = data.r1;
+        }
+
+        html += `
+            <div class="leaderboard-row">
+                <strong>${position}</strong>
+                ${player}
+                -
+                ${data.r1} pts
+            </div>
+        `;
+    });
+
+    document.getElementById(
+        'leaderboard'
+    ).innerHTML = html;
+}
+
+function shotsReceived(courseHandicap, strokeIndex) {
+
+    const fullRounds =
+        Math.floor(courseHandicap / 18);
+
+    const remainder =
+        courseHandicap % 18;
+
+    let shots = fullRounds;
+
+    if (strokeIndex <= remainder) {
+        shots++;
+    }
+
+    return shots;
+}
+
+function stablefordPoints(par, netScore) {
+
+    const diff = par - netScore;
+
+    if (diff >= 3) return 5;
+    if (diff === 2) return 4;
+    if (diff === 1) return 3;
+    if (diff === 0) return 2;
+    if (diff === -1) return 1;
+
+    return 0;
+}
+
 async function initialise() {
 
     await loadSettings();
@@ -382,6 +550,8 @@ async function initialise() {
     buildLeaderboard();
 
     loadHandicaps();
+    
+    await calculateRound1Leaderboard();
 
     document
         .getElementById('courseSelect')
