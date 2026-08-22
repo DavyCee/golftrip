@@ -603,51 +603,49 @@ async function loadRyderCup() {
         <h3>Balls 0 - 0 Shafts</h3>
     `;
 
-    let currentRound = '';
+    let currentRound = null;
+
+    const matches = [];
 
     rows.forEach(row => {
 
-        const cols = row.split(',');
+        const cols =
+            row.split(',')
+                .map(x => x.trim());
 
-        const first =
-            cols[0]?.trim();
+        const first = cols[0];
 
         if (!first) return;
 
         if (first.includes('Round 1')) {
-
-            currentRound =
-                '<h3>Round 1 - Fourball</h3>';
-
-            html += currentRound;
+            currentRound = 1;
+            html += '<h3>Round 1 - Fourball</h3>';
             return;
         }
 
         if (first.includes('Round 2')) {
-
-            currentRound =
-                '<h3>Round 2 - Fourball</h3>';
-
-            html += currentRound;
+            currentRound = 2;
+            html += '<h3>Round 2 - Fourball</h3>';
             return;
         }
 
         if (first.includes('Round 3')) {
-
-            currentRound =
-                '<h3>Round 3 - Singles</h3>';
-
-            html += currentRound;
+            currentRound = 3;
+            html += '<h3>Round 3 - Singles</h3>';
             return;
         }
 
         if (!first.match(/^\d/))
             return;
 
-        if (
-            cols[3] &&
-            cols[4]
-        ) {
+        if (currentRound === 1 || currentRound === 2) {
+
+            matches.push({
+                round: currentRound,
+                teeTime: cols[0],
+                teamA: [cols[1], cols[2]],
+                teamB: [cols[3], cols[4]]
+            });
 
             html += `
                 <div class="fixture">
@@ -657,11 +655,20 @@ async function loadRyderCup() {
                     vs
                     <br>
                     ${cols[3]} / ${cols[4]}
+                    <br>
+                    <em>Not Started</em>
                     <br><br>
                 </div>
             `;
 
         } else {
+
+            matches.push({
+                round: currentRound,
+                teeTime: cols[0],
+                teamA: [cols[1]],
+                teamB: [cols[2]]
+            });
 
             html += `
                 <div class="fixture">
@@ -671,12 +678,16 @@ async function loadRyderCup() {
                     vs
                     <br>
                     ${cols[2]}
+                    <br>
+                    <em>Not Started</em>
                     <br><br>
                 </div>
             `;
         }
 
     });
+
+    console.log('RYDER CUP MATCHES', matches);
 
     document
         .getElementById('rydercup')
