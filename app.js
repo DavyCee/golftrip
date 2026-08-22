@@ -16,6 +16,9 @@ const ROUND2_CSV =
 const ROUND3_CSV =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSfjxQddO15BxkKKZYF9WFg-LcGJsPqaffUnR_W8g3T76h95n78ipqNoSPIHoqsO40LSaAW5NpVO9C3/pub?gid=1861478720&single=true&output=csv';
 
+const MATCHUPS_CSV =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vSfjxQddO15BxkKKZYF9WFg-LcGJsPqaffUnR_W8g3T76h95n78ipqNoSPIHoqsO40LSaAW5NpVO9C3/pub?gid=1270511102&single=true&output=csv';
+
 let settings = {};
 let courseData = {};
 let leaderboard = {};
@@ -585,6 +588,101 @@ function stablefordPoints(par, netScore) {
     return 0;
 }
 
+async function loadRyderCup() {
+
+    const response =
+        await fetch(MATCHUPS_CSV);
+
+    const text =
+        await response.text();
+
+    const rows =
+        text.split('\n');
+
+    let html = `
+        <h3>Balls 0 - 0 Shafts</h3>
+    `;
+
+    let currentRound = '';
+
+    rows.forEach(row => {
+
+        const cols = row.split(',');
+
+        const first =
+            cols[0]?.trim();
+
+        if (!first) return;
+
+        if (first.includes('Round 1')) {
+
+            currentRound =
+                '<h3>Round 1 - Fourball</h3>';
+
+            html += currentRound;
+            return;
+        }
+
+        if (first.includes('Round 2')) {
+
+            currentRound =
+                '<h3>Round 2 - Fourball</h3>';
+
+            html += currentRound;
+            return;
+        }
+
+        if (first.includes('Round 3')) {
+
+            currentRound =
+                '<h3>Round 3 - Singles</h3>';
+
+            html += currentRound;
+            return;
+        }
+
+        if (!first.match(/^\d/))
+            return;
+
+        if (
+            cols[3] &&
+            cols[4]
+        ) {
+
+            html += `
+                <div class="fixture">
+                    <strong>${cols[0]}</strong><br>
+                    ${cols[1]} / ${cols[2]}
+                    <br>
+                    vs
+                    <br>
+                    ${cols[3]} / ${cols[4]}
+                    <br><br>
+                </div>
+            `;
+
+        } else {
+
+            html += `
+                <div class="fixture">
+                    <strong>${cols[0]}</strong><br>
+                    ${cols[1]}
+                    <br>
+                    vs
+                    <br>
+                    ${cols[2]}
+                    <br><br>
+                </div>
+            `;
+        }
+
+    });
+
+    document
+        .getElementById('rydercup')
+        .innerHTML = html;
+}
+
 async function initialise() {
 
     await loadSettings();
@@ -601,6 +699,8 @@ async function initialise() {
     loadHandicaps();
     
     await calculateRound1Leaderboard();
+  
+    await loadRyderCup();
 
     document
         .getElementById('courseSelect')
