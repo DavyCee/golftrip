@@ -23,6 +23,7 @@ let settings = {};
 let courseData = {};
 let leaderboard = {};
 let playerHandicaps = {};
+let ryderCupMatches = [];
 
 async function loadSettings() {
 
@@ -687,11 +688,71 @@ async function loadRyderCup() {
 
     });
 
+    ryderCupMatches = matches;
+    
     console.log('RYDER CUP MATCHES', matches);
 
     document
         .getElementById('rydercup')
         .innerHTML = html;
+}
+
+function getPlayerHoleScore(rows, playerName, holeNumber) {
+
+    const header =
+        rows[1].split(',');
+
+    const playerIndex =
+        header.findIndex(
+            h => h.trim() === playerName
+        );
+
+    if (playerIndex === -1)
+        return null;
+
+    const holeRow =
+        rows[holeNumber + 1].split(',');
+
+    return Number(
+        holeRow[playerIndex]
+    );
+}
+
+function getStrokeIndex(rows, holeNumber) {
+
+    const holeRow =
+        rows[holeNumber + 1].split(',');
+
+    return Number(holeRow[2]);
+}
+
+function getNetScore(
+    rows,
+    playerName,
+    holeNumber,
+    courseHandicap
+) {
+
+    const gross =
+        getPlayerHoleScore(
+            rows,
+            playerName,
+            holeNumber
+        );
+
+    const strokeIndex =
+        getStrokeIndex(
+            rows,
+            holeNumber
+        );
+
+    const shots =
+        shotsReceived(
+            courseHandicap,
+            strokeIndex
+        );
+
+    return gross - shots;
 }
 
 async function initialise() {
@@ -719,3 +780,9 @@ async function initialise() {
 }
 
 initialise();
+
+console.log(
+    'Matches:',
+    ryderCupMatches
+);
+
