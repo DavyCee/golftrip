@@ -24,6 +24,7 @@ let courseData = {};
 let leaderboard = {};
 let playerHandicaps = {};
 let ryderCupMatches = [];
+let roundData = {};
 
 async function loadSettings() {
 
@@ -379,7 +380,9 @@ async function calculateRound(csvUrl, courseName) {
     const text = await response.text();
 
     const rows = text.split('\n');
-
+    
+    roundData[courseName] = rows;
+    
     const header = rows[1].split(',');
 
     const slope = courseData[courseName].slope;
@@ -506,7 +509,9 @@ async function calculateRound1Leaderboard() {
             leaderboard[player].r3;
 
     });
-
+    
+    console.log('ROUND DATA', roundData);
+    
     renderLeaderboard();
 }
     
@@ -780,25 +785,4 @@ async function initialise() {
 }
 
 initialise();
-
-console.log(
-    'Matches:',
-    ryderCupMatches
-);
-
-console.log(
-    getPlayerHoleScore(
-        round1Rows,
-        'David Canavan',
-        1
-    )
-);
-
-console.log(
-    getPlayerHoleScore(
-        round1Rows,
-        'Patrick Halliday',
-        1
-    )
-);
 
