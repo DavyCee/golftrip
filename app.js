@@ -786,3 +786,19 @@ console.log(
     ryderCupMatches
 );
 
+console.log(
+    getPlayerHoleScore(
+        round1Rows,
+        'David Canavan',
+        1
+    )
+);
+
+console.log(
+    getPlayerHoleScore(
+        round1Rows,
+        'Patrick Halliday',
+        1
+    )
+);
+
