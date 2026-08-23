@@ -853,10 +853,10 @@ console.log(
     hole,
     scores
 );
-        const holeHasScores =
-            scores.some(
-                score => !isNaN(score)
-            );
+       const holeHasScores =
+        scores.some(
+        score => score > 0
+    );
 
         if (!holeHasScores)
             break;
