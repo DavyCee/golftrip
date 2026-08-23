@@ -384,6 +384,9 @@ async function calculateRound(csvUrl, courseName) {
     
     const header = rows[1].split(',');
 
+    console.log('COURSE NAME', courseName);
+    console.log('COURSE DATA', courseData);
+    
     const slope = courseData[courseName].slope;
 
     const roundScores = {};
