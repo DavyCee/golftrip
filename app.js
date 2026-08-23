@@ -672,8 +672,6 @@ console.log(
             [cols[1], cols[2]],
             [cols[3], cols[4]]
         );
-
-    console.log('MATCH RESULT', result);
     
 status = result.result;
 
@@ -870,7 +868,15 @@ function calculateFourballHole(
             hole,
             ch
         );
-
+        
+console.log(
+    'HOLE',
+    hole,
+    'A',
+    teamANetScores,
+    'B',
+    teamBNetScores
+);
     });
 
     const bestA =
@@ -933,15 +939,7 @@ function calculateFourballMatch(
         scores.some(
         score => score > 0
     );
-
-    console.log(
-    'HOLE',
-    hole,
-    'SCORES',
-    scores,
-    'HAS SCORES',
-    holeHasScores
-);
+        
         if (!holeHasScores)
             break;
 
