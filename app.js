@@ -130,8 +130,7 @@ async function loadCourseData() {
         }
 
     });
-
-    console.log(courseData);
+    
 }
 
 function renderSchedule() {
@@ -510,8 +509,6 @@ async function calculateRound1Leaderboard() {
 
     });
     
-    console.log('ROUND DATA', roundData);
-    
     renderLeaderboard();
 }
     
@@ -694,8 +691,6 @@ async function loadRyderCup() {
     });
 
     ryderCupMatches = matches;
-    
-    console.log('RYDER CUP MATCHES', matches);
 
     document
         .getElementById('rydercup')
@@ -758,6 +753,79 @@ function getNetScore(
         );
 
     return gross - shots;
+}
+
+function getCourseHandicap(
+    playerName,
+    courseName
+) {
+
+    const hi =
+        playerHandicaps[playerName];
+
+    const slope =
+        courseData[courseName].slope;
+
+    return Math.round(
+        (hi * slope) / 113
+    );
+}
+
+function calculateFourballHole(
+    rows,
+    courseName,
+    teamA,
+    teamB,
+    holeNumber
+) {
+
+    const bestA = Math.min(
+        getNetScore(
+            rows,
+            teamA[0],
+            holeNumber,
+            getCourseHandicap(
+                teamA[0],
+                courseName
+            )
+        ),
+        getNetScore(
+            rows,
+            teamA[1],
+            holeNumber,
+            getCourseHandicap(
+                teamA[1],
+                courseName
+            )
+        )
+    );
+
+    const bestB = Math.min(
+        getNetScore(
+            rows,
+            teamB[0],
+            holeNumber,
+            getCourseHandicap(
+                teamB[0],
+                courseName
+            )
+        ),
+        getNetScore(
+            rows,
+            teamB[1],
+            holeNumber,
+            getCourseHandicap(
+                teamB[1],
+                courseName
+            )
+        )
+    );
+
+    if (bestA < bestB) return 'A';
+
+    if (bestB < bestA) return 'B';
+
+    return 'H';
 }
 
 async function initialise() {
