@@ -607,13 +607,10 @@ async function loadRyderCup() {
     const rows =
         text.split('\n');
 
-    let html = `
-    <h3>
-        ${settings['Team A Name']}
-        0 - 0
-        ${settings['Team B Name']}
-    </h3>
-`;
+    let ballsPoints = 0;
+    let shaftsPoints = 0;
+
+    let html = '';
 
     let currentRound = null;
 
@@ -675,7 +672,26 @@ try {
             [cols[1], cols[2]],
             [cols[3], cols[4]]
         );
-    
+    if (result.status === 'finished') {
+
+    if (result.winner === settings['Team A Name']) {
+
+        ballsPoints += 1;
+
+    } else if (
+        result.winner === settings['Team B Name']
+    ) {
+
+        shaftsPoints += 1;
+
+    } else if (
+        result.winner === 'Halved'
+    ) {
+
+        ballsPoints += 0.5;
+        shaftsPoints += 0.5;
+    }
+}
 status = result.result;
 
 if (
@@ -753,10 +769,20 @@ html += `
 
     ryderCupMatches = matches;
 
-    document
-        .getElementById('rydercup')
-        .innerHTML = html;
-}
+const scoreboard = `
+    <h3>
+        ${settings['Team A Name']}
+        ${ballsPoints}
+        -
+        ${shaftsPoints}
+        ${settings['Team B Name']}
+    </h3>
+`;
+
+document
+    .getElementById('rydercup')
+    .innerHTML =
+        scoreboard + html;
 
 function getPlayerHoleScore(rows, playerName, holeNumber) {
 
