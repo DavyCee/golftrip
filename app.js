@@ -979,9 +979,9 @@ holesPlayed++;
         const holesRemaining =
             18 - holesPlayed;
 
-        if (
-            Math.abs(lead) >
-            holesRemaining
+       if (
+        holesRemaining > 0 &&
+        Math.abs(lead) > holesRemaining
         ) {
 
             const winner =
