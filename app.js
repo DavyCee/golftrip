@@ -870,11 +870,12 @@ function calculateFourballHole(
 console.log(
     'HOLE',
     hole,
-    'A',
+    'A NET',
     teamANetScores,
-    'B',
+    'B NET',
     teamBNetScores
 );
+        
     });
 
     const bestA =
@@ -883,6 +884,15 @@ console.log(
     const bestB =
         Math.min(...teamBNetScores);
 
+    console.log(
+    'BEST',
+    hole,
+    'A',
+    bestA,
+    'B',
+    bestB
+);
+    
     if (bestA < bestB)
         return 'A';
 
