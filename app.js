@@ -806,7 +806,22 @@ function getNetScore(
             strokeIndex
         );
 
-    return gross - shots;
+console.log(
+    'NET SCORE',
+    playerName,
+    'Hole',
+    holeNumber,
+    'Gross',
+    gross,
+    'CH',
+    courseHandicap,
+    'Shots',
+    shots,
+    'Net',
+    gross - shots
+);
+
+return gross - shots;
 }
 
 function getCourseHandicap(
@@ -832,8 +847,6 @@ function calculateFourballHole(
     teamB,
     hole
 ) {
-
-    console.log('ENTERED calculateFourballHole');
     
     const teamANetScores = teamA.map(player => {
 
