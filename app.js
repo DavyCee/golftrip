@@ -798,6 +798,9 @@ function getNetScore(
             holeNumber
         );
 
+    if (gross === null)
+        return null;
+
     const strokeIndex =
         getStrokeIndex(
             rows,
@@ -810,22 +813,7 @@ function getNetScore(
             strokeIndex
         );
 
-console.log(
-    'NET SCORE',
-    playerName,
-    'Hole',
-    holeNumber,
-    'Gross',
-    gross,
-    'CH',
-    courseHandicap,
-    'Shots',
-    shots,
-    'Net',
-    gross - shots
-);
-
-return gross - shots;
+    return gross - shots;
 }
 
 function getCourseHandicap(
