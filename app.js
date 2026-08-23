@@ -869,4 +869,6 @@ async function initialise() {
         .addEventListener('change', loadHandicaps);
 }
 
+console.log('APP LOADED');
+
 initialise();
