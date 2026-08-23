@@ -508,21 +508,6 @@ async function calculateRound1Leaderboard() {
             leaderboard[player].r3;
 
     });
-
-console.log(
-    calculateFourballMatch(
-        roundData['Vale do Lobo Royal'],
-        'Vale do Lobo Royal',
-        [
-            'David Canavan',
-            'Douglas Johnson'
-        ],
-        [
-            'James Kidd',
-            'Patrick Halliday'
-        ]
-    )
-);
     
     renderLeaderboard();
 }
@@ -665,19 +650,47 @@ async function loadRyderCup() {
                 teamB: [cols[3], cols[4]]
             });
 
-            html += `
-                <div class="fixture">
-                    <strong>${cols[0]}</strong><br>
-                    ${cols[1]} / ${cols[2]}
-                    <br>
-                    vs
-                    <br>
-                    ${cols[3]} / ${cols[4]}
-                    <br>
-                    <em>Not Started</em>
-                    <br><br>
-                </div>
-            `;
+            let status = 'Not Started';
+
+try {
+
+    const courseName =
+        currentRound === 1
+            ? 'Vale do Lobo Royal'
+            : 'Pinhal';
+
+    const result =
+        calculateFourballMatch(
+            roundData[courseName],
+            courseName,
+            [cols[1], cols[2]],
+            [cols[3], cols[4]]
+        );
+
+    status =
+        result.winner === 'Halved'
+            ? 'Halved'
+            : `${result.winner} ${result.result}`;
+
+} catch (e) {
+
+    status = 'Not Started';
+
+}
+
+html += `
+    <div class="fixture">
+        <strong>${cols[0]}</strong><br>
+        ${cols[1]} / ${cols[2]}
+        <br>
+        vs
+        <br>
+        ${cols[3]} / ${cols[4]}
+        <br>
+        <em>${status}</em>
+        <br><br>
+    </div>
+`;
 
         } else {
 
@@ -918,7 +931,5 @@ async function initialise() {
         .getElementById('courseSelect')
         .addEventListener('change', loadHandicaps);
 }
-
-console.log('APP LOADED');
 
 initialise();
