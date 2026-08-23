@@ -969,18 +969,3 @@ async function initialise() {
 }
 
 initialise();
-
-console.log(
-    calculateFourballMatch(
-        roundData['Vale do Lobo Royal'],
-        'Vale do Lobo Royal',
-        [
-            'David Canavan',
-            'Douglas Johnson'
-        ],
-        [
-            'James Kidd',
-            'Patrick Halliday'
-        ]
-    )
-);
