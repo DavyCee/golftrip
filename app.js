@@ -667,10 +667,17 @@ try {
             [cols[3], cols[4]]
         );
 
+status = result.result;
+
+if (
+    result.status === 'finished' &&
+    result.winner &&
+    result.winner !== 'Halved'
+) {
+
     status =
-        result.winner === 'Halved'
-            ? 'Halved'
-            : `${result.winner} ${result.result}`;
+        `${result.winner} Won ${result.result}`;
+}
 
 } catch (e) {
 
@@ -799,63 +806,6 @@ function getCourseHandicap(
     );
 }
 
-function calculateFourballHole(
-    rows,
-    courseName,
-    teamA,
-    teamB,
-    holeNumber
-) {
-
-    const bestA = Math.min(
-        getNetScore(
-            rows,
-            teamA[0],
-            holeNumber,
-            getCourseHandicap(
-                teamA[0],
-                courseName
-            )
-        ),
-        getNetScore(
-            rows,
-            teamA[1],
-            holeNumber,
-            getCourseHandicap(
-                teamA[1],
-                courseName
-            )
-        )
-    );
-
-    const bestB = Math.min(
-        getNetScore(
-            rows,
-            teamB[0],
-            holeNumber,
-            getCourseHandicap(
-                teamB[0],
-                courseName
-            )
-        ),
-        getNetScore(
-            rows,
-            teamB[1],
-            holeNumber,
-            getCourseHandicap(
-                teamB[1],
-                courseName
-            )
-        )
-    );
-
-    if (bestA < bestB) return 'A';
-
-    if (bestB < bestA) return 'B';
-
-    return 'H';
-}
-
 function calculateFourballMatch(
     rows,
     courseName,
@@ -863,10 +813,50 @@ function calculateFourballMatch(
     teamB
 ) {
 
-    let teamAHoles = 0;
-    let teamBHoles = 0;
+    let lead = 0;
+    let holesPlayed = 0;
+    let started = false;
 
     for (let hole = 1; hole <= 18; hole++) {
+
+        const scores = [
+
+            getPlayerHoleScore(
+                rows,
+                teamA[0],
+                hole
+            ),
+
+            getPlayerHoleScore(
+                rows,
+                teamA[1],
+                hole
+            ),
+
+            getPlayerHoleScore(
+                rows,
+                teamB[0],
+                hole
+            ),
+
+            getPlayerHoleScore(
+                rows,
+                teamB[1],
+                hole
+            )
+
+        ];
+
+        const holeHasScores =
+            scores.some(
+                score => !isNaN(score)
+            );
+
+        if (!holeHasScores)
+            break;
+
+        started = true;
+        holesPlayed++;
 
         const result =
             calculateFourballHole(
@@ -878,33 +868,77 @@ function calculateFourballMatch(
             );
 
         if (result === 'A')
-            teamAHoles++;
+            lead++;
 
         if (result === 'B')
-            teamBHoles++;
+            lead--;
+
+        const holesRemaining =
+            18 - holesPlayed;
+
+        if (
+            Math.abs(lead) >
+            holesRemaining
+        ) {
+
+            const winner =
+                lead > 0
+                    ? 'Balls'
+                    : 'Shafts';
+
+            return {
+                status: 'finished',
+                winner,
+                result:
+                    `${Math.abs(lead)}&${holesRemaining}`
+            };
+        }
     }
 
-    if (teamAHoles > teamBHoles) {
+    if (!started) {
 
         return {
-            winner: 'Balls',
-            result: `${teamAHoles}-${teamBHoles}`
+            status: 'not-started',
+            result: 'Not Started'
         };
-
     }
 
-    if (teamBHoles > teamAHoles) {
+    if (holesPlayed < 18) {
+
+        if (lead === 0) {
+
+            return {
+                status: 'live',
+                result:
+                    `All Square Through ${holesPlayed}`
+            };
+        }
 
         return {
-            winner: 'Shafts',
-            result: `${teamBHoles}-${teamAHoles}`
+            status: 'live',
+            result:
+                `${lead > 0 ? 'Balls' : 'Shafts'} ` +
+                `${Math.abs(lead)} Up Through ${holesPlayed}`
         };
+    }
 
+    if (lead === 0) {
+
+        return {
+            status: 'finished',
+            winner: 'Halved',
+            result: 'Match Halved'
+        };
     }
 
     return {
-        winner: 'Halved',
-        result: 'Halved'
+        status: 'finished',
+        winner:
+            lead > 0
+                ? 'Balls'
+                : 'Shafts',
+        result:
+            `${Math.abs(lead)} Up`
     };
 }
 
@@ -933,3 +967,18 @@ async function initialise() {
 }
 
 initialise();
+
+console.log(
+    calculateFourballMatch(
+        roundData['Vale do Lobo Royal'],
+        'Vale do Lobo Royal',
+        [
+            'David Canavan',
+            'Douglas Johnson'
+        ],
+        [
+            'James Kidd',
+            'Patrick Halliday'
+        ]
+    )
+);
