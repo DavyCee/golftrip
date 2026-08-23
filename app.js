@@ -854,3 +854,19 @@ async function initialise() {
 
 initialise();
 
+console.log(
+    'HOLE 1 RESULT',
+    calculateFourballHole(
+        roundData['Vale do Lobo Royal'],
+        'Vale do Lobo Royal',
+        [
+            'David Canavan',
+            'Douglas Johnson'
+        ],
+        [
+            'James Kidd',
+            'Patrick Halliday'
+        ],
+        1
+    )
+);
