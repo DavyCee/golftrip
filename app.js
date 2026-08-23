@@ -848,7 +848,11 @@ function calculateFourballMatch(
             )
 
         ];
-
+console.log(
+    'MATCH TEST',
+    hole,
+    scores
+);
         const holeHasScores =
             scores.some(
                 score => !isNaN(score)
