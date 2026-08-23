@@ -833,6 +833,8 @@ function calculateFourballHole(
     hole
 ) {
 
+    console.log('ENTERED calculateFourballHole');
+    
     const teamANetScores = teamA.map(player => {
 
         const ch =
