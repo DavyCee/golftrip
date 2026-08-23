@@ -510,6 +510,8 @@ async function calculateRound1Leaderboard() {
     });
     
     renderLeaderboard();
+
+    loadRyderCup();
 }
     
 function renderLeaderboard() {
@@ -959,7 +961,7 @@ async function initialise() {
     
     await calculateRound1Leaderboard();
   
-    await loadRyderCup();
+    //await loadRyderCup();
 
     document
         .getElementById('courseSelect')
