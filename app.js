@@ -660,7 +660,11 @@ try {
         currentRound === 1
             ? 'Vale do Lobo Royal'
             : 'Pinhal';
-
+console.log(
+    'ROUND DATA TYPE',
+    courseName,
+    roundData[courseName]
+);
     const result =
         calculateFourballMatch(
             roundData[courseName],
@@ -856,6 +860,14 @@ function calculateFourballMatch(
         score => score > 0
     );
 
+    console.log(
+    'HOLE',
+    hole,
+    'SCORES',
+    scores,
+    'HAS SCORES',
+    holeHasScores
+);
         if (!holeHasScores)
             break;
 
