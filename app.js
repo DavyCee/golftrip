@@ -896,7 +896,6 @@ const bestA =
 
 const bestB =
     Math.min(...validB);
-);
     
     if (bestA < bestB)
         return 'A';
