@@ -669,6 +669,8 @@ try {
             [cols[3], cols[4]]
         );
 
+    console.log('MATCH RESULT', result);
+    
 status = result.result;
 
 if (
@@ -848,11 +850,7 @@ function calculateFourballMatch(
             )
 
         ];
-console.log(
-    'MATCH TEST',
-    hole,
-    scores
-);
+
        const holeHasScores =
         scores.some(
         score => score > 0
