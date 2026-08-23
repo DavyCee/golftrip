@@ -689,7 +689,9 @@ if (
 
 } catch (e) {
 
-    status = 'Not Started';
+    console.error(e);
+
+    status = 'ERROR';
 
 }
 
@@ -812,6 +814,63 @@ function getCourseHandicap(
     return Math.round(
         (hi * slope) / 113
     );
+}
+
+function calculateFourballHole(
+    rows,
+    courseName,
+    teamA,
+    teamB,
+    hole
+) {
+
+    const teamANetScores = teamA.map(player => {
+
+        const ch =
+            getCourseHandicap(
+                player,
+                courseName
+            );
+
+        return getNetScore(
+            rows,
+            player,
+            hole,
+            ch
+        );
+
+    });
+
+    const teamBNetScores = teamB.map(player => {
+
+        const ch =
+            getCourseHandicap(
+                player,
+                courseName
+            );
+
+        return getNetScore(
+            rows,
+            player,
+            hole,
+            ch
+        );
+
+    });
+
+    const bestA =
+        Math.min(...teamANetScores);
+
+    const bestB =
+        Math.min(...teamBNetScores);
+
+    if (bestA < bestB)
+        return 'A';
+
+    if (bestB < bestA)
+        return 'B';
+
+    return 'HALVED';
 }
 
 function calculateFourballMatch(
