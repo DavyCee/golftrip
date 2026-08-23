@@ -861,8 +861,11 @@ console.log(
         if (!holeHasScores)
             break;
 
-        started = true;
-        holesPlayed++;
+        if (!holeHasScores)
+    break;
+
+started = true;
+holesPlayed++;
 
         const result =
             calculateFourballHole(
