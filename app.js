@@ -510,8 +510,7 @@ async function calculateRound1Leaderboard() {
     });
 
 console.log(
-    'HOLE 1 RESULT',
-    calculateFourballHole(
+    calculateFourballMatch(
         roundData['Vale do Lobo Royal'],
         'Vale do Lobo Royal',
         [
@@ -521,8 +520,7 @@ console.log(
         [
             'James Kidd',
             'Patrick Halliday'
-        ],
-        1
+        ]
     )
 );
     
@@ -843,6 +841,58 @@ function calculateFourballHole(
     if (bestB < bestA) return 'B';
 
     return 'H';
+}
+
+function calculateFourballMatch(
+    rows,
+    courseName,
+    teamA,
+    teamB
+) {
+
+    let teamAHoles = 0;
+    let teamBHoles = 0;
+
+    for (let hole = 1; hole <= 18; hole++) {
+
+        const result =
+            calculateFourballHole(
+                rows,
+                courseName,
+                teamA,
+                teamB,
+                hole
+            );
+
+        if (result === 'A')
+            teamAHoles++;
+
+        if (result === 'B')
+            teamBHoles++;
+    }
+
+    if (teamAHoles > teamBHoles) {
+
+        return {
+            winner: 'Balls',
+            result: `${teamAHoles}-${teamBHoles}`
+        };
+
+    }
+
+    if (teamBHoles > teamAHoles) {
+
+        return {
+            winner: 'Shafts',
+            result: `${teamBHoles}-${teamAHoles}`
+        };
+
+    }
+
+    return {
+        winner: 'Halved',
+        result: 'Halved'
+    };
 }
 
 async function initialise() {
