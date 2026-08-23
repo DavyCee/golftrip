@@ -473,24 +473,24 @@ async function calculateRound1Leaderboard() {
 
     });
 
-    const r1 =
-        await calculateRound(
-            ROUND1_CSV,
-            'Vale do Lobo Royal'
-        );
+   const r1 =
+    await calculateRound(
+        ROUND1_CSV,
+        settings['Course 1 Name']
+    );
 
-    const r2 =
-        await calculateRound(
-            ROUND2_CSV,
-            'Pinhal'
-        );
+const r2 =
+    await calculateRound(
+        ROUND2_CSV,
+        settings['Course 2 Name']
+    );
 
-    const r3 =
-        await calculateRound(
-            ROUND3_CSV,
-            'Vale do Lobo Ocean'
-        );
-
+const r3 =
+    await calculateRound(
+        ROUND3_CSV,
+        settings['Course 3 Name']
+    );
+    
     Object.keys(leaderboard).forEach(player => {
 
         leaderboard[player].r1 =
@@ -605,8 +605,12 @@ async function loadRyderCup() {
         text.split('\n');
 
     let html = `
-        <h3>Balls 0 - 0 Shafts</h3>
-    `;
+    <h3>
+        ${settings['Team A Name']}
+        0 - 0
+        ${settings['Team B Name']}
+    </h3>
+`;
 
     let currentRound = null;
 
@@ -656,10 +660,10 @@ async function loadRyderCup() {
 
 try {
 
-    const courseName =
-        currentRound === 1
-            ? 'Vale do Lobo Royal'
-            : 'Pinhal';
+   const courseName =
+    currentRound === 1
+        ? settings['Course 1 Name']
+        : settings['Course 2 Name'];
 
     const result =
         calculateFourballMatch(
@@ -692,7 +696,7 @@ if (
 html += `
     <div class="fixture">
         <strong>${cols[0]}</strong><br>
-        <strong>Balls</strong>
+        <strong>${settings['Team B Name']}</strong>
         <br>
         ${cols[1]} / ${cols[2]}
         <br><br>
@@ -701,7 +705,7 @@ html += `
 
         <br><br>
 
-        <strong>Shafts</strong>
+        <strong>${settings['Team A Name']}</strong>
         <br>
         ${cols[3]} / ${cols[4]}
         <br>
@@ -722,7 +726,7 @@ html += `
             html += `
                 <div class="fixture">
                     <strong>${cols[0]}</strong><br>
-                    <strong>Balls</strong>
+                    <strong>${settings['Team B Name']}</strong>
                     <br>
                     ${cols[1]}
 
@@ -732,7 +736,7 @@ html += `
 
                     <br><br>
 
-                    <strong>Shafts</strong>
+                    <strong>${settings['Team A Name']}</strong>
                     <br>
                     ${cols[2]}
                     <br>
@@ -872,15 +876,6 @@ function calculateFourballHole(
             ch
         );
         
-console.log(
-    'HOLE',
-    hole,
-    'A NET',
-    teamANetScores,
-    'B NET',
-    teamBNetScores
-);
-        
     });
 
     const validA =
@@ -898,14 +893,6 @@ const bestA =
 
 const bestB =
     Math.min(...validB);
-
-    console.log(
-    'BEST',
-    hole,
-    'A',
-    bestA,
-    'B',
-    bestB
 );
     
     if (bestA < bestB)
