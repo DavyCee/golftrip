@@ -767,9 +767,13 @@ function getPlayerHoleScore(rows, playerName, holeNumber) {
     const holeRow =
         rows[holeNumber + 1].split(',');
 
-    return Number(
-        holeRow[playerIndex]
-    );
+    const value =
+        holeRow[playerIndex]?.trim();
+
+    if (!value)
+        return null;
+
+    return Number(value);
 }
 
 function getStrokeIndex(rows, holeNumber) {
@@ -891,11 +895,21 @@ console.log(
         
     });
 
-    const bestA =
-        Math.min(...teamANetScores);
+    const validA =
+    teamANetScores.filter(
+        score => score !== null
+    );
 
-    const bestB =
-        Math.min(...teamBNetScores);
+const validB =
+    teamBNetScores.filter(
+        score => score !== null
+    );
+
+const bestA =
+    Math.min(...validA);
+
+const bestB =
+    Math.min(...validB);
 
     console.log(
     'BEST',
