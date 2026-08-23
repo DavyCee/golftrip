@@ -960,6 +960,12 @@ holesPlayed++;
                 hole
             );
 
+        console.log(
+    'HOLE',
+    hole,
+    'RESULT',
+    result
+);
         if (result === 'A')
             lead++;
 
