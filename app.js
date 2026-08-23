@@ -660,11 +660,7 @@ try {
         currentRound === 1
             ? 'Vale do Lobo Royal'
             : 'Pinhal';
-console.log(
-    'ROUND DATA TYPE',
-    courseName,
-    roundData[courseName]
-);
+
     const result =
         calculateFourballMatch(
             roundData[courseName],
@@ -957,13 +953,7 @@ holesPlayed++;
                 teamB,
                 hole
             );
-
-        console.log(
-    'HOLE',
-    hole,
-    'RESULT',
-    result
-);
+        
         if (result === 'A')
             lead++;
 
