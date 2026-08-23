@@ -698,9 +698,16 @@ if (
 html += `
     <div class="fixture">
         <strong>${cols[0]}</strong><br>
-        ${cols[1]} / ${cols[2]}
+        <strong>Balls</strong>
         <br>
+        ${cols[1]} / ${cols[2]}
+        <br><br>
+
         vs
+
+        <br><br>
+
+        <strong>Shafts</strong>
         <br>
         ${cols[3]} / ${cols[4]}
         <br>
@@ -721,9 +728,17 @@ html += `
             html += `
                 <div class="fixture">
                     <strong>${cols[0]}</strong><br>
-                    ${cols[1]}
+                    <strong>Balls</strong>
                     <br>
+                    ${cols[1]}
+
+                    <br><br>
+
                     vs
+
+                    <br><br>
+
+                    <strong>Shafts</strong>
                     <br>
                     ${cols[2]}
                     <br>
