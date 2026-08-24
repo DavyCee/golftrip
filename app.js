@@ -797,38 +797,83 @@ html += `
     </div>
 `;
 
+       } else {
+
+    matches.push({
+        round: currentRound,
+        teeTime: cols[0],
+        teamA: [cols[1]],
+        teamB: [cols[2]]
+    });
+
+    let singlesStatus = 'Not Started';
+
+    try {
+
+        const result =
+            calculateSinglesMatch(
+                roundData[
+                    settings['Course 3 Name']
+                ],
+                settings['Course 3 Name'],
+                cols[1],
+                cols[2]
+            );
+
+        if (result.status === 'finished') {
+
+            if (result.winner === 'A') {
+
+                singlesStatus =
+                    `${settings['Team A Name']} Won ${result.result}`;
+
+            } else if (result.winner === 'B') {
+
+                singlesStatus =
+                    `${settings['Team B Name']} Won ${result.result}`;
+
+            } else {
+
+                singlesStatus =
+                    result.result;
+            }
+
         } else {
 
-            matches.push({
-                round: currentRound,
-                teeTime: cols[0],
-                teamA: [cols[1]],
-                teamB: [cols[2]]
-            });
-
-            html += `
-                <div class="fixture">
-                    <strong>${cols[0]}</strong><br>
-                    <strong>${settings['Team B Name']}</strong>
-                    <br>
-                    ${cols[1]}
-
-                    <br><br>
-
-                    vs
-
-                    <br><br>
-
-                    <strong>${settings['Team A Name']}</strong>
-                    <br>
-                    ${cols[2]}
-                    <br>
-                    <em>Not Started</em>
-                    <br><br>
-                </div>
-            `;
+            singlesStatus =
+                result.result;
         }
 
+    } catch (e) {
+
+        singlesStatus = 'Not Started';
+
+    }
+
+    html += `
+        <div class="fixture">
+            <strong>${cols[0]}</strong><br>
+
+            <strong>${settings['Team A Name']}</strong><br>
+            ${cols[1]}
+
+            <br><br>
+
+            vs
+
+            <br><br>
+
+            <strong>${settings['Team B Name']}</strong><br>
+            ${cols[2]}
+
+            <br>
+
+            <em>${singlesStatus}</em>
+
+            <br><br>
+        </div>
+    `;
+}
     });
 
     ryderCupMatches = matches;
