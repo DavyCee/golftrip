@@ -672,14 +672,14 @@ try {
             [cols[1], cols[2]],
             [cols[3], cols[4]]
         );
-    if (result.status === 'finished') {
+if (result.status === 'finished') {
 
-    if (result.winner === settings['Team A Name']) {
+    if (result.winner === 'A') {
 
         ballsPoints += 1;
 
     } else if (
-        result.winner === settings['Team B Name']
+        result.winner === 'B'
     ) {
 
         shaftsPoints += 1;
@@ -700,8 +700,14 @@ if (
     result.winner !== 'Halved'
 ) {
 
-    status =
-        `${result.winner} Won ${result.result}`;
+   const winnerName =
+    result.winner === 'A'
+        ? settings['Team A Name']
+        : settings['Team B Name'];
+
+status =
+    `${winnerName} Won ${result.result}`;
+    
 }
 
 } catch (e) {
@@ -1012,9 +1018,9 @@ holesPlayed++;
         ) {
 
             const winner =
-                lead > 0
-                    ? 'Balls'
-                    : 'Shafts';
+            lead > 0
+            ? 'A'
+            : 'B';
 
             return {
                 status: 'finished',
@@ -1062,13 +1068,13 @@ holesPlayed++;
     }
 
     return {
-        status: 'finished',
-        winner:
-            lead > 0
-                ? 'Balls'
-                : 'Shafts',
-        result:
-            `${Math.abs(lead)} Up`
+    status: 'finished',
+    winner:
+        lead > 0
+            ? 'A'
+            : 'B',
+    result:
+        `${Math.abs(lead)} Up`
     };
 }
 
