@@ -688,23 +688,31 @@ try {
 if (result.status === 'finished') {
 
     if (result.winner === 'A') {
-
-        ballsPoints += 1;
+        ballsPoints += Number(
+    settings['Ryder Cup Points Win']
+);
 
     } else if (
         result.winner === 'B'
     ) {
 
-        shaftsPoints += 1;
+        shaftsPoints += Number(
+    settings['Ryder Cup Points Win']
+);
+        
 
     } else if (
         result.winner === 'Halved'
     ) {
+        
+ballsPoints += Number(
+    settings['Ryder Cup Points Half']
+);
 
-        ballsPoints += 0.5;
-        shaftsPoints += 0.5;
-    }
-}
+shaftsPoints += Number(
+    settings['Ryder Cup Points Half']
+);
+        
 status = result.result;
 
 if (
@@ -777,28 +785,43 @@ try {
             cols[2]
         );
 
-    if (result.status === 'finished') {
+   if (result.status === 'finished') {
 
-        if (result.winner === 'A') {
+    if (result.winner === 'A') {
 
-            singlesStatus =
-                `${settings['Team A Name']} Won ${result.result}`;
+        ballsPoints += Number(
+            settings['Ryder Cup Points Win']
+        );
 
-        } else if (result.winner === 'B') {
+        singlesStatus =
+            `${settings['Team A Name']} Won ${result.result}`;
 
-            singlesStatus =
-                `${settings['Team B Name']} Won ${result.result}`;
+    } else if (result.winner === 'B') {
 
-        } else {
+        shaftsPoints += Number(
+            settings['Ryder Cup Points Win']
+        );
 
-            singlesStatus = result.result;
-        }
+        singlesStatus =
+            `${settings['Team B Name']} Won ${result.result}`;
 
     } else {
+
+        ballsPoints += Number(
+            settings['Ryder Cup Points Half']
+        );
+
+        shaftsPoints += Number(
+            settings['Ryder Cup Points Half']
+        );
 
         singlesStatus = result.result;
     }
 
+} else {
+
+    singlesStatus = result.result;
+}
 } catch (e) {
 
     singlesStatus = 'Not Started';
