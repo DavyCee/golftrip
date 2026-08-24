@@ -998,6 +998,124 @@ function calculateSinglesHole(
     return 'HALVED';
 }
 
+function calculateSinglesMatch(
+    rows,
+    courseName,
+    playerA,
+    playerB
+) {
+
+    let lead = 0;
+    let holesPlayed = 0;
+    let started = false;
+
+    for (let hole = 1; hole <= 18; hole++) {
+
+        const scoreA =
+            getPlayerHoleScore(
+                rows,
+                playerA,
+                hole
+            );
+
+        const scoreB =
+            getPlayerHoleScore(
+                rows,
+                playerB,
+                hole
+            );
+
+        const holeHasScores =
+            scoreA !== null ||
+            scoreB !== null;
+
+        if (!holeHasScores)
+            break;
+
+        started = true;
+        holesPlayed++;
+
+        const result =
+            calculateSinglesHole(
+                rows,
+                courseName,
+                playerA,
+                playerB,
+                hole
+            );
+
+        if (result === 'A')
+            lead++;
+
+        if (result === 'B')
+            lead--;
+
+        const holesRemaining =
+            18 - holesPlayed;
+
+        if (
+            holesRemaining > 0 &&
+            Math.abs(lead) > holesRemaining
+        ) {
+
+            return {
+                status: 'finished',
+                winner:
+                    lead > 0
+                        ? 'A'
+                        : 'B',
+                result:
+                    `${Math.abs(lead)}&${holesRemaining}`
+            };
+        }
+    }
+
+    if (!started) {
+
+        return {
+            status: 'not-started',
+            result: 'Not Started'
+        };
+    }
+
+    if (holesPlayed < 18) {
+
+        if (lead === 0) {
+
+            return {
+                status: 'live',
+                result:
+                    `All Square Through ${holesPlayed}`
+            };
+        }
+
+        return {
+            status: 'live',
+            result:
+                `${Math.abs(lead)} Up Through ${holesPlayed}`
+        };
+    }
+
+    if (lead === 0) {
+
+        return {
+            status: 'finished',
+            winner: 'Halved',
+            result: 'Match Halved'
+        };
+    }
+
+    return {
+        status: 'finished',
+        winner:
+            lead > 0
+                ? 'A'
+                : 'B',
+        result:
+            `${Math.abs(lead)} Up`
+    };
+}
+
 function calculateFourballMatch(
     rows,
     courseName,
