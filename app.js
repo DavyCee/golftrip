@@ -496,6 +496,17 @@ console.log(
     Object.keys(roundData)
 );
     
+console.log(
+    calculateSinglesMatch(
+        roundData[
+            settings['Course 3 Name']
+        ],
+        settings['Course 3 Name'],
+        'Aidan Thomson',
+        'Ross Newell'
+    )
+);
+    
     Object.keys(leaderboard).forEach(player => {
 
         leaderboard[player].r1 =
@@ -1281,7 +1292,5 @@ async function initialise() {
         .addEventListener('change', loadHandicaps);
 }
 
-
-console.log(Object.keys(roundData));
 
 initialise();
