@@ -688,17 +688,28 @@ try {
 if (result.status === 'finished') {
 
     if (result.winner === 'A') {
-        ballsPoints += Number(
-    settings['Ryder Cup Points Win']
-);
 
-    } else if (
-        result.winner === 'B'
-    ) {
+        ballsPoints += Number(
+            settings['Ryder Cup Points Win']
+        );
+
+    } else if (result.winner === 'B') {
 
         shaftsPoints += Number(
-    settings['Ryder Cup Points Win']
-);
+            settings['Ryder Cup Points Win']
+        );
+
+    } else if (result.winner === 'Halved') {
+
+        ballsPoints += Number(
+            settings['Ryder Cup Points Half']
+        );
+
+        shaftsPoints += Number(
+            settings['Ryder Cup Points Half']
+        );
+    }
+}
         
 
     } else if (
@@ -771,6 +782,7 @@ html += `
         teamA: [cols[1]],
         teamB: [cols[2]]
     });
+            
 let singlesStatus = 'Not Started';
 
 try {
