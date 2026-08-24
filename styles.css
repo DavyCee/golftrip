@@ -90,3 +90,26 @@ select {
     flex: 1;
     text-align: right;
 }
+
+.team-columns {
+    display: flex;
+    gap: 50px;
+    justify-content: space-between;
+}
+
+.team-column {
+    flex: 1;
+}
+
+.team-column h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.team-column p {
+    margin-bottom: 20px;
+}
+
+.team-column div {
+    padding: 4px 0;
+}
