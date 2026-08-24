@@ -172,39 +172,89 @@ function renderSchedule() {
 
 async function loadTeams() {
 
-    const response = await fetch(PLAYER_CSV);
-    const text = await response.text();
+    const response =
+        await fetch(TEAMS_CSV);
 
-    const rows = text.split('\n').slice(1);
+    const text =
+        await response.text();
 
-    let north = '';
-    let south = '';
+    const rows =
+        text.split('\n');
 
-    rows.forEach(row => {
+    const teamA = [];
+    const teamB = [];
 
-        if (!row.trim()) return;
+    rows.slice(1).forEach(row => {
 
-        const cols = row.split(',');
+        const cols =
+            row.split(',')
+                .map(x => x.trim());
 
-        if (cols[2] === 'North') {
-            north += `<div class="team-player">${cols[0]}</div>`;
+        if (!cols[0]) return;
+
+        const playerName = cols[0];
+        const teamName = cols[3];
+
+        if (
+            teamName === settings['Team A Name']
+        ) {
+            teamA.push(playerName);
         }
 
-        if (cols[2] === 'South') {
-            south += `<div class="team-player">${cols[0]}</div>`;
+        if (
+            teamName === settings['Team B Name']
+        ) {
+            teamB.push(playerName);
         }
 
     });
 
-    document.getElementById('teams').innerHTML = `
-        <div class="team-section">
-            <div class="team-title">North</div>
-            ${north}
-        </div>
+    const captainA = teamA[0];
+    const captainB = teamB[0];
 
-        <div class="team-section">
-            <div class="team-title">South</div>
-            ${south}
+    document
+        .getElementById('teams')
+        .innerHTML = `
+        <div class="team-columns">
+
+            <div class="team-column">
+
+                <h3>${settings['Team A Name']}</h3>
+
+                <p>
+                    <strong>Captain</strong><br>
+                    ${captainA}
+                </p>
+
+                ${teamA
+                    .slice(1)
+                    .map(
+                        player =>
+                            `<div>${player}</div>`
+                    )
+                    .join('')}
+
+            </div>
+
+            <div class="team-column">
+
+                <h3>${settings['Team B Name']}</h3>
+
+                <p>
+                    <strong>Captain</strong><br>
+                    ${captainB}
+                </p>
+
+                ${teamB
+                    .slice(1)
+                    .map(
+                        player =>
+                            `<div>${player}</div>`
+                    )
+                    .join('')}
+
+            </div>
+
         </div>
     `;
 }
