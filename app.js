@@ -783,6 +783,7 @@ document
     .getElementById('rydercup')
     .innerHTML =
         scoreboard + html;
+}
 
 function getPlayerHoleScore(rows, playerName, holeNumber) {
 
