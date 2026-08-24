@@ -736,7 +736,7 @@ html += `
         <strong>${cols[0]}</strong><br>
 
         <strong>${settings['Team A Name']}</strong><br>
-        ${cols[1]}
+        ${cols[1]} / ${cols[2]}
 
         <br><br>
 
@@ -745,11 +745,11 @@ html += `
         <br><br>
 
         <strong>${settings['Team B Name']}</strong><br>
-        ${cols[2]}
+        ${cols[3]} / ${cols[4]}
 
         <br>
 
-        <em>Not Started</em>
+        <em>${status}</em>
 
         <br><br>
     </div>
@@ -804,49 +804,6 @@ try {
     singlesStatus = 'Not Started';
 
 }
-    let singlesStatus = 'Not Started';
-
-    try {
-
-        const result =
-            calculateSinglesMatch(
-                roundData[
-                    settings['Course 3 Name']
-                ],
-                settings['Course 3 Name'],
-                cols[1],
-                cols[2]
-            );
-
-        if (result.status === 'finished') {
-
-            if (result.winner === 'A') {
-
-                singlesStatus =
-                    `${settings['Team A Name']} Won ${result.result}`;
-
-            } else if (result.winner === 'B') {
-
-                singlesStatus =
-                    `${settings['Team B Name']} Won ${result.result}`;
-
-            } else {
-
-                singlesStatus =
-                    result.result;
-            }
-
-        } else {
-
-            singlesStatus =
-                result.result;
-        }
-
-    } catch (e) {
-
-        singlesStatus = 'Not Started';
-
-    }
 
     html += `
         <div class="fixture">
@@ -866,7 +823,7 @@ try {
 
             <br>
 
-            <em>Not Started</em>
+            <em>${singlesStatus}</em>
 
             <br><br>
         </div>
