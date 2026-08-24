@@ -731,48 +731,6 @@ status =
 
 }
 
-let status = 'Not Started';
-
-try {
-
-    const result =
-        calculateSinglesMatch(
-            roundData[
-                settings['Course 3 Name']
-            ],
-            settings['Course 3 Name'],
-            cols[1],
-            cols[2]
-        );
-
-    if (result.status === 'finished') {
-
-        if (result.winner === 'A') {
-
-            status =
-                `${settings['Team A Name']} Won ${result.result}`;
-
-        } else if (result.winner === 'B') {
-
-            status =
-                `${settings['Team B Name']} Won ${result.result}`;
-
-        } else {
-
-            status = result.result;
-        }
-
-    } else {
-
-        status = result.result;
-    }
-
-} catch (e) {
-
-    status = 'Not Started';
-
-}
-
 html += `
     <div class="fixture">
         <strong>${cols[0]}</strong><br>
@@ -791,7 +749,7 @@ html += `
 
         <br>
 
-        <em>${status}</em>
+        <em>Not Started</em>
 
         <br><br>
     </div>
@@ -805,7 +763,47 @@ html += `
         teamA: [cols[1]],
         teamB: [cols[2]]
     });
+let singlesStatus = 'Not Started';
 
+try {
+
+    const result =
+        calculateSinglesMatch(
+            roundData[
+                settings['Course 3 Name']
+            ],
+            settings['Course 3 Name'],
+            cols[1],
+            cols[2]
+        );
+
+    if (result.status === 'finished') {
+
+        if (result.winner === 'A') {
+
+            singlesStatus =
+                `${settings['Team A Name']} Won ${result.result}`;
+
+        } else if (result.winner === 'B') {
+
+            singlesStatus =
+                `${settings['Team B Name']} Won ${result.result}`;
+
+        } else {
+
+            singlesStatus = result.result;
+        }
+
+    } else {
+
+        singlesStatus = result.result;
+    }
+
+} catch (e) {
+
+    singlesStatus = 'Not Started';
+
+}
     let singlesStatus = 'Not Started';
 
     try {
@@ -868,7 +866,7 @@ html += `
 
             <br>
 
-            <em>${singlesStatus}</em>
+            <em>Not Started</em>
 
             <br><br>
         </div>
