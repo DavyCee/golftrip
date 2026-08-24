@@ -170,33 +170,6 @@ function renderSchedule() {
     document.getElementById('schedule').innerHTML = html;
 }
 
-async function loadPlayers() {
-
-    const response = await fetch(PLAYER_CSV);
-    const text = await response.text();
-
-    const rows = text.split('\n').slice(1);
-
-    let html = '';
-
-    rows.forEach(row => {
-
-        if (!row.trim()) return;
-
-        const cols = row.split(',');
-
-        html += `
-            <div class="player">
-                <strong>${cols[0]}</strong>
-                | HI ${cols[1]}
-                | ${cols[2]}
-            </div>
-        `;
-    });
-
-    document.getElementById('players').innerHTML = html;
-}
-
 async function loadTeams() {
 
     const response = await fetch(PLAYER_CSV);
@@ -1348,8 +1321,6 @@ async function initialise() {
     await loadCourseData();
 
     renderSchedule();
-
-    loadPlayers();
 
     loadTeams();
 
