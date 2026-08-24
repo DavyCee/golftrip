@@ -1283,12 +1283,8 @@ async function initialise() {
 setTimeout(() => {
 
     console.log(
-        calculateSinglesMatch(
-            roundData['Vale do Lobo Ocean'],
-            'Vale do Lobo Ocean',
-            'Aidan Thomson',
-            'Ross Newell'
-        )
+        'ROUND 3 DATA',
+        roundData['Vale do Lobo Ocean']
     );
 
 }, 3000);
