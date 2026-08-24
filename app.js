@@ -173,7 +173,7 @@ function renderSchedule() {
 async function loadTeams() {
 
     const response =
-        await fetch(PLAYERS_CSV);
+        await fetch(PLAYER_CSV);
 
     const text =
         await response.text();
