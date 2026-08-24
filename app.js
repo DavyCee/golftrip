@@ -1282,19 +1282,4 @@ async function initialise() {
 
 console.log(Object.keys(roundData));
 
-setTimeout(() => {
-
-    console.log(
-        calculateSinglesMatch(
-            roundData[
-                settings['Course 3 Name']
-            ],
-            settings['Course 3 Name'],
-            'Aidan Thomson',
-            'Ross Newell'
-        )
-    );
-
-}, 3000);
-
 initialise();
