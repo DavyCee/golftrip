@@ -1279,4 +1279,18 @@ async function initialise() {
         .addEventListener('change', loadHandicaps);
 }
 
+
+setTimeout(() => {
+
+    console.log(
+        calculateSinglesMatch(
+            roundData['Vale do Lobo Ocean'],
+            'Vale do Lobo Ocean',
+            'Aidan Thomson',
+            'Ross Newell'
+        )
+    );
+
+}, 3000);
+
 initialise();
