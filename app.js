@@ -939,6 +939,65 @@ const bestB =
     return 'HALVED';
 }
 
+function calculateSinglesHole(
+    rows,
+    courseName,
+    playerA,
+    playerB,
+    hole
+) {
+
+    const slope =
+        courseData[courseName].slope;
+
+    const hiA =
+        playerHandicaps[playerA];
+
+    const hiB =
+        playerHandicaps[playerB];
+
+    const chA =
+        Math.round(
+            (hiA * slope) / 113
+        );
+
+    const chB =
+        Math.round(
+            (hiB * slope) / 113
+        );
+
+    const netA =
+        getNetScore(
+            rows,
+            playerA,
+            hole,
+            chA
+        );
+
+    const netB =
+        getNetScore(
+            rows,
+            playerB,
+            hole,
+            chB
+        );
+
+    if (
+        netA === null ||
+        netB === null
+    ) {
+        return 'HALVED';
+    }
+
+    if (netA < netB)
+        return 'A';
+
+    if (netB < netA)
+        return 'B';
+
+    return 'HALVED';
+}
+
 function calculateFourballMatch(
     rows,
     courseName,
