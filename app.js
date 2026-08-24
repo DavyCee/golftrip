@@ -1280,11 +1280,19 @@ async function initialise() {
 }
 
 
+console.log(Object.keys(roundData));
+
 setTimeout(() => {
 
     console.log(
-        'ROUND 3 DATA',
-        roundData['Vale do Lobo Ocean']
+        calculateSinglesMatch(
+            roundData[
+                settings['Course 3 Name']
+            ],
+            settings['Course 3 Name'],
+            'Aidan Thomson',
+            'Ross Newell'
+        )
     );
 
 }, 3000);
