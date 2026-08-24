@@ -710,20 +710,7 @@ if (result.status === 'finished') {
         );
     }
 }
-        
 
-    } else if (
-        result.winner === 'Halved'
-    ) {
-        
-ballsPoints += Number(
-    settings['Ryder Cup Points Half']
-);
-
-shaftsPoints += Number(
-    settings['Ryder Cup Points Half']
-);
-        
 status = result.result;
 
 if (
