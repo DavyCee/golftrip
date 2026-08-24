@@ -240,12 +240,11 @@ if (
                 </p>
 
                 ${teamA
-                    .slice(1)
-                    .map(
-                        player =>
-                            `<div>${player}</div>`
-                    )
-                    .join('')}
+                .map(
+                player =>
+                `<div>${player}</div>`
+                )
+                .join('')}
 
             </div>
 
@@ -258,13 +257,12 @@ if (
                     ${captainB}
                 </p>
 
-                ${teamB
-                    .slice(1)
-                    .map(
-                        player =>
-                            `<div>${player}</div>`
-                    )
-                    .join('')}
+               ${teamB
+                .map(
+                player =>
+                `<div>${player}</div>`
+                )
+                .join('')}
 
             </div>
 
