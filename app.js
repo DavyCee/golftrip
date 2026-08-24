@@ -184,6 +184,9 @@ async function loadTeams() {
     const teamA = [];
     const teamB = [];
 
+    let captainA = '';
+    let captainB = '';
+
     rows.slice(1).forEach(row => {
 
         const cols =
@@ -193,24 +196,34 @@ async function loadTeams() {
         if (!cols[0]) return;
 
         const playerName = cols[0];
-        const teamName = cols[3];
+        const teamName = cols[2];
 
-        if (
-            teamName === settings['Team A Name']
-        ) {
-            teamA.push(playerName);
-        }
+       const isCaptain =
+    cols[3]?.toLowerCase() === 'yes';
 
-        if (
-            teamName === settings['Team B Name']
-        ) {
-            teamB.push(playerName);
-        }
+if (
+    teamName === settings['Team A Name']
+) {
+
+    if (isCaptain) {
+        captainA = playerName;
+    } else {
+        teamA.push(playerName);
+    }
+}
+
+if (
+    teamName === settings['Team B Name']
+) {
+
+    if (isCaptain) {
+        captainB = playerName;
+    } else {
+        teamB.push(playerName);
+    }
+}
 
     });
-
-    const captainA = teamA[0];
-    const captainB = teamB[0];
 
     document
         .getElementById('teams')
