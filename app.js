@@ -731,23 +731,68 @@ status =
 
 }
 
+let status = 'Not Started';
+
+try {
+
+    const result =
+        calculateSinglesMatch(
+            roundData[
+                settings['Course 3 Name']
+            ],
+            settings['Course 3 Name'],
+            cols[1],
+            cols[2]
+        );
+
+    if (result.status === 'finished') {
+
+        if (result.winner === 'A') {
+
+            status =
+                `${settings['Team A Name']} Won ${result.result}`;
+
+        } else if (result.winner === 'B') {
+
+            status =
+                `${settings['Team B Name']} Won ${result.result}`;
+
+        } else {
+
+            status = result.result;
+        }
+
+    } else {
+
+        status = result.result;
+    }
+
+} catch (e) {
+
+    status = 'Not Started';
+
+}
+
 html += `
     <div class="fixture">
         <strong>${cols[0]}</strong><br>
-        <strong>${settings['Team B Name']}</strong>
-        <br>
-        ${cols[1]} / ${cols[2]}
+
+        <strong>${settings['Team A Name']}</strong><br>
+        ${cols[1]}
+
         <br><br>
 
         vs
 
         <br><br>
 
-        <strong>${settings['Team A Name']}</strong>
+        <strong>${settings['Team B Name']}</strong><br>
+        ${cols[2]}
+
         <br>
-        ${cols[3]} / ${cols[4]}
-        <br>
+
         <em>${status}</em>
+
         <br><br>
     </div>
 `;
