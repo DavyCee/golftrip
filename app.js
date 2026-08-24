@@ -490,6 +490,11 @@ const r3 =
         ROUND3_CSV,
         settings['Course 3 Name']
     );
+
+console.log(
+    'ROUND DATA KEYS',
+    Object.keys(roundData)
+);
     
     Object.keys(leaderboard).forEach(player => {
 
