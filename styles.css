@@ -215,3 +215,16 @@ select {
 .leaderboard-table tr:first-child {
     font-weight: bold;
 }
+
+@media (max-width: 768px) {
+
+    .leaderboard-table {
+        font-size: 14px;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 6px;
+    }
+
+}
