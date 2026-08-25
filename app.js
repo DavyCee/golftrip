@@ -44,10 +44,10 @@ async function loadSettings() {
 
     if (settings['Event Name']) {
         document.querySelector('h1').textContent =
-            `🏌️ ${settings['Event Name']}`;
+            ` ${settings['Event Name']}`;
 
         document.getElementById('eventTitle').innerHTML =
-    `🏌️ ${settings['Event Name']}`;
+    `🇵🇹 ${settings['Event Name']}`;
 
 document.getElementById('eventTeams').innerHTML =
     `${settings['Team A Name']} vs ${settings['Team B Name']}`;
