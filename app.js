@@ -372,12 +372,10 @@ async function loadHandicaps() {
 const slope =
     courseData[selectedCourse].slope;
 
-    let html = `
-    <div class="handicap-row">
+   let html = `
+    <div class="handicap-row handicap-header">
         <strong class="handicap-name">Player</strong>
-        <strong class="handicap-hi">HI</strong>
-        <strong class="handicap-ch">CH</strong>
-        <strong class="handicap-ph">PH</strong>
+        <strong class="handicap-score">Course Hcp</strong>
     </div>
 `;
 
@@ -399,14 +397,14 @@ const slope =
     const playingHandicap =
         Math.round(courseHandicap * allowance);
 
-    html += `
-        <div class="handicap-row">
-            <div class="handicap-name">${player}</div>
-            <div class="handicap-hi">${hi.toFixed(1)}</div>
-            <div class="handicap-ch">${courseHandicap}</div>
-            <div class="handicap-ph">${playingHandicap}</div>
+   html += `
+    <div class="handicap-row">
+        <div class="handicap-name">${player}</div>
+        <div class="handicap-score">
+            ${courseHandicap}
         </div>
-    `;
+    </div>
+`;
 
 });   
 
