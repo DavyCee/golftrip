@@ -61,7 +61,7 @@ function loadVillaInfo() {
     document
         .getElementById('villaInfo')
         .innerHTML = `
-            <h2>🏡 Villa</h2>
+            <h2>🏡 Villa Details </h2>
 
             <p>
                 Volta da Popa 20<br>
