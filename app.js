@@ -925,7 +925,13 @@ const scoreboard = `
 
     </div>
 `;
+
+    document
+    .getElementById('rydercup')
+    .innerHTML =
+        scoreboard + html;
 }
+
 function getPlayerHoleScore(rows, playerName, holeNumber) {
 
     const header =
@@ -1153,7 +1159,7 @@ function calculateSinglesMatch(
                 hole
             );
 
-        const scoreB =
+         =
             getPlayerHoleScore(
                 rows,
                 playerB,
