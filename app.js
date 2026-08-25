@@ -1158,8 +1158,7 @@ function calculateSinglesMatch(
                 playerA,
                 hole
             );
-
-         =
+        
             getPlayerHoleScore(
                 rows,
                 playerB,
