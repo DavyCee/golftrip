@@ -327,9 +327,25 @@ function renderLeaderboard() {
 
     const players =
         Object.entries(leaderboard)
-            .sort((a, b) => b[1].total - a[1].total);
+            .sort(
+                (a, b) =>
+                    b[1].total - a[1].total
+            );
 
-    let html = '';
+    let html = `
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Player</th>
+                    <th>R1</th>
+                    <th>R2</th>
+                    <th>R3</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     let lastScore = null;
     let position = 0;
@@ -337,26 +353,36 @@ function renderLeaderboard() {
     players.forEach(([player, data], index) => {
 
         if (data.total !== lastScore) {
+
             position = index + 1;
             lastScore = data.total;
+
         }
 
         html += `
-            <div class="leaderboard-row">
-                ${position}. ${player}
-                <br>
-                R1: ${data.r1}
-                |
-                R2: ${data.r2}
-                |
-                R3: ${data.r3}
-                |
-                Total: ${data.total}
-            </div>
+            <tr>
+                <td>${position}</td>
+                <td>${player}</td>
+                <td>${data.r1}</td>
+                <td>${data.r2}</td>
+                <td>${data.r3}</td>
+                <td>
+                    <strong>
+                        ${data.total}
+                    </strong>
+                </td>
+            </tr>
         `;
     });
 
-    document.getElementById('leaderboard').innerHTML = html;
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    document
+        .getElementById('leaderboard')
+        .innerHTML = html;
 }
 
 async function loadHandicaps() {
