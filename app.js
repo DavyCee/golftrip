@@ -259,10 +259,9 @@ if (
 
                 <h3>${settings['Team A Name']}</h3>
 
-                <p>
-                    <strong>Captain</strong><br>
-                    ${captainA}
-                </p>
+                <div class="captain">
+                ${captainA} (C)
+                </div>
 
                 ${teamA
                 .map(
@@ -277,10 +276,9 @@ if (
 
                 <h3>${settings['Team B Name']}</h3>
 
-                <p>
-                    <strong>Captain</strong><br>
-                    ${captainB}
-                </p>
+               <div class="captain">
+                ${captainB} (C)
+                </div>
 
                ${teamB
                 .map(
