@@ -55,6 +55,31 @@ document.getElementById('eventTeams').innerHTML =
     }
     
 }
+
+function loadVillaInfo() {
+
+    document
+        .getElementById('villaInfo')
+        .innerHTML = `
+            <h2>🏡 Villa</h2>
+
+            <p>
+                Volta da Popa 20<br>
+                8125-523 Vilamoura
+            </p>
+
+            <p>
+                <a
+                    href="https://maps.google.com/?q=Volta+da+Popa+20+8125-523+Vilamoura"
+                    target="_blank"
+                    class="villa-link"
+                >
+                    📍 Open in Google Maps
+                </a>
+            </p>
+        `;
+}
+
 async function loadCourseData() {
 
     const response = await fetch(COURSE_CSV);
@@ -1422,6 +1447,9 @@ holesPlayed++;
 async function initialise() {
 
     await loadSettings();
+    
+    loadVillaInfo();
+    
     await loadCourseData();
 
     renderSchedule();
