@@ -415,6 +415,26 @@ async function loadHandicaps() {
 
     const rows = text.split('\n').slice(1);
 
+    rows.sort((a, b) => {
+
+    const surnameA =
+        a.split(',')[0]
+            .trim()
+            .split(' ')
+            .pop()
+            .toLowerCase();
+
+    const surnameB =
+        b.split(',')[0]
+            .trim()
+            .split(' ')
+            .pop()
+            .toLowerCase();
+
+    return surnameA.localeCompare(surnameB);
+
+});
+    
     const selectedCourse =
         document.getElementById('courseSelect').value;
 
