@@ -897,20 +897,34 @@ try {
     ryderCupMatches = matches;
 
 const scoreboard = `
-    <h3>
-        ${settings['Team A Name']}
-        ${ballsPoints}
-        -
-        ${shaftsPoints}
-        ${settings['Team B Name']}
-    </h3>
-`;
+    <div class="ryder-scoreboard">
 
-document
-    .getElementById('rydercup')
-    .innerHTML =
-        scoreboard + html;
-}
+        <div class="ryder-team">
+            <div class="ryder-team-name">
+                ${settings['Team A Name']}
+            </div>
+
+            <div class="ryder-score">
+                ${ballsPoints}
+            </div>
+        </div>
+
+        <div class="ryder-vs">
+            v
+        </div>
+
+        <div class="ryder-team">
+            <div class="ryder-team-name">
+                ${settings['Team B Name']}
+            </div>
+
+            <div class="ryder-score">
+                ${shaftsPoints}
+            </div>
+        </div>
+
+    </div>
+`;
 
 function getPlayerHoleScore(rows, playerName, holeNumber) {
 
