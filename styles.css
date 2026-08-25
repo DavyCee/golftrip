@@ -114,11 +114,12 @@ select {
     margin-bottom: 15px;
 }
 
-.team-column p {
-    margin-bottom: 20px;
+.team-column div {
+    padding: 4px 0;
 }
 
-.team-column div {
+.captain {
+    font-weight: bold;
     padding: 4px 0;
 }
 
