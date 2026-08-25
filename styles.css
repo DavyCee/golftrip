@@ -68,8 +68,12 @@ select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
+
+    font-size: 18px;
+
     background: #111827;
     color: white;
+
     border: 1px solid #374151;
     border-radius: 8px;
 }
