@@ -47,7 +47,7 @@ async function loadSettings() {
             ` ${settings['Event Name']}`;
 
         document.getElementById('eventTitle').innerHTML =
-    `🇵🇹 ${settings['Event Name']}`;
+    `🇵🇹 ${settings['Event Name']}🇵🇹`;
 
 document.getElementById('eventTeams').innerHTML =
     `${settings['Team A Name']} vs ${settings['Team B Name']}`;
