@@ -1225,7 +1225,8 @@ function calculateSinglesMatch(
                 playerA,
                 hole
             );
-        
+
+         const scoreB =
             getPlayerHoleScore(
                 rows,
                 playerB,
