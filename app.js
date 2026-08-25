@@ -925,7 +925,7 @@ const scoreboard = `
 
     </div>
 `;
-
+}
 function getPlayerHoleScore(rows, playerName, holeNumber) {
 
     const header =
