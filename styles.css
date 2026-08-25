@@ -186,3 +186,32 @@ select {
     font-weight: bold;
     color: #ffd700;
 }
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    padding: 10px;
+    text-align: center;
+
+    color: #ffd700;
+
+    border-bottom: 2px solid #374151;
+}
+
+.leaderboard-table td {
+    padding: 10px;
+    text-align: center;
+
+    border-bottom: 1px solid #374151;
+}
+
+.leaderboard-table td:nth-child(2) {
+    text-align: left;
+}
+
+.leaderboard-table tr:first-child {
+    font-weight: bold;
+}
