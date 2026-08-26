@@ -1547,6 +1547,8 @@ function getHolePar(
 
 function renderScorecard() {
 
+console.log('renderScorecard running');
+    
     const player =
         document.getElementById(
             'scorecardPlayer'
