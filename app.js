@@ -604,17 +604,6 @@ console.log(
     Object.keys(roundData)
 );
     
-console.log(
-    calculateSinglesMatch(
-        roundData[
-            settings['Course 3 Name']
-        ],
-        settings['Course 3 Name'],
-        'Aidan Thomson',
-        'Ross Newell'
-    )
-);
-    
     Object.keys(leaderboard).forEach(player => {
 
         leaderboard[player].r1 =
@@ -1535,9 +1524,6 @@ function getHolePar(
 
     const rows =
         roundData[courseName];
-
-        console.log('Course:', courseName);
-        console.log('Rows:', roundData[courseName]);
     
     const row =
         rows.find(
