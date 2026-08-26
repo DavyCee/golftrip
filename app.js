@@ -1461,15 +1461,52 @@ holesPlayed++;
     result:
         `${Math.abs(lead)} Up`
     };
+    
+}
+
+async function loadScorecardPlayers() {
+
+    const response =
+        await fetch(PLAYER_CSV);
+
+    const text =
+        await response.text();
+
+    const rows =
+        text.split('\n').slice(1);
+
+    let html = '';
+
+    rows.forEach(row => {
+
+        if (!row.trim()) return;
+
+        const cols =
+            row.split(',');
+
+        html += `
+            <option>
+                ${cols[0]}
+            </option>
+        `;
+    });
+
+    document
+        .getElementById(
+            'scorecardPlayer'
+        )
+        .innerHTML = html;
 }
 
 async function initialise() {
 
     await loadSettings();
-    
+
     loadVillaInfo();
-    
+
     await loadCourseData();
+
+    await loadScorecardPlayers();
 
     renderSchedule();
 
@@ -1478,14 +1515,31 @@ async function initialise() {
     buildLeaderboard();
 
     loadHandicaps();
-    
+
     await calculateRound1Leaderboard();
-  
-    //await loadRyderCup();
 
     document
         .getElementById('courseSelect')
-        .addEventListener('change', loadHandicaps);
+        .addEventListener(
+            'change',
+            loadHandicaps
+        );
+
+    document
+        .getElementById('scorecardPlayer')
+        .addEventListener(
+            'change',
+            renderScorecard
+        );
+
+    document
+        .getElementById('scorecardCourse')
+        .addEventListener(
+            'change',
+            renderScorecard
+        );
+
+    renderScorecard();
 }
 
 
