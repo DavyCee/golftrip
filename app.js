@@ -1536,6 +1536,9 @@ function getHolePar(
     const rows =
         roundData[courseName];
 
+        console.log('Course:', courseName);
+        console.log('Rows:', roundData[courseName]);
+    
     const row =
         rows.find(
             r =>
