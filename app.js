@@ -1524,23 +1524,15 @@ async function initialise() {
             'change',
             loadHandicaps
         );
-
-    document
-        .getElementById('scorecardPlayer')
-        .addEventListener(
-            'change',
-            renderScorecard
-        );
-
-    document
-        .getElementById('scorecardCourse')
-        .addEventListener(
-            'change',
-            renderScorecard
-        );
-
-    renderScorecard();
 }
 
+function renderScorecard() {
+
+    document
+        .getElementById('scorecard')
+        .innerHTML =
+            'Scorecard coming soon';
+
+}
 
 initialise();
