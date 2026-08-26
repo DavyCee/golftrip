@@ -1537,13 +1537,4 @@ function renderScorecard() {
 
 }
 
-function renderScorecard() {
-
-    document
-        .getElementById('scorecard')
-        .innerHTML =
-            'Select a player and round';
-
-}
-
 initialise();
