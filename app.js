@@ -1518,6 +1518,8 @@ async function initialise() {
 
     await calculateRound1Leaderboard();
 
+    loadRyderCup();
+    
     document
         .getElementById('courseSelect')
         .addEventListener(
@@ -1532,6 +1534,15 @@ function renderScorecard() {
         .getElementById('scorecard')
         .innerHTML =
             'Scorecard coming soon';
+
+}
+
+function renderScorecard() {
+
+    document
+        .getElementById('scorecard')
+        .innerHTML =
+            'Select a player and round';
 
 }
 
