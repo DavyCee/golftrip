@@ -1503,6 +1503,19 @@ async function loadRyderCup() {
                         teamBPlayer
                     );
 
+                console.log(
+    'RYDER SINGLES TEST:',
+    {
+        sheetPlayer1: player1,
+        sheetPlayer2: player2,
+        player1Team: player1Team,
+        player2Team: player2Team,
+        teamAPlayer: teamAPlayer,
+        teamBPlayer: teamBPlayer,
+        result: result
+    }
+);
+
 
                 /*
                  * FINISHED
