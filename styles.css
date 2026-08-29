@@ -210,16 +210,47 @@ select:focus {
 
 .leaderboard-table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
-    min-width: 420px;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
 }
 
 .leaderboard-table th,
 .leaderboard-table td {
-    padding: 0.7rem 0.45rem;
+    padding: 0.55rem 0.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leaderboard-table th {
+    color: var(--gold-soft);
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.leaderboard-table th:nth-child(1),
+.leaderboard-table td:nth-child(1) {
+    width: 9%;
+    text-align: center;
+}
+
+.leaderboard-table th:nth-child(2),
+.leaderboard-table td:nth-child(2) {
+    width: 43%;
     text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.leaderboard-table th:nth-child(3),
+.leaderboard-table td:nth-child(3),
+.leaderboard-table th:nth-child(4),
+.leaderboard-table td:nth-child(4),
+.leaderboard-table th:nth-child(5),
+.leaderboard-table td:nth-child(5),
+.leaderboard-table th:nth-child(6),
+.leaderboard-table td:nth-child(6) {
+    width: 12%;
+    text-align: center;
 }
 
 .leaderboard-table th {
@@ -411,7 +442,12 @@ select:focus {
     }
 
     .leaderboard-table {
-        font-size: 0.8rem;
+        font-size: 0.76rem;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 0.5rem 0.15rem;
     }
 
     .scorecard-table {
