@@ -2049,29 +2049,86 @@ function renderStats() {
     `;
 }
 
-function getPlayerHoleScore(rows, playerName, holeNumber) {
+function getPlayerHoleScore(
+    rows,
+    playerName,
+    holeNumber
+) {
+
+    if (
+        !rows ||
+        !playerName
+    ) {
+        return null;
+    }
+
 
     const header =
-        rows[1].split(',');
+        rows[1]
+            .split(',')
+            .map(
+                value =>
+                    value.trim()
+            );
+
+
+    const wantedPlayer =
+        playerName
+            .trim()
+            .toLowerCase();
+
 
     const playerIndex =
         header.findIndex(
-            h => h.trim() === playerName
+            value =>
+                value
+                    .trim()
+                    .toLowerCase() ===
+                wantedPlayer
         );
 
-    if (playerIndex === -1)
+
+    if (
+        playerIndex === -1
+    ) {
         return null;
+    }
+
 
     const holeRow =
-        rows[holeNumber + 1].split(',');
+        rows[holeNumber + 1]
+            ?.split(',')
+            .map(
+                value =>
+                    value.trim()
+            );
+
+
+    if (!holeRow) {
+        return null;
+    }
+
 
     const value =
-        holeRow[playerIndex]?.trim();
+        holeRow[playerIndex];
 
-    if (!value)
+
+    if (
+        value === undefined ||
+        value === ''
+    ) {
         return null;
+    }
 
-    return Number(value);
+
+    const score =
+        Number(value);
+
+
+    return Number.isNaN(score)
+        ? null
+        : score;
+
 }
 
 function getStrokeIndex(rows, holeNumber) {
@@ -2258,7 +2315,6 @@ function calculateSinglesMatch(
 
     let lead = 0;
     let holesPlayed = 0;
-    let started = false;
 
     for (let hole = 1; hole <= 18; hole++) {
 
@@ -2269,105 +2325,159 @@ function calculateSinglesMatch(
                 hole
             );
 
-         const scoreB =
+        const scoreB =
             getPlayerHoleScore(
                 rows,
                 playerB,
                 hole
             );
 
-        const holeHasScores =
-            scoreA !== null ||
-            scoreB !== null;
 
-        if (!holeHasScores)
+        /*
+         * A hole is only considered played
+         * when BOTH players have entered a score.
+         */
+        if (
+            scoreA === null ||
+            scoreB === null
+        ) {
             break;
+        }
 
-        started = true;
+
+        /*
+         * Now we know both players have scores.
+         */
         holesPlayed++;
 
-       const result =
-    calculateSinglesHole(
-        rows,
-        courseName,
-        playerA,
-        playerB,
-        hole
-    );
 
-if (result === null)
-    break;
+        const result =
+            calculateSinglesHole(
+                rows,
+                courseName,
+                playerA,
+                playerB,
+                hole
+            );
 
-if (result === 'A')
-    lead++;
 
-if (result === 'B')
-    lead--;
-        
+        if (result === 'A')
+            lead++;
+
+        if (result === 'B')
+            lead--;
+
+
         const holesRemaining =
             18 - holesPlayed;
 
+
+        /*
+         * Match won before the 18th hole.
+         */
         if (
             holesRemaining > 0 &&
             Math.abs(lead) > holesRemaining
         ) {
 
             return {
+
                 status: 'finished',
+
                 winner:
                     lead > 0
                         ? 'A'
                         : 'B',
+
                 result:
                     `${Math.abs(lead)}&${holesRemaining}`
+
             };
+
         }
+
     }
 
-    if (!started) {
+
+    /*
+     * No completed holes.
+     */
+    if (holesPlayed === 0) {
 
         return {
+
             status: 'not-started',
+
             result: 'Not Started'
+
         };
+
     }
 
+
+    /*
+     * Some holes played but not all 18.
+     */
     if (holesPlayed < 18) {
 
         if (lead === 0) {
 
             return {
+
                 status: 'live',
+
                 result:
                     `All Square Through ${holesPlayed}`
+
             };
+
         }
 
+
         return {
+
             status: 'live',
+
             result:
                 `${Math.abs(lead)} Up Through ${holesPlayed}`
+
         };
+
     }
 
+
+    /*
+     * All 18 holes completed.
+     */
     if (lead === 0) {
 
         return {
+
             status: 'finished',
+
             winner: 'Halved',
+
             result: 'Match Halved'
+
         };
+
     }
 
+
     return {
+
         status: 'finished',
+
         winner:
             lead > 0
                 ? 'A'
                 : 'B',
+
         result:
             `${Math.abs(lead)} Up`
+
     };
+
 }
 
 function calculateFourballMatch(
