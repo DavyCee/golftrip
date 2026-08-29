@@ -132,6 +132,7 @@ async function loadCourseData() {
 
             courseData[ocean].rating =
                 parseFloat(cols[3]);
+
         }
 
         if (label === 'Slope Rating') {
@@ -144,6 +145,7 @@ async function loadCourseData() {
 
             courseData[ocean].slope =
                 parseInt(cols[3]);
+
         }
 
         if (label === 'Par') {
@@ -156,6 +158,7 @@ async function loadCourseData() {
 
             courseData[ocean].par =
                 parseInt(cols[3]);
+
         }
 
         if (label === 'Group 1 Tee Time') {
@@ -171,6 +174,7 @@ async function loadCourseData() {
             courseData[ocean].teeTimes = [
                 cols[3]
             ];
+
         }
 
         if (label === 'Group 2 Tee Time') {
@@ -186,6 +190,7 @@ async function loadCourseData() {
             courseData[ocean].teeTimes.push(
                 cols[3]
             );
+
         }
 
         if (label === 'Group 3 Tee Time') {
@@ -201,6 +206,7 @@ async function loadCourseData() {
             courseData[ocean].teeTimes.push(
                 cols[3]
             );
+
         }
 
     });
