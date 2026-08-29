@@ -1521,7 +1521,8 @@ async function loadRyderCup() {
                             </strong>
 
                             <span>
-                                ${teamAPlayers.join(' / ')}
+                            ${teamAPlayers[0]}<br>
+                            ${teamAPlayers[1]}
                             </span>
 
                         </div>
@@ -1533,7 +1534,8 @@ async function loadRyderCup() {
                             </strong>
 
                             <span>
-                                ${teamBPlayers.join(' / ')}
+                            ${teamBPlayers[0]}<br>
+                            ${teamBPlayers[1]}
                             </span>
 
                         </div>
