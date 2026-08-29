@@ -19,6 +19,9 @@ const ROUND3_CSV =
 const MATCHUPS_CSV =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSfjxQddO15BxkKKZYF9WFg-LcGJsPqaffUnR_W8g3T76h95n78ipqNoSPIHoqsO40LSaAW5NpVO9C3/pub?gid=1270511102&single=true&output=csv';
 
+const SIDE_COMPETITIONS_CSV =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSfjxQddO15BxkKKZYF9WFg-LcGJsPqaffUnR_W8g3T76h95n78ipqNoSPIHoqsO40LSaAW5NpVO9C3/pub?gid=361921158&single=true&output=csv';
+
 let settings = {};
 let courseData = {};
 let leaderboard = {};
