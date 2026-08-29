@@ -1962,5 +1962,13 @@ select:focus {
     .ryder-teams {
     margin-bottom: 1.5rem;
 }
+
+    #rydercup > h3 {
+    margin-top: 1.5rem;
+}
+
+#rydercup > h3:first-child {
+    margin-top: 0;
+}
     
 }
