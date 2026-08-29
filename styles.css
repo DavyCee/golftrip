@@ -622,8 +622,20 @@ main {
 }
 
 .team-column div:not(.captain) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     color: rgba(236, 253, 245, 0.9);
+}
+
+.team-record {
+    flex: 0 0 auto;
+    margin-left: 0.65rem;
+    color: var(--gold-soft);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
 .team-column .captain {
