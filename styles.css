@@ -201,10 +201,11 @@ select:focus {
 }
 
 .handicap-score {
-    width: 64px;
+    width: 90px;
     text-align: right;
     font-weight: bold;
-    color: var(--gold);
+    color: white;
+    white-space: nowrap;
 }
 
 .leaderboard-table {
@@ -669,7 +670,15 @@ select {
 }
 
 .handicap-score {
-    color: #67e8f9;
+    width: 90px;
+    text-align: right;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+}
+
+.handicap-header .handicap-score {
+    color: var(--gold);
 }
 
 .leaderboard-table th {
