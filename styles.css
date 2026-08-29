@@ -1970,5 +1970,145 @@ select:focus {
 #rydercup > h3:first-child {
     margin-top: 0;
 }
+
+    /* =========================================================
+   SIDE COMPETITIONS
+   ========================================================= */
+
+#sideCompetitionsSection {
+    --section-accent: var(--gold);
+}
+
+.side-competition-round {
+    padding:
+        0.8rem 0;
+
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+}
+
+.side-competition-round:first-child {
+    padding-top: 0.2rem;
+}
+
+.side-competition-round:last-child {
+    border-bottom: 0;
+}
+
+.side-competition-round h3 {
+    margin-bottom: 0.7rem;
+
+    color: var(--gold);
+
+    font-size: 1rem;
+}
+
+.side-competition-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 0.55rem;
+}
+
+.side-competition-item {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    min-height: 5.2rem;
+
+    padding: 0.7rem;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+    border-radius: 8px;
+
+    background:
+        rgba(
+            3,
+            25,
+            17,
+            0.3
+        );
+}
+
+.side-competition-label {
+    color: var(--gold);
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+}
+
+.side-competition-hole {
+    margin-top: 0.1rem;
+
+    color: var(--muted);
+
+    font-size: 0.7rem;
+}
+
+.side-competition-item strong {
+    margin-top: 0.25rem;
+
+    color: var(--text);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   SIDE COMPETITIONS - MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .side-competition-grid {
+        gap: 0.45rem;
+    }
+
+    .side-competition-item {
+        min-height: 5rem;
+
+        padding: 0.6rem 0.5rem;
+    }
+
+    .side-competition-label {
+        font-size: 0.62rem;
+    }
+
+    .side-competition-hole {
+        font-size: 0.65rem;
+    }
+
+    .side-competition-item strong {
+        font-size: 0.8rem;
+    }
+
+}
     
 }
