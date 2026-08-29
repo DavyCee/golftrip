@@ -5,13 +5,22 @@
     --panel-alt: #164d35;
     --card: rgba(17, 51, 36, 0.9);
     --card-border: rgba(255, 255, 255, 0.08);
+
     --gold: #fbbf24;
     --gold-soft: #f3d57a;
+
     --text: #ecfdf5;
     --muted: #d1fae5;
+
     --shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+
     --radius: 18px;
 }
+
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
 
 * {
     box-sizing: border-box;
@@ -24,7 +33,9 @@ html {
 
 body {
     margin: 0;
+
     font-family: "DM Sans", sans-serif;
+
     background:
         radial-gradient(
             circle at top,
@@ -36,22 +47,23 @@ body {
             var(--bg) 0%,
             #0d291d 100%
         );
+
     color: var(--text);
+
     line-height: 1.5;
 }
+
 
 /* =========================================================
    HEADER
    ========================================================= */
 
 header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    position: relative;
 
     text-align: center;
 
-    padding: 2.2rem 1rem 0.7rem;
+    padding: 2.2rem 1rem 1rem;
 
     background:
         linear-gradient(
@@ -65,16 +77,30 @@ header {
             rgba(255, 255, 255, 0.025) 19px 20px
         );
 
-    border-bottom: 2px solid rgba(251, 191, 36, 0.9);
+    border-bottom:
+        2px solid
+        rgba(
+            251,
+            191,
+            36,
+            0.9
+        );
 
     box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.18);
+        0 10px 24px
+        rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
 
     overflow: visible;
 }
 
 header::after {
     position: absolute;
+
     right: -2rem;
     bottom: -4rem;
 
@@ -82,7 +108,8 @@ header::after {
     height: 12rem;
 
     border:
-        1px solid rgba(
+        1px solid
+        rgba(
             251,
             191,
             36,
@@ -92,13 +119,14 @@ header::after {
     border-radius: 50%;
 
     content: "";
+
     pointer-events: none;
 }
 
 header h1,
-header p,
-header nav {
+header p {
     position: relative;
+
     z-index: 1;
 }
 
@@ -122,29 +150,69 @@ header h1 {
     letter-spacing: 0.04em;
 
     text-shadow:
-        0 2px 0 rgba(0, 0, 0, 0.2);
+        0 2px 0
+        rgba(
+            0,
+            0,
+            0,
+            0.2
+        );
 }
 
 header p {
     margin: 0.4rem 0;
 }
 
+
 /* =========================================================
-   NAVIGATION
+   STICKY NAVIGATION
    ========================================================= */
 
 .quick-nav {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
     display: flex;
 
     gap: 0.5rem;
 
     overflow-x: auto;
 
-    padding: 0.7rem 0;
+    padding: 0.7rem 1rem;
+
+    background:
+        rgba(
+            15,
+            45,
+            32,
+            0.98
+        );
+
+    border-bottom:
+        1px solid
+        rgba(
+            251,
+            191,
+            36,
+            0.25
+        );
+
+    box-shadow:
+        0 4px 12px
+        rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
 
     scrollbar-width: none;
 
-    background: transparent;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .quick-nav::-webkit-scrollbar {
@@ -167,7 +235,8 @@ header p {
         );
 
     border:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -176,11 +245,14 @@ header p {
 
     border-radius: 999px;
 
-    padding: 0.5rem 0.9rem;
+    padding:
+        0.5rem 0.9rem;
 
     font-size: 0.8rem;
 
     font-weight: 600;
+
+    white-space: nowrap;
 }
 
 .quick-nav a:hover,
@@ -201,6 +273,7 @@ header p {
             0.35
         );
 }
+
 
 /* =========================================================
    HEADINGS
@@ -259,8 +332,9 @@ p {
     margin: 0.4rem 0;
 }
 
+
 /* =========================================================
-   MAIN / CARDS
+   MAIN
    ========================================================= */
 
 main {
@@ -268,9 +342,13 @@ main {
 
     margin: 0 auto;
 
-    padding:
-        1.25rem 1rem;
+    padding: 1.25rem 1rem;
 }
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
 
 .card {
     position: relative;
@@ -285,14 +363,16 @@ main {
         );
 
     border:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
             0.12
         );
 
-    border-radius: var(--radius);
+    border-radius:
+        var(--radius);
 
     padding:
         1rem 1rem 1.1rem;
@@ -330,13 +410,15 @@ main {
     padding-bottom: 0.7rem;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
             0.1
         );
 }
+
 
 /* =========================================================
    GENERAL ROWS
@@ -350,7 +432,8 @@ main {
     padding: 0.7rem 0;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -365,6 +448,7 @@ main {
 .leaderboard-row:last-child {
     border-bottom: 0;
 }
+
 
 /* =========================================================
    TEAMS
@@ -390,7 +474,8 @@ main {
         );
 
     border:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -417,19 +502,20 @@ main {
 
     justify-content: space-between;
 
+    color: var(--gold);
+
     margin-bottom: 0.85rem;
 
     padding-bottom: 0.6rem;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
             0.1
         );
-
-    color: var(--gold);
 
     font-size: 1.1rem;
 }
@@ -446,7 +532,8 @@ main {
     justify-content: space-between;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -487,12 +574,16 @@ main {
     margin-bottom: 0.2rem;
 
     padding:
-        0.55rem 0.65rem 0.55rem 0.9rem;
+        0.55rem
+        0.65rem
+        0.55rem
+        0.9rem;
 
     border-radius: 7px;
 
     border-left:
-        4px solid var(--gold);
+        4px solid
+        var(--gold);
 
     background:
         rgba(
@@ -502,6 +593,7 @@ main {
             0.1
         );
 }
+
 
 /* =========================================================
    SELECTS
@@ -563,6 +655,7 @@ select:focus {
     outline-offset: 2px;
 }
 
+
 /* =========================================================
    COURSE HANDICAPS
    ========================================================= */
@@ -577,10 +670,12 @@ select:focus {
     gap: 0.75rem;
 
     padding:
-        0.62rem 0.35rem;
+        0.62rem
+        0.35rem;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -626,8 +721,9 @@ select:focus {
     color: var(--gold);
 }
 
+
 /* =========================================================
-   LEADERBOARD
+   STABLEFORD LEADERBOARD
    ========================================================= */
 
 .leaderboard-table {
@@ -643,10 +739,12 @@ select:focus {
 .leaderboard-table th,
 .leaderboard-table td {
     padding:
-        0.55rem 0.25rem;
+        0.55rem
+        0.25rem;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -684,6 +782,8 @@ select:focus {
     overflow: hidden;
 
     text-overflow: ellipsis;
+
+    white-space: nowrap;
 }
 
 .leaderboard-table th:nth-child(3),
@@ -720,365 +820,6 @@ select:focus {
     text-align: right;
 }
 
-/* =========================================================
-   GENERAL OVERFLOW
-   ========================================================= */
-
-#scorecard,
-#schedule,
-#teams,
-#handicapTable,
-#rydercup {
-    overflow-x: auto;
-}
-
-/* =========================================================
-   RYDER CUP
-   ========================================================= */
-
-.ryder-scoreboard {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    text-align: center;
-
-    gap: 0.6rem;
-
-    margin:
-        0 0 1rem;
-
-    padding:
-        1rem 0.75rem;
-
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(
-                251,
-                191,
-                36,
-                0.12
-            ),
-            rgba(
-                251,
-                191,
-                36,
-                0.05
-            )
-        );
-
-    border:
-        1px solid rgba(
-            255,
-            255,
-            255,
-            0.14
-        );
-}
-
-.ryder-team {
-    flex: 1;
-}
-
-.ryder-team-name {
-    font-weight: 700;
-
-    margin-bottom: 0.5rem;
-
-    color: var(--gold-soft);
-}
-
-.ryder-score {
-    font-size:
-        clamp(
-            2rem,
-            8vw,
-            2.8rem
-        );
-
-    font-weight: bold;
-
-    color: var(--gold);
-
-    line-height: 1;
-}
-
-.ryder-vs {
-    font-size: 1.2rem;
-
-    font-weight: bold;
-
-    opacity: 0.7;
-}
-
-/* =========================================================
-   FIXTURES
-   ========================================================= */
-
-.fixture {
-    padding: 0.8rem;
-
-    border:
-        1px solid rgba(
-            255,
-            255,
-            255,
-            0.1
-        );
-
-    border-radius: 8px;
-
-    background:
-        rgba(
-            4,
-            24,
-            17,
-            0.24
-        );
-}
-
-.fixture + .fixture {
-    margin-top: 0.7rem;
-}
-
-.fixture-heading {
-    display: flex;
-
-    justify-content: space-between;
-
-    margin-bottom: 0.65rem;
-
-    color: var(--muted);
-
-    font-size: 0.75rem;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.08em;
-}
-
-.fixture-heading strong {
-    color: var(--text);
-}
-
-.match-result {
-    margin-bottom: 0.7rem;
-
-    padding: 0.55rem;
-
-    border-radius: 6px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.08
-        );
-
-    color: var(--gold);
-
-    font-size: 0.82rem;
-
-    font-weight: 800;
-
-    text-align: center;
-
-    letter-spacing: 0.1em;
-}
-
-.fixture-teams {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0, 1fr)
-        );
-
-    gap: 0.55rem;
-}
-
-.fixture-team {
-    display: flex;
-
-    min-height: 4.1rem;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    gap: 0.2rem;
-
-    padding: 0.65rem;
-
-    border-radius: 6px;
-}
-
-.fixture-team strong {
-    font-size: 0.8rem;
-}
-
-.fixture-team span {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 0.15rem;
-
-    font-size: 0.76rem;
-
-    line-height: 1.3;
-}
-
-.fixture-team-a {
-    border:
-        1px solid rgba(
-            103,
-            232,
-            249,
-            0.5
-        );
-
-    background:
-        rgba(
-            103,
-            232,
-            249,
-            0.12
-        );
-
-    color: #cffafe;
-}
-
-.fixture-team-b {
-    border:
-        1px solid rgba(
-            251,
-            113,
-            133,
-            0.5
-        );
-
-    background:
-        rgba(
-            251,
-            113,
-            133,
-            0.12
-        );
-
-    color: #ffe4e6;
-}
-
-.match-team-a {
-    border-color:
-        rgba(
-            103,
-            232,
-            249,
-            0.8
-        );
-
-    background:
-        rgba(
-            103,
-            232,
-            249,
-            0.12
-        );
-}
-
-.match-team-a .match-result {
-    background:
-        rgba(
-            103,
-            232,
-            249,
-            0.2
-        );
-
-    color: #a5f3fc;
-}
-
-.match-team-b {
-    border-color:
-        rgba(
-            251,
-            113,
-            133,
-            0.8
-        );
-
-    background:
-        rgba(
-            251,
-            113,
-            133,
-            0.12
-        );
-}
-
-.match-team-b .match-result {
-    background:
-        rgba(
-            251,
-            113,
-            133,
-            0.2
-        );
-
-    color: #fecdd3;
-}
-
-.match-halved .match-result {
-    background:
-        rgba(
-            251,
-            191,
-            36,
-            0.15
-        );
-}
-
-.match-not-started .match-result {
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.06
-        );
-
-    color: var(--muted);
-}
-
-.match-live .match-result {
-    background:
-        rgba(
-            251,
-            191,
-            36,
-            0.12
-        );
-
-    color: var(--gold-soft);
-}
-
-.fixture em {
-    display: inline-block;
-
-    margin-top: 0.65rem;
-
-    color: var(--gold-soft);
-
-    font-size: 0.86rem;
-}
 
 /* =========================================================
    SCORECARD
@@ -1090,7 +831,9 @@ select:focus {
     margin-bottom: 15px;
 
     padding:
-        0.55rem 0 0.9rem;
+        0.55rem
+        0
+        0.9rem;
 
     border-bottom:
         1px solid
@@ -1141,7 +884,8 @@ select:focus {
     padding: 6px 2px;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -1180,6 +924,11 @@ select:focus {
     color: #d9f99d;
 }
 
+
+/* =========================================================
+   SCORE SYMBOLS
+   ========================================================= */
+
 .score-symbol {
     position: relative;
 
@@ -1197,7 +946,8 @@ select:focus {
 
 .score-birdie {
     border:
-        1px solid var(--gold);
+        1px solid
+        var(--gold);
 
     border-radius: 50%;
 }
@@ -1206,7 +956,8 @@ select:focus {
     color: var(--text);
 
     border:
-        1px solid var(--gold);
+        1px solid
+        var(--gold);
 
     border-radius: 50%;
 }
@@ -1220,7 +971,8 @@ select:focus {
     inset: 3px;
 
     border:
-        1px solid currentColor;
+        1px solid
+        currentColor;
 }
 
 .score-eagle::after {
@@ -1231,19 +983,22 @@ select:focus {
 
 .score-bogey {
     border:
-        1px solid #fca5a5;
+        1px solid
+        #fca5a5;
 }
 
 .score-double-bogey {
     color: var(--text);
 
     border:
-        1px solid #fca5a5;
+        1px solid
+        #fca5a5;
 }
 
 .score-double-bogey::after {
     border-color: #fca5a5;
 }
+
 
 /* =========================================================
    VILLA
@@ -1351,6 +1106,7 @@ select:focus {
     transform: translateY(1px);
 }
 
+
 /* =========================================================
    SECTION ACCENTS
    ========================================================= */
@@ -1379,6 +1135,7 @@ select:focus {
     --section-accent: var(--gold);
 }
 
+
 /* =========================================================
    SCHEDULE
    ========================================================= */
@@ -1390,11 +1147,13 @@ select:focus {
         auto 1fr;
 
     gap:
-        0.15rem 0.8rem;
+        0.15rem
+        0.8rem;
 
     align-items: center;
 
-    padding: 0.85rem 0;
+    padding:
+        0.85rem 0;
 }
 
 .round-label {
@@ -1456,6 +1215,7 @@ select:focus {
 #schedule .schedule-row:first-child {
     padding-top: 0.35rem;
 }
+
 
 /* =========================================================
    STATS
@@ -1571,7 +1331,8 @@ select:focus {
         0.62rem 0.4rem;
 
     border-bottom:
-        1px solid rgba(
+        1px solid
+        rgba(
             255,
             255,
             255,
@@ -1610,15 +1371,15 @@ select:focus {
     color: var(--muted);
 }
 
+
 /* =========================================================
-   BREAKPOINTS
+   DESKTOP
    ========================================================= */
 
 @media (min-width: 640px) {
 
     main {
-        padding:
-            1.5rem;
+        padding: 1.5rem;
     }
 
     .team-columns {
@@ -1629,16 +1390,25 @@ select:focus {
 
     .card {
         padding:
-            1.25rem 1.4rem 1.3rem;
+            1.25rem
+            1.4rem
+            1.3rem;
     }
 
 }
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 480px) {
 
     header {
         padding:
-            1.1rem 0.9rem 0.55rem;
+            1.1rem
+            0.9rem
+            0.55rem;
     }
 
     header h1 {
@@ -1655,11 +1425,16 @@ select:focus {
 
     .quick-nav {
         gap: 0.4rem;
+
+        padding:
+            0.6rem
+            0.8rem;
     }
 
     .quick-nav a {
         padding:
-            0.45rem 0.75rem;
+            0.45rem
+            0.75rem;
 
         font-size: 0.76rem;
     }
@@ -1671,13 +1446,15 @@ select:focus {
     .leaderboard-table th,
     .leaderboard-table td {
         padding:
-            0.5rem 0.15rem;
+            0.5rem
+            0.15rem;
     }
 
     .scorecard-table th,
     .scorecard-table td {
         padding:
-            0.42rem 0.12rem;
+            0.42rem
+            0.12rem;
     }
 
     .stats-highlights {
@@ -1692,7 +1469,8 @@ select:focus {
         min-height: 5.5rem;
 
         padding:
-            0.65rem 0.35rem;
+            0.65rem
+            0.35rem;
 
         text-align: center;
     }
@@ -1701,7 +1479,9 @@ select:focus {
         font-size: 0.62rem;
     }
 
-    .stat-scoring-grid .stat-highlight strong {
+    .stat-scoring-grid
+    .stat-highlight
+    strong {
         font-size: 1.4rem;
     }
 
