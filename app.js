@@ -2827,20 +2827,72 @@ function renderStats() {
         </div>
 
 
-        <div class="stats-table-wrap">
+       <div class="stats-table-wrap">
 
-            <table class="stats-table">
+    <table class="stats-table">
 
-                <tr>
-                    <th>Player</th>
-                    <th>Gross</th>
-                    <th>To par</th>
-                    <th>Net Score</th>
-                </tr>
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>R1</th>
+                <th>R2</th>
+                <th>R3</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            ${players.map(
+                ([player, data]) => {
+
+                    const round1 =
+                        data.rounds.find(
+                            round =>
+                                round.name ===
+                                settings['Course 1 Name']
+                        );
+
+                    const round2 =
+                        data.rounds.find(
+                            round =>
+                                round.name ===
+                                settings['Course 2 Name']
+                        );
+
+                    const round3 =
+                        data.rounds.find(
+                            round =>
+                                round.name ===
+                                settings['Course 3 Name']
+                        );
 
 
-                ${players.map(
-                    ([player, data]) => `
+                    const formatRound =
+                        round => {
+
+                            if (!round)
+                                return '-';
+
+                            const toPar =
+                                round.toPar;
+
+                            const formattedToPar =
+                                toPar > 0
+                                    ? `+${toPar}`
+                                    : `${toPar}`;
+
+                            return `
+                                <strong>
+                                    ${round.gross}
+                                </strong>
+                                <span class="round-to-par">
+                                    (${formattedToPar})
+                                </span>
+                            `;
+                        };
+
+
+                    return `
 
                         <tr>
 
@@ -2849,33 +2901,28 @@ function renderStats() {
                             </td>
 
                             <td>
-                                <strong>
-                                    ${data.gross}
-                                </strong>
+                                ${formatRound(round1)}
                             </td>
 
                             <td>
-                                ${
-                                    -data.underPar > 0
-                                        ? '+'
-                                        : ''
-                                }${-data.underPar}
+                                ${formatRound(round2)}
                             </td>
 
                             <td>
-                                <strong>
-                                    ${data.net}
-                                </strong>
+                                ${formatRound(round3)}
                             </td>
 
                         </tr>
 
-                    `
-                ).join('')}
+                    `;
+                }
+            ).join('')}
 
-            </table>
+        </tbody>
 
-        </div>
+    </table>
+
+</div>
 
     `;
 }
