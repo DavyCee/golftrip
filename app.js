@@ -148,28 +148,60 @@ async function loadCourseData() {
             ];
         }
 
-        function getPlayerHoleScore(rows, playerName, holeNumber) {
+        function getPlayerHoleScore(
+    rows,
+    playerName,
+    holeNumber
+) {
 
-        }
+    if (!rows || !playerName)
+        return null;
 
-        if (label === 'Group 2 Tee Time') {
+    const header =
+        rows[1]
+            .split(',')
+            .map(
+                h => h.trim()
+            );
 
-            courseData[royal].teeTimes.push(cols[1]);
-            courseData[pinhal].teeTimes.push(cols[2]);
-            courseData[ocean].teeTimes.push(cols[3]);
+    const wantedPlayer =
+        playerName.trim();
 
-        }
+    const playerIndex =
+        header.findIndex(
+            h =>
+                h.toLowerCase() ===
+                wantedPlayer.toLowerCase()
+        );
 
-        if (label === 'Group 3 Tee Time') {
+    if (playerIndex === -1)
+        return null;
 
-            courseData[royal].teeTimes.push(cols[1]);
-            courseData[pinhal].teeTimes.push(cols[2]);
-            courseData[ocean].teeTimes.push(cols[3]);
+    const holeRow =
+        rows[holeNumber + 1]
+            ?.split(',')
+            .map(
+                value => value.trim()
+            );
 
-        }
+    if (!holeRow)
+        return null;
 
-    });
+    const value =
+        holeRow[playerIndex];
 
+    if (
+        value === undefined ||
+        value === ''
+    )
+        return null;
+
+    const score =
+        Number(value);
+
+    return Number.isNaN(score)
+        ? null
+        : score;
 }
 
 function loadCourseSelector() {
@@ -1649,23 +1681,16 @@ function calculateSinglesHole(
     hole
 ) {
 
-    const slope =
-        courseData[courseName].slope;
-
-    const hiA =
-        playerHandicaps[playerA];
-
-    const hiB =
-        playerHandicaps[playerB];
-
     const chA =
-        Math.round(
-            (hiA * slope) / 113
+        getCourseHandicap(
+            playerA,
+            courseName
         );
 
     const chB =
-        Math.round(
-            (hiB * slope) / 113
+        getCourseHandicap(
+            playerB,
+            courseName
         );
 
     const netA =
@@ -1688,7 +1713,7 @@ function calculateSinglesHole(
         netA === null ||
         netB === null
     ) {
-        return 'HALVED';
+        return null;
     }
 
     if (netA < netB)
@@ -1737,21 +1762,24 @@ function calculateSinglesMatch(
         started = true;
         holesPlayed++;
 
-        const result =
-            calculateSinglesHole(
-                rows,
-                courseName,
-                playerA,
-                playerB,
-                hole
-            );
+       const result =
+    calculateSinglesHole(
+        rows,
+        courseName,
+        playerA,
+        playerB,
+        hole
+    );
 
-        if (result === 'A')
-            lead++;
+if (result === null)
+    break;
 
-        if (result === 'B')
-            lead--;
+if (result === 'A')
+    lead++;
 
+if (result === 'B')
+    lead--;
+        
         const holesRemaining =
             18 - holesPlayed;
 
@@ -2255,3 +2283,11 @@ async function initialise() {
 }
 
 initialise();
+
+        calculateSinglesMatch(
+    roundData[settings['Course 3 Name']],
+    settings['Course 3 Name'],
+    'Douglas Johnson',
+    'Patrick Halliday'
+)
+                 
