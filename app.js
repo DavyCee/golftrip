@@ -1524,6 +1524,9 @@ function getHolePar(
 
     const rows =
         roundData[courseName];
+
+    console.log('Course:', courseName);
+console.log('Rows:', roundData[courseName]);
     
     const row =
         rows.find(
@@ -1574,7 +1577,10 @@ console.log('renderScorecard running');
 
         return;
     }
-
+console.log(player);
+console.log(courseName);
+console.log(rows);
+    
     let frontTotal = 0;
     let backTotal = 0;
 
