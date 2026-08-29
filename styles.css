@@ -289,3 +289,17 @@ select {
 
     color: #ffd700;
 }
+
+.scorecard-header {
+
+    text-align: center;
+
+    margin-bottom: 15px;
+}
+
+.scorecard-course {
+
+    color: #ffd700;
+
+    font-size: 14px;
+}
