@@ -1487,36 +1487,6 @@ async function loadScorecardPlayers() {
         .innerHTML = html;
 }
 
-async function initialise() {
-
-    await loadSettings();
-
-    loadVillaInfo();
-
-    await loadCourseData();
-
-    await loadScorecardPlayers();
-
-    renderSchedule();
-
-    loadTeams();
-
-    buildLeaderboard();
-
-    loadHandicaps();
-
-    await calculateRound1Leaderboard();
-
-    loadRyderCup();
-    
-    document
-        .getElementById('courseSelect')
-        .addEventListener(
-            'change',
-            loadHandicaps
-        );
-}
-
 function getHolePar(
     courseName,
     hole
@@ -1716,6 +1686,38 @@ console.log(rows);
             'scorecard'
         )
         .innerHTML = html;
+}
+
+async function initialise() {
+
+    await loadSettings();
+
+    loadVillaInfo();
+
+    await loadCourseData();
+
+    await loadScorecardPlayers();
+
+    renderSchedule();
+
+    loadTeams();
+
+    buildLeaderboard();
+
+    loadHandicaps();
+
+    await calculateRound1Leaderboard();
+
+    loadRyderCup();
+
+    renderScorecard();
+    
+    document
+        .getElementById('courseSelect')
+        .addEventListener(
+            'change',
+            loadHandicaps
+        );
 }
 
 initialise();
