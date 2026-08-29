@@ -591,6 +591,10 @@ main {
     font-size: 0.82rem;
 }
 
+.schedule-date {
+    font-style: italic;
+}
+
 .schedule-course {
     grid-column: 2;
     font-weight: 700;
@@ -599,6 +603,10 @@ main {
 
 .schedule-times {
     grid-column: 2;
+}
+
+#schedule .schedule-row:first-child {
+    padding-top: 0.35rem;
 }
 
 .team-column {
