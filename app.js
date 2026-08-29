@@ -4452,17 +4452,20 @@ async function loadSideCompetitions() {
             );
 
 
+    /*
+     * Reset the side-competition win counters.
+     */
     sideCompetitionWinners = {
-    ctp: {},
-    drive: {}
-};
+        ctp: {},
+        drive: {}
+    };
 
 
     let html = '';
 
 
     /*
-     * Remove the header row.
+     * Process each competition row.
      */
     rows.slice(1).forEach(row => {
 
@@ -4483,45 +4486,62 @@ async function loadSideCompetitions() {
             Number(cols[0]);
 
 
+        /*
+         * Record the CTP and Longest Drive
+         * wins for the leaderboard badges.
+         *
+         * There are two opportunities for each
+         * category per round, so repeat wins
+         * are deliberately counted.
+         */
         if (!Number.isNaN(round)) {
 
-            /*
-             * Record the CTP winners.
-             */
             if (cols[1]) {
 
-    sideCompetitionWinners.ctp[cols[1]] =
-        (sideCompetitionWinners.ctp[cols[1]] || 0) + 1;
+                sideCompetitionWinners.ctp[cols[1]] =
+                    (sideCompetitionWinners.ctp[cols[1]] || 0) + 1;
 
-}
+            }
 
-if (cols[2]) {
 
-    sideCompetitionWinners.ctp[cols[2]] =
-        (sideCompetitionWinners.ctp[cols[2]] || 0) + 1;
+            if (cols[2]) {
 
-}
+                sideCompetitionWinners.ctp[cols[2]] =
+                    (sideCompetitionWinners.ctp[cols[2]] || 0) + 1;
 
-if (cols[3]) {
+            }
 
-    sideCompetitionWinners.drive[cols[3]] =
-        (sideCompetitionWinners.drive[cols[3]] || 0) + 1;
 
-}
+            if (cols[3]) {
 
-if (cols[4]) {
+                sideCompetitionWinners.drive[cols[3]] =
+                    (sideCompetitionWinners.drive[cols[3]] || 0) + 1;
 
-    sideCompetitionWinners.drive[cols[4]] =
-        (sideCompetitionWinners.drive[cols[4]] || 0) + 1;
+            }
 
-}
 
+            if (cols[4]) {
+
+                sideCompetitionWinners.drive[cols[4]] =
+                    (sideCompetitionWinners.drive[cols[4]] || 0) + 1;
+
+            }
+
+        }
+
+
+        /*
+         * Use the course name from Settings.
+         */
         const courseName =
             settings[
                 `Course ${round} Name`
             ] || `Round ${round}`;
 
 
+        /*
+         * Render the round.
+         */
         html += `
 
             <div class="side-competition-round">
@@ -4611,6 +4631,9 @@ if (cols[4]) {
     });
 
 
+    /*
+     * Display the completed section.
+     */
     document
         .getElementById(
             'sideCompetitions'
