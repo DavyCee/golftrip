@@ -4340,6 +4340,110 @@ function renderScorecard() {
 
 }
 
+function initialiseStickyNavigation() {
+
+    const nav =
+        document.querySelector(
+            '.quick-nav'
+        );
+
+    if (!nav)
+        return;
+
+
+    const placeholder =
+        document.createElement(
+            'div'
+        );
+
+    placeholder.className =
+        'quick-nav-placeholder';
+
+
+    nav.parentNode.insertBefore(
+        placeholder,
+        nav.nextSibling
+    );
+
+
+    const navTop =
+        nav.offsetTop;
+
+
+    function updateNavigation() {
+
+        if (
+            window.scrollY >=
+            navTop
+        ) {
+
+            if (
+                !nav.classList.contains(
+                    'nav-fixed'
+                )
+            ) {
+
+                placeholder.style.height =
+                    `${nav.offsetHeight}px`;
+
+                placeholder.classList.add(
+                    'active'
+                );
+
+                nav.classList.add(
+                    'nav-fixed'
+                );
+
+            }
+
+        } else {
+
+            nav.classList.remove(
+                'nav-fixed'
+            );
+
+            placeholder.classList.remove(
+                'active'
+            );
+
+            placeholder.style.height =
+                '0px';
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        'scroll',
+        updateNavigation,
+        { passive: true }
+    );
+
+
+    window.addEventListener(
+        'resize',
+        () => {
+
+            if (
+                nav.classList.contains(
+                    'nav-fixed'
+                )
+            ) {
+
+                placeholder.style.height =
+                    `${nav.offsetHeight}px`;
+
+            }
+
+        }
+    );
+
+
+    updateNavigation();
+
+}
+
 async function initialise() {
 
     await loadSettings();
@@ -4388,6 +4492,8 @@ async function initialise() {
         'change',
         () => renderScorecard()
     );
+    
+    initialiseStickyNavigation();
 }
 
 initialise();         
