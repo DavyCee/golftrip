@@ -3639,26 +3639,36 @@ async function loadScorecardPlayers() {
     const rows =
         text.split('\n').slice(1);
 
-    let html = '';
+    let html = `
+        <option value="">
+            Select Player
+        </option>
+    `;
 
     rows.forEach(row => {
 
-        if (!row.trim()) return;
+        if (!row.trim())
+            return;
 
         const cols =
             row.split(',');
 
+        const player =
+            cols[0]?.trim();
+
+        if (!player)
+            return;
+
         html += `
-            <option>
-                ${cols[0]}
+            <option value="${player}">
+                ${player}
             </option>
         `;
+
     });
 
     document
-        .getElementById(
-            'scorecardPlayer'
-        )
+        .getElementById('scorecardPlayer')
         .innerHTML = html;
 }
 
@@ -3697,6 +3707,224 @@ function formatGrossScore(score, par) {
         : `<span class="score-symbol">${score}</span>`;
 }
 
+function buildEmptyScorecard(
+    courseName
+) {
+
+    let frontPar = 0;
+    let backPar = 0;
+
+    let html = `
+        <div class="scorecard-header">
+
+            <h3>
+                Select a player
+            </h3>
+
+            <div class="scorecard-course">
+                ${courseName}
+            </div>
+
+        </div>
+
+
+        <table class="scorecard-table">
+
+            <tr>
+                <th>Hole</th>
+    `;
+
+
+    /*
+     * Front 9 headings.
+     */
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
+
+        html += `
+            <th>${hole}</th>
+        `;
+
+    }
+
+
+    html += `
+                <th>OUT</th>
+            </tr>
+
+            <tr>
+                <td>Par</td>
+    `;
+
+
+    /*
+     * Front 9 par.
+     */
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
+
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
+
+        frontPar += par;
+
+        html += `
+            <td>${par}</td>
+        `;
+
+    }
+
+
+    html += `
+                <td>${frontPar}</td>
+            </tr>
+
+            <tr>
+                <td>Score</td>
+    `;
+
+
+    /*
+     * Empty front 9.
+     */
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
+
+        html += `
+            <td>-</td>
+        `;
+
+    }
+
+
+    html += `
+                <td>-</td>
+            </tr>
+
+        </table>
+
+
+        <table class="scorecard-table">
+
+            <tr>
+                <th>Hole</th>
+    `;
+
+
+    /*
+     * Back 9 headings.
+     */
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        html += `
+            <th>${hole}</th>
+        `;
+
+    }
+
+
+    html += `
+                <th>IN</th>
+            </tr>
+
+            <tr>
+                <td>Par</td>
+    `;
+
+
+    /*
+     * Back 9 par.
+     */
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
+
+        backPar += par;
+
+        html += `
+            <td>${par}</td>
+        `;
+
+    }
+
+
+    html += `
+                <td>${backPar}</td>
+            </tr>
+
+            <tr>
+                <td>Score</td>
+    `;
+
+
+    /*
+     * Empty back 9.
+     */
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        html += `
+            <td>-</td>
+        `;
+
+    }
+
+
+    html += `
+                <td>-</td>
+            </tr>
+
+        </table>
+
+
+        <div class="scorecard-summary">
+
+            <div>
+                OUT: -
+                &nbsp; | &nbsp;
+                IN: -
+            </div>
+
+            <div>
+                18 HOLES: -
+                &nbsp; | &nbsp;
+                STABLEFORD: -
+            </div>
+
+        </div>
+    `;
+
+
+    return html;
+}
+
 function renderScorecard() {
 
     const player =
@@ -3709,6 +3937,10 @@ function renderScorecard() {
             'scorecardCourse'
         ).value;
 
+
+    /*
+     * Work out which course is selected.
+     */
     let courseName;
 
     if (round === '1')
@@ -3723,155 +3955,389 @@ function renderScorecard() {
         courseName =
             settings['Course 3 Name'];
 
+
+    /*
+     * Get the score data for the selected course.
+     */
     const rows =
         roundData[courseName];
 
-    if (!rows) return;
+    if (!rows)
+        return;
+
 
     let frontPar = 0;
-let backPar = 0;
+    let backPar = 0;
 
-let frontScore = 0;
-let backScore = 0;
+    let frontScore = 0;
+    let backScore = 0;
 
-let html = `
-<div class="scorecard-header">
 
-    <h3>${player}</h3>
+    /*
+     * Start the scorecard.
+     */
+    let html = `
+        <div class="scorecard-header">
 
-    <div class="scorecard-course">
-        ${courseName}
-    </div>
+            <h3>
+                ${player || 'Select a player'}
+            </h3>
 
-</div>
+            <div class="scorecard-course">
+                ${courseName}
+            </div>
 
-<table class="scorecard-table">
+        </div>
+    `;
 
-<tr>
-    <th>Hole</th>
-`;
 
-for (let hole = 1; hole <= 9; hole++) {
+    /*
+     * =====================================================
+     * FRONT 9
+     * =====================================================
+     */
 
-    html += `<th>${hole}</th>`;
-}
+    html += `
+        <table class="scorecard-table">
 
-html += `<th>OUT</th></tr>`;
+            <tr>
+                <th>Hole</th>
+    `;
 
-html += `<tr><td>Par</td>`;
 
-for (let hole = 1; hole <= 9; hole++) {
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
 
-    const par =
-        getHolePar(
-            courseName,
-            hole
-        );
+        html += `
+            <th>${hole}</th>
+        `;
 
-    frontPar += par;
+    }
 
-    html += `<td>${par}</td>`;
-}
 
-html += `<td>${frontPar}</td></tr>`;
+    html += `
+                <th>OUT</th>
+            </tr>
+    `;
 
-html += `<tr><td>Score</td>`;
 
-for (let hole = 1; hole <= 9; hole++) {
+    /*
+     * Front 9 par row.
+     */
+    html += `
+        <tr>
+            <td>Par</td>
+    `;
 
-    const par =
-        getHolePar(
-            courseName,
-            hole
-        );
 
-    const score =
-        getPlayerHoleScore(
-            rows,
-            player,
-            hole
-        );
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
 
-    frontScore +=
-        Number(score || 0);
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
 
-    html += `<td>${formatGrossScore(score, par)}</td>`;
-}
+        frontPar += par;
 
-html += `<td>${frontScore}</td></tr>`;
+        html += `
+            <td>${par}</td>
+        `;
 
-html += `</table><br>`;
+    }
 
-html += `
-<table class="scorecard-table">
 
-<tr>
-    <th>Hole</th>
-`;
+    html += `
+            <td>${frontPar}</td>
+        </tr>
+    `;
 
-for (let hole = 10; hole <= 18; hole++) {
 
-    html += `<th>${hole}</th>`;
-}
+    /*
+     * Front 9 score row.
+     */
+    html += `
+        <tr>
+            <td>Score</td>
+    `;
 
-html += `<th>IN</th></tr>`;
 
-html += `<tr><td>Par</td>`;
+    for (
+        let hole = 1;
+        hole <= 9;
+        hole++
+    ) {
 
-for (let hole = 10; hole <= 18; hole++) {
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
 
-    const par =
-        getHolePar(
-            courseName,
-            hole
-        );
 
-    backPar += par;
+        let score = null;
 
-    html += `<td>${par}</td>`;
-}
+        /*
+         * Only look up a player's score
+         * when a player has actually been selected.
+         */
+        if (player) {
 
-html += `<td>${backPar}</td></tr>`;
+            score =
+                getPlayerHoleScore(
+                    rows,
+                    player,
+                    hole
+                );
 
-html += `<tr><td>Score</td>`;
+        }
 
-for (let hole = 10; hole <= 18; hole++) {
 
-    const par =
-        getHolePar(
-            courseName,
-            hole
-        );
+        /*
+         * Add to total only when a real
+         * score exists.
+         */
+        if (score !== null) {
 
-    const score =
-        getPlayerHoleScore(
-            rows,
-            player,
-            hole
-        );
+            frontScore +=
+                Number(score);
 
-    backScore +=
-        Number(score || 0);
+        }
 
-    html += `<td>${formatGrossScore(score, par)}</td>`;
-}
 
-html += `<td>${backScore}</td></tr>`;
+        html += `
+            <td>
+                ${
+                    player
+                        ? formatGrossScore(
+                            score,
+                            par
+                        )
+                        : '-'
+                }
+            </td>
+        `;
 
-html += `</table>`;
+    }
 
-html += `
-<div class="scorecard-summary">
 
-    Gross:
-    ${frontScore + backScore}
+    html += `
+            <td>
+                ${
+                    player
+                        ? frontScore
+                        : '-'
+                }
+            </td>
 
-</div>
-`;
+        </tr>
 
-document
-    .getElementById('scorecard')
-    .innerHTML = html;
+        </table>
+    `;
+
+
+    /*
+     * =====================================================
+     * BACK 9
+     * =====================================================
+     */
+
+    html += `
+        <table class="scorecard-table">
+
+            <tr>
+                <th>Hole</th>
+    `;
+
+
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        html += `
+            <th>${hole}</th>
+        `;
+
+    }
+
+
+    html += `
+                <th>IN</th>
+            </tr>
+    `;
+
+
+    /*
+     * Back 9 par row.
+     */
+    html += `
+        <tr>
+            <td>Par</td>
+    `;
+
+
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
+
+        backPar += par;
+
+        html += `
+            <td>${par}</td>
+        `;
+
+    }
+
+
+    html += `
+            <td>${backPar}</td>
+        </tr>
+    `;
+
+
+    /*
+     * Back 9 score row.
+     */
+    html += `
+        <tr>
+            <td>Score</td>
+    `;
+
+
+    for (
+        let hole = 10;
+        hole <= 18;
+        hole++
+    ) {
+
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
+
+
+        let score = null;
+
+        /*
+         * Only look up a player's score
+         * when a player has been selected.
+         */
+        if (player) {
+
+            score =
+                getPlayerHoleScore(
+                    rows,
+                    player,
+                    hole
+                );
+
+        }
+
+
+        /*
+         * Add to total only when a real
+         * score exists.
+         */
+        if (score !== null) {
+
+            backScore +=
+                Number(score);
+
+        }
+
+
+        html += `
+            <td>
+                ${
+                    player
+                        ? formatGrossScore(
+                            score,
+                            par
+                        )
+                        : '-'
+                }
+            </td>
+        `;
+
+    }
+
+
+    html += `
+            <td>
+                ${
+                    player
+                        ? backScore
+                        : '-'
+                }
+            </td>
+
+        </tr>
+
+        </table>
+    `;
+
+
+    /*
+     * =====================================================
+     * SUMMARY
+     * =====================================================
+     */
+
+    if (player) {
+
+        const grossTotal =
+            frontScore +
+            backScore;
+
+
+        html += `
+            <div class="scorecard-summary">
+
+                Gross:
+                ${grossTotal}
+
+            </div>
+        `;
+
+    } else {
+
+        html += `
+            <div class="scorecard-summary">
+
+                Select a player to view
+                their score
+
+            </div>
+        `;
+
+    }
+
+
+    /*
+     * Put the scorecard onto the page.
+     */
+    document
+        .getElementById('scorecard')
+        .innerHTML = html;
+
 }
 
 async function initialise() {
