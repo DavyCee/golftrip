@@ -252,21 +252,29 @@ select {
 
     width: 100%;
 
+    table-layout: fixed;
+
     border-collapse: collapse;
 
-    font-size: 12px;
-
-    overflow-x: auto;
+    margin-bottom: 12px;
 }
 
 .scorecard-table th,
 .scorecard-table td {
 
-    border: 1px solid rgba(255,255,255,0.15);
-
-    padding: 6px;
-
     text-align: center;
+
+    padding: 6px 2px;
+
+    font-size: 12px;
+}
+
+.scorecard-table th:first-child,
+.scorecard-table td:first-child {
+
+    width: 50px;
+
+    font-weight: bold;
 }
 
 .scorecard-summary {
