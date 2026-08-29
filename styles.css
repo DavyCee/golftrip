@@ -318,18 +318,68 @@ select:focus {
 }
 
 #villaInfo {
+    --section-accent: var(--gold);
+
     text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20, 67, 48, 0.98),
+            rgba(12, 43, 31, 0.98)
+        );
+}
+
+.villa-address {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    margin: 0.35rem 0 1rem;
+}
+
+.villa-address strong {
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+.villa-address span {
+    color: var(--muted);
+    font-size: 0.95rem;
 }
 
 .villa-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.65rem 1rem;
+
+    border: 1px solid rgba(251, 191, 36, 0.5);
+    border-radius: 999px;
+
+    background: rgba(251, 191, 36, 0.1);
+
     color: var(--gold);
-    font-weight: bold;
+
+    font-weight: 700;
     text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .villa-link:hover,
 .villa-link:focus {
-    text-decoration: underline;
+    background: rgba(251, 191, 36, 0.18);
+    border-color: rgba(251, 191, 36, 0.8);
+    text-decoration: none;
+}
+
+.villa-link:active {
+    transform: translateY(1px);
 }
 
 @media (min-width: 640px) {
