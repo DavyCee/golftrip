@@ -1503,6 +1503,28 @@ function getHolePar(
     );
 }
 
+function renderScorecard() {
+
+    const player =
+        document.getElementById(
+            'scorecardPlayer'
+        ).value;
+
+    const round =
+        document.getElementById(
+            'scorecardCourse'
+        ).value;
+
+    document
+        .getElementById('scorecard')
+        .innerHTML = `
+            <div>
+                Player: ${player}<br>
+                Round: ${round}
+            </div>
+        `;
+}
+
 async function initialise() {
 
     await loadSettings();
