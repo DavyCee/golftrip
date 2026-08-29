@@ -63,6 +63,11 @@ document.getElementById('eventTeams').innerHTML =
 
 }
 
+let sideCompetitionWinners = {
+    ctp: new Set(),
+    drive: new Set()
+};
+
 function loadVillaInfo() {
 
     document
@@ -588,12 +593,17 @@ function renderLeaderboard() {
         Object.entries(leaderboard)
             .sort(
                 (a, b) =>
-                    b[1].total - a[1].total
+                    b[1].total -
+                    a[1].total
             );
 
+
     let html = `
+
         <table class="leaderboard-table">
+
             <thead>
+
                 <tr>
                     <th>Pos</th>
                     <th>Player</th>
@@ -602,46 +612,124 @@ function renderLeaderboard() {
                     <th>R3</th>
                     <th>Total</th>
                 </tr>
+
             </thead>
+
             <tbody>
+
     `;
+
 
     let lastScore = null;
     let position = 0;
 
-    players.forEach(([player, data], index) => {
 
-        if (data.total !== lastScore) {
+    players.forEach(
+        ([player, data], index) => {
 
-            position = index + 1;
-            lastScore = data.total;
+            if (
+                data.total !==
+                lastScore
+            ) {
+
+                position =
+                    index + 1;
+
+                lastScore =
+                    data.total;
+
+            }
+
+
+            /*
+             * Build the player's
+             * side-competition badges.
+             */
+            let playerBadges = '';
+
+
+            if (
+                sideCompetitionWinners.ctp
+                    .has(player)
+            ) {
+
+                playerBadges +=
+                    ' 🎯';
+
+            }
+
+
+            if (
+                sideCompetitionWinners.drive
+                    .has(player)
+            ) {
+
+                playerBadges +=
+                    ' 🚀';
+
+            }
+
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        ${position}
+                    </td>
+
+
+                    <td>
+                        ${player}${playerBadges}
+                    </td>
+
+
+                    <td>
+                        ${data.r1}
+                    </td>
+
+
+                    <td>
+                        ${data.r2}
+                    </td>
+
+
+                    <td>
+                        ${data.r3}
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ${data.total}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+            `;
 
         }
+    );
 
-        html += `
-            <tr>
-                <td>${position}</td>
-                <td>${player}</td>
-                <td>${data.r1}</td>
-                <td>${data.r2}</td>
-                <td>${data.r3}</td>
-                <td>
-                    <strong>
-                        ${data.total}
-                    </strong>
-                </td>
-            </tr>
-        `;
-    });
 
     html += `
+
             </tbody>
+
         </table>
+
     `;
 
+
     document
-        .getElementById('leaderboard')
+        .getElementById(
+            'leaderboard'
+        )
         .innerHTML = html;
+
 }
 
 async function loadHandicaps() {
@@ -4356,20 +4444,24 @@ async function loadSideCompetitions() {
     const rows =
         text
             .split('\n')
-            .filter(row => row.trim());
+            .filter(
+                row => row.trim()
+            );
 
 
-    /*
-     * Remove the header row.
-     */
-    const dataRows =
-        rows.slice(1);
+    sideCompetitionWinners = {
+        ctp: new Set(),
+        drive: new Set()
+    };
 
 
     let html = '';
 
 
-    dataRows.forEach(row => {
+    /*
+     * Remove the header row.
+     */
+    rows.slice(1).forEach(row => {
 
         const cols =
             row
@@ -4385,19 +4477,45 @@ async function loadSideCompetitions() {
 
 
         const round =
-            cols[0];
+            Number(cols[0]);
 
-        const front9CTP =
-            cols[1] || '-';
 
-        const back9CTP =
-            cols[2] || '-';
+        if (!Number.isNaN(round)) {
 
-        const front9LD =
-            cols[3] || '-';
+            /*
+             * Record the CTP winners.
+             */
+            if (cols[1])
+                sideCompetitionWinners.ctp.add(
+                    cols[1]
+                );
 
-        const back9LD =
-            cols[4] || '-';
+            if (cols[2])
+                sideCompetitionWinners.ctp.add(
+                    cols[2]
+                );
+
+
+            /*
+             * Record the Longest Drive winners.
+             */
+            if (cols[3])
+                sideCompetitionWinners.drive.add(
+                    cols[3]
+                );
+
+            if (cols[4])
+                sideCompetitionWinners.drive.add(
+                    cols[4]
+                );
+
+        }
+
+
+        const courseName =
+            settings[
+                `Course ${round} Name`
+            ] || `Round ${round}`;
 
 
         html += `
@@ -4405,7 +4523,7 @@ async function loadSideCompetitions() {
             <div class="side-competition-round">
 
                 <h3>
-                    Round ${round}
+                    ${courseName}
                 </h3>
 
 
@@ -4423,7 +4541,7 @@ async function loadSideCompetitions() {
                         </span>
 
                         <strong>
-                            ${front9CTP}
+                            ${cols[1] || '-'}
                         </strong>
 
                     </div>
@@ -4440,7 +4558,7 @@ async function loadSideCompetitions() {
                         </span>
 
                         <strong>
-                            ${back9CTP}
+                            ${cols[2] || '-'}
                         </strong>
 
                     </div>
@@ -4457,7 +4575,7 @@ async function loadSideCompetitions() {
                         </span>
 
                         <strong>
-                            ${front9LD}
+                            ${cols[3] || '-'}
                         </strong>
 
                     </div>
@@ -4474,7 +4592,7 @@ async function loadSideCompetitions() {
                         </span>
 
                         <strong>
-                            ${back9LD}
+                            ${cols[4] || '-'}
                         </strong>
 
                     </div>
@@ -4496,6 +4614,7 @@ async function loadSideCompetitions() {
         .innerHTML =
             html ||
             '<p class="empty-state">No side competition results yet.</p>';
+
 }
 
 function initialiseStickyNavigation() {
@@ -4624,9 +4743,9 @@ async function initialise() {
 
     loadHandicaps();
 
-    await calculateRound1Leaderboard();
-
     await loadSideCompetitions();
+    
+    await calculateRound1Leaderboard();
     
     renderStats();
 
