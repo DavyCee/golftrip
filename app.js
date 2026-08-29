@@ -2282,12 +2282,4 @@ async function initialise() {
     );
 }
 
-initialise();
-
-        calculateSinglesMatch(
-    roundData[settings['Course 3 Name']],
-    settings['Course 3 Name'],
-    'Douglas Johnson',
-    'Patrick Halliday'
-)
-                 
+initialise();         
