@@ -86,16 +86,26 @@ function loadVillaInfo() {
 
 async function loadCourseData() {
 
-    const response = await fetch(COURSE_CSV);
-    const text = await response.text();
+    const response =
+        await fetch(COURSE_CSV);
 
-    const rows = text.split('\n');
+    const text =
+        await response.text();
 
-    const headers = rows[0].split(',');
+    const rows =
+        text.split('\n');
 
-    const royal = headers[1].trim();
-    const pinhal = headers[2].trim();
-    const ocean = headers[3].trim();
+    const headers =
+        rows[0].split(',');
+
+    const royal =
+        headers[1].trim();
+
+    const pinhal =
+        headers[2].trim();
+
+    const ocean =
+        headers[3].trim();
 
     courseData[royal] = {};
     courseData[pinhal] = {};
@@ -103,34 +113,49 @@ async function loadCourseData() {
 
     rows.forEach(row => {
 
-        const cols = row.split(',');
+        const cols =
+            row.split(',');
 
-        const label = cols[0]?.trim();
+        const label =
+            cols[0]?.trim();
 
-        if (!label) return;
+        if (!label)
+            return;
 
         if (label === 'Course Rating') {
 
-            courseData[royal].rating = parseFloat(cols[1]);
-            courseData[pinhal].rating = parseFloat(cols[2]);
-            courseData[ocean].rating = parseFloat(cols[3]);
+            courseData[royal].rating =
+                parseFloat(cols[1]);
 
+            courseData[pinhal].rating =
+                parseFloat(cols[2]);
+
+            courseData[ocean].rating =
+                parseFloat(cols[3]);
         }
 
         if (label === 'Slope Rating') {
 
-            courseData[royal].slope = parseInt(cols[1]);
-            courseData[pinhal].slope = parseInt(cols[2]);
-            courseData[ocean].slope = parseInt(cols[3]);
+            courseData[royal].slope =
+                parseInt(cols[1]);
 
+            courseData[pinhal].slope =
+                parseInt(cols[2]);
+
+            courseData[ocean].slope =
+                parseInt(cols[3]);
         }
 
         if (label === 'Par') {
 
-            courseData[royal].par = parseInt(cols[1]);
-            courseData[pinhal].par = parseInt(cols[2]);
-            courseData[ocean].par = parseInt(cols[3]);
+            courseData[royal].par =
+                parseInt(cols[1]);
 
+            courseData[pinhal].par =
+                parseInt(cols[2]);
+
+            courseData[ocean].par =
+                parseInt(cols[3]);
         }
 
         if (label === 'Group 1 Tee Time') {
@@ -148,60 +173,38 @@ async function loadCourseData() {
             ];
         }
 
-        function getPlayerHoleScore(
-    rows,
-    playerName,
-    holeNumber
-) {
+        if (label === 'Group 2 Tee Time') {
 
-    if (!rows || !playerName)
-        return null;
-
-    const header =
-        rows[1]
-            .split(',')
-            .map(
-                h => h.trim()
+            courseData[royal].teeTimes.push(
+                cols[1]
             );
 
-    const wantedPlayer =
-        playerName.trim();
-
-    const playerIndex =
-        header.findIndex(
-            h =>
-                h.toLowerCase() ===
-                wantedPlayer.toLowerCase()
-        );
-
-    if (playerIndex === -1)
-        return null;
-
-    const holeRow =
-        rows[holeNumber + 1]
-            ?.split(',')
-            .map(
-                value => value.trim()
+            courseData[pinhal].teeTimes.push(
+                cols[2]
             );
 
-    if (!holeRow)
-        return null;
+            courseData[ocean].teeTimes.push(
+                cols[3]
+            );
+        }
 
-    const value =
-        holeRow[playerIndex];
+        if (label === 'Group 3 Tee Time') {
 
-    if (
-        value === undefined ||
-        value === ''
-    )
-        return null;
+            courseData[royal].teeTimes.push(
+                cols[1]
+            );
 
-    const score =
-        Number(value);
+            courseData[pinhal].teeTimes.push(
+                cols[2]
+            );
 
-    return Number.isNaN(score)
-        ? null
-        : score;
+            courseData[ocean].teeTimes.push(
+                cols[3]
+            );
+        }
+
+    });
+
 }
 
 function loadCourseSelector() {
