@@ -1707,11 +1707,25 @@ async function initialise() {
     renderScorecard();
     
     document
-        .getElementById('courseSelect')
-        .addEventListener(
-            'change',
-            loadHandicaps
-        );
+    .getElementById('courseSelect')
+    .addEventListener(
+        'change',
+        () => loadHandicaps()
+    );
+
+    document
+    .getElementById('scorecardPlayer')
+    .addEventListener(
+        'change',
+        () => renderScorecard()
+    );
+
+    document
+    .getElementById('scorecardCourse')
+    .addEventListener(
+        'change',
+        () => renderScorecard()
+    );
 }
 
 initialise();
