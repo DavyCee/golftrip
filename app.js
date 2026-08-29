@@ -711,55 +711,6 @@ console.log(
     await loadRyderCup();
 }
 
-function renderLeaderboard() {
-
-    const players =
-        Object.entries(leaderboard)
-            .sort(
-                (a, b) =>
-                b[1].total - a[1].total
-            );
-
-    let html = `
-        <h3>Individual Stableford</h3>
-        <table class="leaderboard-table">
-            <tr>
-                <th>Pos</th>
-                <th>Player</th>
-                <th>R1</th>
-                <th>R2</th>
-                <th>R3</th>
-                <th>Total</th>
-            </tr>
-    `;
-
-    let lastScore = null;
-    let position = 0;
-
-    players.forEach(([player, data], index) => {
-
-        if (data.total !== lastScore) {
-            position = index + 1;
-            lastScore = data.total;
-        }
-
-        html += `
-            <tr>
-                <td>${position}</td>
-                <td>${player}</td>
-                <td>${data.r1}</td>
-                <td>${data.r2}</td>
-                <td>${data.r3}</td>
-                <td><strong>${data.total}</strong></td>
-            </tr>
-        `;
-    });
-
-    html += '</table>';
-
-    document.getElementById('leaderboard').innerHTML = html;
-}
-
 function shotsReceived(courseHandicap, strokeIndex) {
 
     const fullRounds =
