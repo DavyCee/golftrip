@@ -4343,6 +4343,161 @@ function renderScorecard() {
 
 }
 
+async function loadSideCompetitions() {
+
+    const response =
+        await fetch(
+            SIDE_COMPETITIONS_CSV
+        );
+
+    const text =
+        await response.text();
+
+    const rows =
+        text
+            .split('\n')
+            .filter(row => row.trim());
+
+
+    /*
+     * Remove the header row.
+     */
+    const dataRows =
+        rows.slice(1);
+
+
+    let html = '';
+
+
+    dataRows.forEach(row => {
+
+        const cols =
+            row
+                .split(',')
+                .map(
+                    value =>
+                        value.trim()
+                );
+
+
+        if (!cols[0])
+            return;
+
+
+        const round =
+            cols[0];
+
+        const front9CTP =
+            cols[1] || '-';
+
+        const back9CTP =
+            cols[2] || '-';
+
+        const front9LD =
+            cols[3] || '-';
+
+        const back9LD =
+            cols[4] || '-';
+
+
+        html += `
+
+            <div class="side-competition-round">
+
+                <h3>
+                    Round ${round}
+                </h3>
+
+
+                <div class="side-competition-grid">
+
+
+                    <div class="side-competition-item">
+
+                        <span class="side-competition-label">
+                            Closest to Pin
+                        </span>
+
+                        <span class="side-competition-hole">
+                            Front 9
+                        </span>
+
+                        <strong>
+                            ${front9CTP}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="side-competition-item">
+
+                        <span class="side-competition-label">
+                            Closest to Pin
+                        </span>
+
+                        <span class="side-competition-hole">
+                            Back 9
+                        </span>
+
+                        <strong>
+                            ${back9CTP}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="side-competition-item">
+
+                        <span class="side-competition-label">
+                            Longest Drive
+                        </span>
+
+                        <span class="side-competition-hole">
+                            Front 9
+                        </span>
+
+                        <strong>
+                            ${front9LD}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="side-competition-item">
+
+                        <span class="side-competition-label">
+                            Longest Drive
+                        </span>
+
+                        <span class="side-competition-hole">
+                            Back 9
+                        </span>
+
+                        <strong>
+                            ${back9LD}
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    document
+        .getElementById(
+            'sideCompetitions'
+        )
+        .innerHTML =
+            html ||
+            '<p class="empty-state">No side competition results yet.</p>';
+}
+
 function initialiseStickyNavigation() {
 
     const nav =
@@ -4471,6 +4626,8 @@ async function initialise() {
 
     await calculateRound1Leaderboard();
 
+    await loadSideCompetitions();
+    
     renderStats();
 
     renderScorecard();
