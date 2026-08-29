@@ -771,36 +771,128 @@ async function loadRyderCup() {
 
     const awardPlayerPoints = (players, points) => {
 
-            const recordRyderMatch = (teamAPlayers, teamBPlayers, winningTeam, resultText) => {
-                const allPlayers = [...teamAPlayers, ...teamBPlayers];
-                if (!winningTeam || !allPlayers.length) return;
+    players.forEach(player => {
 
-                allPlayers.forEach(player => {
-                    if (!ryderPlayerRecords[player]) {
-                        ryderPlayerRecords[player] = { wins: 0, losses: 0, draws: 0 };
-                    }
-                });
+        ryderPlayerPoints[player] =
+            (ryderPlayerPoints[player] || 0) + points;
 
-                const winningPlayers = winningTeam === settings['Team A Name'] ? teamAPlayers : teamBPlayers;
-                const losingPlayers = winningTeam === settings['Team A Name'] ? teamBPlayers : teamAPlayers;
+    });
 
-                if (winningTeam === 'Halved') {
-                    allPlayers.forEach(player => ryderPlayerRecords[player].draws += 1);
-                } else {
-                    winningPlayers.forEach(player => ryderPlayerRecords[player].wins += 1);
-                    losingPlayers.forEach(player => ryderPlayerRecords[player].losses += 1);
-                }
+};
 
-                const marginMatch = resultText.match(/(\d+)\s*&\s*(\d+)|^(\d+)\s+Up$/i);
-                const margin = marginMatch ? Number(marginMatch[1] || marginMatch[3]) : 0;
-                if (margin && (!biggestRyderWin || margin > biggestRyderWin.margin)) {
-                    biggestRyderWin = { margin, team: winningTeam, players: winningPlayers.join(' / '), result: resultText };
-                }
+const recordRyderMatch = (
+    teamAPlayers,
+    teamBPlayers,
+    winningTeam,
+    resultText
+) => {
+
+    const allPlayers = [
+        ...teamAPlayers,
+        ...teamBPlayers
+    ];
+
+    if (!winningTeam || !allPlayers.length)
+        return;
+
+    allPlayers.forEach(player => {
+
+        if (!ryderPlayerRecords[player]) {
+
+            ryderPlayerRecords[player] = {
+                wins: 0,
+                losses: 0,
+                draws: 0
             };
-        players.forEach(player => {
-            ryderPlayerPoints[player] = (ryderPlayerPoints[player] || 0) + points;
+
+        }
+
+    });
+
+    if (winningTeam === 'Halved') {
+
+        allPlayers.forEach(player => {
+
+            ryderPlayerRecords[player].draws += 1;
+
         });
-    };
+
+    } else {
+
+        teamAPlayers.forEach(player => {
+
+            if (
+                winningTeam ===
+                settings['Team A Name']
+            ) {
+
+                ryderPlayerRecords[player].wins += 1;
+
+            } else {
+
+                ryderPlayerRecords[player].losses += 1;
+
+            }
+
+        });
+
+        teamBPlayers.forEach(player => {
+
+            if (
+                winningTeam ===
+                settings['Team B Name']
+            ) {
+
+                ryderPlayerRecords[player].wins += 1;
+
+            } else {
+
+                ryderPlayerRecords[player].losses += 1;
+
+            }
+
+        });
+
+    }
+
+    const marginMatch =
+        resultText.match(
+            /(\d+)\s*&\s*(\d+)|^(\d+)\s+Up$/i
+        );
+
+    const margin =
+        marginMatch
+            ? Number(
+                marginMatch[1] ||
+                marginMatch[3]
+            )
+            : 0;
+
+    if (
+        margin &&
+        (
+            !biggestRyderWin ||
+            margin > biggestRyderWin.margin
+        )
+    ) {
+
+        const winningPlayers =
+            winningTeam ===
+            settings['Team A Name']
+                ? teamAPlayers
+                : teamBPlayers;
+
+        biggestRyderWin = {
+            margin,
+            team: winningTeam,
+            players:
+                winningPlayers.join(' / '),
+            result: resultText
+        };
+
+    }
+
+};
 
     rows.forEach(row => {
 
