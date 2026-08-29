@@ -1560,8 +1560,15 @@ let frontScore = 0;
 let backScore = 0;
 
 let html = `
-<h3>${player}</h3>
-<p>${courseName}</p>
+<div class="scorecard-header">
+
+    <h3>${player}</h3>
+
+    <div class="scorecard-course">
+        ${courseName}
+    </div>
+
+</div>
 
 <table class="scorecard-table">
 
