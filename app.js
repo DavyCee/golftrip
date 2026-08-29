@@ -25,6 +25,8 @@ let leaderboard = {};
 let playerHandicaps = {};
 let playerTeams = {};
 let ryderPlayerPoints = {};
+let ryderPlayerRecords = {};
+let biggestRyderWin = null;
 let ryderCupMatches = [];
 let roundData = {};
 
@@ -299,7 +301,7 @@ if (
                 ${teamA
                 .map(
                 player =>
-                `<div>${player}</div>`
+                `<div data-player="${player}">${player}<span class="team-record"></span></div>`
                 )
                 .join('')}
 
@@ -316,7 +318,7 @@ if (
                ${teamB
                 .map(
                 player =>
-                `<div>${player}</div>`
+                `<div data-player="${player}">${player}<span class="team-record"></span></div>`
                 )
                 .join('')}
 
@@ -324,6 +326,16 @@ if (
 
         </div>
     `;
+}
+
+function renderTeamRecords() {
+    document.querySelectorAll('[data-player]').forEach(element => {
+        const record = ryderPlayerRecords[element.dataset.player];
+        if (!record) return;
+
+        element.querySelector('.team-record').textContent =
+            `${record.wins}-${record.losses}-${record.draws}`;
+    });
 }
 
 async function loadCourses() {
@@ -798,12 +810,42 @@ async function loadRyderCup() {
 
     const matches = [];
     ryderPlayerPoints = {};
+    ryderPlayerRecords = {};
+    biggestRyderWin = null;
 
     Object.keys(playerTeams).forEach(player => {
         ryderPlayerPoints[player] = 0;
+        ryderPlayerRecords[player] = { wins: 0, losses: 0, draws: 0 };
     });
 
     const awardPlayerPoints = (players, points) => {
+
+            const recordRyderMatch = (teamAPlayers, teamBPlayers, winningTeam, resultText) => {
+                const allPlayers = [...teamAPlayers, ...teamBPlayers];
+                if (!winningTeam || !allPlayers.length) return;
+
+                allPlayers.forEach(player => {
+                    if (!ryderPlayerRecords[player]) {
+                        ryderPlayerRecords[player] = { wins: 0, losses: 0, draws: 0 };
+                    }
+                });
+
+                const winningPlayers = winningTeam === settings['Team A Name'] ? teamAPlayers : teamBPlayers;
+                const losingPlayers = winningTeam === settings['Team A Name'] ? teamBPlayers : teamAPlayers;
+
+                if (winningTeam === 'Halved') {
+                    allPlayers.forEach(player => ryderPlayerRecords[player].draws += 1);
+                } else {
+                    winningPlayers.forEach(player => ryderPlayerRecords[player].wins += 1);
+                    losingPlayers.forEach(player => ryderPlayerRecords[player].losses += 1);
+                }
+
+                const marginMatch = resultText.match(/(\d+)\s*&\s*(\d+)|^(\d+)\s+Up$/i);
+                const margin = marginMatch ? Number(marginMatch[1] || marginMatch[3]) : 0;
+                if (margin && (!biggestRyderWin || margin > biggestRyderWin.margin)) {
+                    biggestRyderWin = { margin, team: winningTeam, players: winningPlayers.join(' / '), result: resultText };
+                }
+            };
         players.forEach(player => {
             ryderPlayerPoints[player] = (ryderPlayerPoints[player] || 0) + points;
         });
@@ -888,6 +930,15 @@ if (result.status === 'finished') {
         : result.winner === 'B'
             ? secondPairTeam
             : null;
+
+    if (result.status === 'finished') {
+        recordRyderMatch(
+            firstPairTeam === settings['Team A Name'] ? [cols[1], cols[2]] : [cols[3], cols[4]],
+            firstPairTeam === settings['Team B Name'] ? [cols[1], cols[2]] : [cols[3], cols[4]],
+            winningTeam || 'Halved',
+            result.result
+        );
+    }
 
     matchOutcome = winningTeam === settings['Team A Name']
         ? 'team-a'
@@ -1028,6 +1079,15 @@ try {
             ? secondPlayerTeam
             : null;
 
+    if (result.status === 'finished') {
+        recordRyderMatch(
+            firstPlayerTeam === settings['Team A Name'] ? [cols[1]] : [cols[2]],
+            firstPlayerTeam === settings['Team B Name'] ? [cols[1]] : [cols[2]],
+            winningTeam || 'Halved',
+            result.result
+        );
+    }
+
     singlesOutcome = winningTeam === settings['Team A Name']
         ? 'team-a'
         : winningTeam === settings['Team B Name']
@@ -1160,6 +1220,8 @@ const scoreboard = `
     .getElementById('rydercup')
     .innerHTML =
         scoreboard + html;
+
+    renderTeamRecords();
 }
 
 function renderStats() {
@@ -1173,6 +1235,8 @@ function renderStats() {
     ];
 
     const stats = {};
+    const courseStats = {};
+    const holeStats = Array.from({ length: 18 }, () => ({ total: 0, count: 0 }));
 
     Object.keys(playerHandicaps).forEach(player => {
         stats[player] = {
@@ -1186,6 +1250,10 @@ function renderStats() {
         };
 
         rounds.forEach(round => {
+            if (!courseStats[round.name]) {
+                courseStats[round.name] = { total: 0, count: 0 };
+            }
+
             const rows = roundData[round.name];
             const header = rows && rows[1] ? rows[1].split(',') : [];
             const playerIndex = header.findIndex(value => value.trim() === player);
@@ -1215,10 +1283,15 @@ function renderStats() {
 
                     if (score === par - 1) birdies += 1;
                     if (score >= par + 2) doubleBogeysPlus += 1;
+
+                    holeStats[hole - 1].total += score;
+                    holeStats[hole - 1].count += 1;
                 }
             }
 
             if (holes) {
+                courseStats[round.name].total += gross / holes * 18;
+                courseStats[round.name].count += 1;
                 stats[player].gross += gross;
                 stats[player].net += net;
                 stats[player].holes += holes;
@@ -1253,6 +1326,30 @@ function renderStats() {
     const mostDoubleBogeysPlus = players
         .slice()
         .sort((a, b) => b[1].doubleBogeysPlus - a[1].doubleBogeysPlus)[0];
+    const courseAverages = Object.entries(courseStats)
+        .filter(([, data]) => data.count)
+        .map(([name, data]) => ({ name, average: data.total / data.count }))
+        .sort((a, b) => b.average - a.average);
+    const hardestCourse = courseAverages[0];
+    const easiestCourse = courseAverages[courseAverages.length - 1];
+    const holeAverages = holeStats
+        .map((data, index) => ({ hole: index + 1, average: data.count ? data.total / data.count : 0, count: data.count }))
+        .filter(data => data.count)
+        .sort((a, b) => b.average - a.average);
+    const hardestHole = holeAverages[0];
+    const easiestHole = holeAverages[holeAverages.length - 1];
+    const totalScoredHoles = holeStats.reduce((sum, data) => sum + data.count, 0);
+    const totalStrokes = holeStats.reduce((sum, data) => sum + data.total, 0);
+    const groupScoringAverage = totalScoredHoles ? totalStrokes / totalScoredHoles : 0;
+    const ryderPoints = Object.values(ryderPlayerPoints);
+    const bestRyderPoints = Math.max(...ryderPoints);
+    const worstRyderPoints = Math.min(...ryderPoints);
+    const bestRyderPlayers = Object.entries(ryderPlayerPoints)
+        .filter(([, points]) => points === bestRyderPoints)
+        .map(([player]) => player).join(', ');
+    const worstRyderPlayers = Object.entries(ryderPlayerPoints)
+        .filter(([, points]) => points === worstRyderPoints)
+        .map(([player]) => player).join(', ');
 
     statsElement.innerHTML = `
         <div class="stats-highlights">
@@ -1283,13 +1380,48 @@ function renderStats() {
             </div>
             <div class="stat-highlight stat-highlight-ryder">
                 <span class="stat-label">Best Ryder Cup Player</span>
-                <strong>${Object.entries(ryderPlayerPoints).filter(([, points]) => points === Math.max(...Object.values(ryderPlayerPoints))).map(([player]) => player).join(', ') || 'No completed matches'}</strong>
-                <span>${Math.max(...Object.values(ryderPlayerPoints))} point${Math.max(...Object.values(ryderPlayerPoints)) === 1 ? '' : 's'} secured</span>
+                <strong>${bestRyderPlayers || 'No completed matches'}</strong>
+                <span>${bestRyderPoints} point${bestRyderPoints === 1 ? '' : 's'} secured</span>
             </div>
             <div class="stat-highlight stat-highlight-ryder">
                 <span class="stat-label">Worst Ryder Cup Player</span>
-                <strong>${Object.entries(ryderPlayerPoints).filter(([, points]) => points === Math.min(...Object.values(ryderPlayerPoints))).map(([player]) => player).join(', ') || 'No completed matches'}</strong>
-                <span>${Math.min(...Object.values(ryderPlayerPoints))} point${Math.min(...Object.values(ryderPlayerPoints)) === 1 ? '' : 's'} secured</span>
+                <strong>${worstRyderPlayers || 'No completed matches'}</strong>
+                <span>${worstRyderPoints} point${worstRyderPoints === 1 ? '' : 's'} secured</span>
+            </div>
+            <div class="stat-highlight stat-highlight-group">
+                <span class="stat-label">Biggest Winning Margin</span>
+                <strong>${biggestRyderWin ? biggestRyderWin.players : 'No completed matches'}</strong>
+                <span>${biggestRyderWin ? `${biggestRyderWin.team} · ${biggestRyderWin.result}` : ''}</span>
+            </div>
+        </div>
+        <div class="stats-group">
+            <h3>Group Stats</h3>
+            <div class="stats-highlights">
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">Group Scoring Average</span>
+                    <strong>${groupScoringAverage.toFixed(2)}</strong>
+                    <span>strokes per scored hole</span>
+                </div>
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">Hardest Course</span>
+                    <strong>${hardestCourse.name}</strong>
+                    <span>${hardestCourse.average.toFixed(1)} average strokes</span>
+                </div>
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">Easiest Course</span>
+                    <strong>${easiestCourse.name}</strong>
+                    <span>${easiestCourse.average.toFixed(1)} average strokes</span>
+                </div>
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">Hardest Hole</span>
+                    <strong>Hole ${hardestHole.hole}</strong>
+                    <span>${hardestHole.average.toFixed(2)} average strokes</span>
+                </div>
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">Easiest Hole</span>
+                    <strong>Hole ${easiestHole.hole}</strong>
+                    <span>${easiestHole.average.toFixed(2)} average strokes</span>
+                </div>
             </div>
         </div>
         <div class="stats-table-wrap">
