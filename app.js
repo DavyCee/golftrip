@@ -232,34 +232,154 @@ function loadCourseSelector() {
         .innerHTML = html;
 }
 
+function formatScheduleDate(dateString) {
+
+    if (!dateString)
+        return '';
+
+    const date =
+        new Date(`${dateString.trim()}T00:00:00`);
+
+    if (Number.isNaN(date.getTime()))
+        return dateString;
+
+    const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+    ];
+
+    const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ];
+
+    const day =
+        date.getDate();
+
+    const ordinal =
+        day % 100 >= 11 &&
+        day % 100 <= 13
+            ? 'th'
+            : day % 10 === 1
+                ? 'st'
+                : day % 10 === 2
+                    ? 'nd'
+                    : day % 10 === 3
+                        ? 'rd'
+                        : 'th';
+
+    return `
+        ${days[date.getDay()]}
+        ${day}${ordinal}
+        ${months[date.getMonth()]}
+    `;
+}
+
+
 function renderSchedule() {
 
     const html = `
 
         <div class="schedule-row">
-            <strong class="round-label">Round 1</strong>
-            <span class="schedule-date">${settings['Round 1 Date']}</span>
-            <span class="schedule-course">${settings['Course 1 Name']}</span>
-            <span class="schedule-times">${courseData[settings['Course 1 Name']].teeTimes.join(' • ')}</span>
+
+            <strong class="round-label">
+                Round 1
+            </strong>
+
+            <span class="schedule-date">
+                ${formatScheduleDate(
+                    settings['Round 1 Date']
+                )}
+            </span>
+
+            <span class="schedule-course">
+                ${settings['Course 1 Name']}
+            </span>
+
+            <span class="schedule-times">
+                ${
+                    courseData[
+                        settings['Course 1 Name']
+                    ].teeTimes.join(' • ')
+                }
+            </span>
+
         </div>
 
-        <div class="schedule-row">
-            <strong class="round-label">Round 2</strong>
-            <span class="schedule-date">${settings['Round 2 Date']}</span>
-            <span class="schedule-course">${settings['Course 2 Name']}</span>
-            <span class="schedule-times">${courseData[settings['Course 2 Name']].teeTimes.join(' • ')}</span>
-        </div>
 
         <div class="schedule-row">
-            <strong class="round-label">Round 3</strong>
-            <span class="schedule-date">${settings['Round 3 Date']}</span>
-            <span class="schedule-course">${settings['Course 3 Name']}</span>
-            <span class="schedule-times">${courseData[settings['Course 3 Name']].teeTimes.join(' • ')}</span>
+
+            <strong class="round-label">
+                Round 2
+            </strong>
+
+            <span class="schedule-date">
+                ${formatScheduleDate(
+                    settings['Round 2 Date']
+                )}
+            </span>
+
+            <span class="schedule-course">
+                ${settings['Course 2 Name']}
+            </span>
+
+            <span class="schedule-times">
+                ${
+                    courseData[
+                        settings['Course 2 Name']
+                    ].teeTimes.join(' • ')
+                }
+            </span>
+
+        </div>
+
+
+        <div class="schedule-row">
+
+            <strong class="round-label">
+                Round 3
+            </strong>
+
+            <span class="schedule-date">
+                ${formatScheduleDate(
+                    settings['Round 3 Date']
+                )}
+            </span>
+
+            <span class="schedule-course">
+                ${settings['Course 3 Name']}
+            </span>
+
+            <span class="schedule-times">
+                ${
+                    courseData[
+                        settings['Course 3 Name']
+                    ].teeTimes.join(' • ')
+                }
+            </span>
+
         </div>
 
     `;
 
-    document.getElementById('schedule').innerHTML = html;
+    document
+        .getElementById('schedule')
+        .innerHTML = html;
 }
 
 async function loadTeams() {
