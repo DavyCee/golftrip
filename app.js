@@ -543,16 +543,6 @@ async function loadHandicaps() {
     const selectedCourse =
         document.getElementById('courseSelect').value;
 
-console.log(
-    'Selected course:',
-    selectedCourse
-);
-
-console.log(
-    'Course lookup:',
-    courseData[selectedCourse]
-);
-
 if (!courseData[selectedCourse]) {
 
     console.error(
@@ -723,21 +713,6 @@ const r3 =
         ROUND3_CSV,
         settings['Course 3 Name']
     );
-
-    console.log(
-    'ROUND 3 ROWS:',
-    roundData[settings['Course 3 Name']]
-);
-
-console.log(
-    'ROUND 3 SCORES:',
-    r3
-);
-
-console.log(
-    'PLAYERS:',
-    Object.keys(leaderboard)
-);
 
     Object.keys(leaderboard).forEach(player => {
 
