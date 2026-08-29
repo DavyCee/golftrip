@@ -571,7 +571,7 @@ main {
 }
 
 .round-label {
-    grid-row: span 2;
+    grid-row: span 3;
     align-self: center;
     width: 5.5rem;
     padding: 0.45rem 0.55rem;
