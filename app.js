@@ -1822,316 +1822,1061 @@ async function loadRyderCup() {
 }
 
 function renderStats() {
-    const statsElement = document.getElementById('stats');
-    if (!statsElement) return;
+
+    const statsElement =
+        document.getElementById('stats');
+
+    if (!statsElement)
+        return;
+
 
     const rounds = [
-        { key: 'r1', name: settings['Course 1 Name'] },
-        { key: 'r2', name: settings['Course 2 Name'] },
-        { key: 'r3', name: settings['Course 3 Name'] }
+        {
+            key: 'r1',
+            name: settings['Course 1 Name']
+        },
+        {
+            key: 'r2',
+            name: settings['Course 2 Name']
+        },
+        {
+            key: 'r3',
+            name: settings['Course 3 Name']
+        }
     ];
 
-   const stats = {};
+
+    const stats = {};
 
     const courseStats = {};
 
-const holeStats = Array.from(
-    { length: 18 },
-    () => ({
-        total: 0,
-        count: 0
-    })
-);
+    /*
+     * Overall statistics for each
+     * course / hole combination.
+     */
+    const courseHoleStats = {};
 
-const groupScoringStats = {
-    eagles: 0,
-    birdies: 0,
-    pars: 0,
-    bogeys: 0,
-    doubleBogeys: 0,
-    triplesOrWorse: 0
-};
-
-    Object.keys(playerHandicaps).forEach(player => {
-        stats[player] = {
-            gross: 0,
-            net: 0,
-            holes: 0,
-            underPar: 0,
-            birdies: 0,
-            doubleBogeysPlus: 0,
-            rounds: []
-        };
-
-        rounds.forEach(round => {
-            if (!courseStats[round.name]) {
-                courseStats[round.name] = { total: 0, count: 0 };
-            }
-
-            const rows = roundData[round.name];
-            const header = rows && rows[1] ? rows[1].split(',') : [];
-            const playerIndex = header.findIndex(value => value.trim() === player);
-            let gross = 0;
-            let net = 0;
-            let parTotal = 0;
-            let holes = 0;
-            let birdies = 0;
-            let doubleBogeysPlus = 0;
-
-            if (rows && playerIndex !== -1) {
-                const slope = courseData[round.name]?.slope || 113;
-                const courseHandicap = Math.round((playerHandicaps[player] * slope) / 113);
-
-                for (let hole = 1; hole <= 18; hole += 1) {
-                    const columns = rows[hole + 1]?.split(',') || [];
-                    const rawScore = columns[playerIndex]?.trim();
-                    const score = Number(rawScore);
-                    const par = Number(columns[1]);
-
-                    if (!rawScore || Number.isNaN(score) || Number.isNaN(par)) continue;
-
-                    gross += score;
-                    net += score - shotsReceived(courseHandicap, Number(columns[2]));
-                    parTotal += par;
-                    holes += 1;
-
-                   const scoreToPar =
-    score - par;
+    /*
+     * Group-wide scoring totals.
+     */
+    const groupScoringStats = {
+        eagles: 0,
+        birdies: 0,
+        pars: 0,
+        bogeys: 0,
+        doubleBogeys: 0,
+        triplesOrWorse: 0
+    };
 
 
-/*
- * Player statistics
- */
-if (scoreToPar === -1)
-    birdies += 1;
+    /*
+     * Build player statistics.
+     */
+    Object.keys(playerHandicaps).forEach(
+        player => {
 
-if (scoreToPar >= 2)
-    doubleBogeysPlus += 1;
+            stats[player] = {
 
+                gross: 0,
 
-/*
- * Group-wide scoring statistics
- */
-if (scoreToPar <= -2) {
+                net: 0,
 
-    groupScoringStats.eagles += 1;
+                holes: 0,
 
-} else if (scoreToPar === -1) {
+                underPar: 0,
 
-    groupScoringStats.birdies += 1;
+                birdies: 0,
 
-} else if (scoreToPar === 0) {
+                doubleBogeysPlus: 0,
 
-    groupScoringStats.pars += 1;
+                rounds: []
 
-} else if (scoreToPar === 1) {
-
-    groupScoringStats.bogeys += 1;
-
-} else if (scoreToPar === 2) {
-
-    groupScoringStats.doubleBogeys += 1;
-
-} else if (scoreToPar >= 3) {
-
-    groupScoringStats.triplesOrWorse += 1;
-
-}
+            };
 
 
-holeStats[hole - 1].total += score;
+            rounds.forEach(round => {
 
-holeStats[hole - 1].count += 1;
-                    
+                if (!courseStats[round.name]) {
+
+                    courseStats[round.name] = {
+                        total: 0,
+                        count: 0
+                    };
+
                 }
-            }
 
-            if (holes) {
-                courseStats[round.name].total += gross / holes * 18;
-                courseStats[round.name].count += 1;
-                stats[player].gross += gross;
-                stats[player].net += net;
-                stats[player].holes += holes;
-                stats[player].underPar += parTotal - gross;
-                stats[player].birdies += birdies;
-                stats[player].doubleBogeysPlus += doubleBogeysPlus;
-                stats[player].rounds.push({ name: round.name, gross, net, holes, toPar: gross - parTotal });
-            }
-        });
-    });
 
-    const players = Object.entries(stats)
-        .filter(([, data]) => data.holes)
-        .sort((a, b) => a[1].gross - b[1].gross);
+                const rows =
+                    roundData[round.name];
+
+                const header =
+                    rows &&
+                    rows[1]
+                        ? rows[1].split(',')
+                        : [];
+
+
+                const playerIndex =
+                    header.findIndex(
+                        value =>
+                            value
+                                .trim()
+                                .toLowerCase() ===
+                            player
+                                .trim()
+                                .toLowerCase()
+                    );
+
+
+                let gross = 0;
+                let net = 0;
+                let parTotal = 0;
+                let holes = 0;
+                let birdies = 0;
+                let doubleBogeysPlus = 0;
+
+
+                if (
+                    rows &&
+                    playerIndex !== -1
+                ) {
+
+                    const slope =
+                        courseData[
+                            round.name
+                        ]?.slope || 113;
+
+
+                    const courseHandicap =
+                        Math.round(
+                            (
+                                playerHandicaps[player]
+                                * slope
+                            ) / 113
+                        );
+
+
+                    for (
+                        let hole = 1;
+                        hole <= 18;
+                        hole += 1
+                    ) {
+
+                        const columns =
+                            rows[
+                                hole + 1
+                            ]?.split(',') || [];
+
+
+                        const rawScore =
+                            columns[
+                                playerIndex
+                            ]?.trim();
+
+
+                        const score =
+                            Number(rawScore);
+
+
+                        const par =
+                            Number(columns[1]);
+
+
+                        const strokeIndex =
+                            Number(columns[2]);
+
+
+                        if (
+                            !rawScore ||
+                            Number.isNaN(score) ||
+                            Number.isNaN(par)
+                        ) {
+                            continue;
+                        }
+
+
+                        const scoreToPar =
+                            score - par;
+
+
+                        gross += score;
+
+                        net +=
+                            score -
+                            shotsReceived(
+                                courseHandicap,
+                                strokeIndex
+                            );
+
+                        parTotal += par;
+
+                        holes += 1;
+
+
+                        /*
+                         * Player-specific statistics.
+                         */
+                        if (
+                            scoreToPar === -1
+                        ) {
+                            birdies += 1;
+                        }
+
+                        if (
+                            scoreToPar >= 2
+                        ) {
+                            doubleBogeysPlus += 1;
+                        }
+
+
+                        /*
+                         * Group-wide scoring totals.
+                         */
+                        if (
+                            scoreToPar <= -2
+                        ) {
+
+                            groupScoringStats.eagles += 1;
+
+                        } else if (
+                            scoreToPar === -1
+                        ) {
+
+                            groupScoringStats.birdies += 1;
+
+                        } else if (
+                            scoreToPar === 0
+                        ) {
+
+                            groupScoringStats.pars += 1;
+
+                        } else if (
+                            scoreToPar === 1
+                        ) {
+
+                            groupScoringStats.bogeys += 1;
+
+                        } else if (
+                            scoreToPar === 2
+                        ) {
+
+                            groupScoringStats.doubleBogeys += 1;
+
+                        } else if (
+                            scoreToPar >= 3
+                        ) {
+
+                            groupScoringStats.triplesOrWorse += 1;
+
+                        }
+
+
+                        /*
+                         * Course scoring average.
+                         */
+                        courseStats[
+                            round.name
+                        ].total += score;
+
+                        courseStats[
+                            round.name
+                        ].count += 1;
+
+
+                        /*
+                         * Course + hole scoring average.
+                         */
+                        const holeKey =
+                            `${round.name}|${hole}`;
+
+
+                        if (
+                            !courseHoleStats[holeKey]
+                        ) {
+
+                            courseHoleStats[
+                                holeKey
+                            ] = {
+
+                                course:
+                                    round.name,
+
+                                hole,
+
+                                total: 0,
+
+                                count: 0
+
+                            };
+
+                        }
+
+
+                        courseHoleStats[
+                            holeKey
+                        ].total += score;
+
+
+                        courseHoleStats[
+                            holeKey
+                        ].count += 1;
+
+                    }
+
+                }
+
+
+                if (holes) {
+
+                    stats[player].gross +=
+                        gross;
+
+                    stats[player].net +=
+                        net;
+
+                    stats[player].holes +=
+                        holes;
+
+                    stats[player].underPar +=
+                        parTotal - gross;
+
+                    stats[player].birdies +=
+                        birdies;
+
+                    stats[player].doubleBogeysPlus +=
+                        doubleBogeysPlus;
+
+
+                    stats[player].rounds.push({
+
+                        name:
+                            round.name,
+
+                        gross,
+
+                        net,
+
+                        holes,
+
+                        toPar:
+                            gross - parTotal
+
+                    });
+
+                }
+
+            });
+
+        }
+    );
+
+
+    /*
+     * Sort players by total gross score.
+     */
+    const players =
+        Object.entries(stats)
+            .filter(
+                ([, data]) =>
+                    data.holes
+            )
+            .sort(
+                (a, b) =>
+                    a[1].gross -
+                    b[1].gross
+            );
+
 
     if (!players.length) {
-        statsElement.innerHTML = '<p class="empty-state">Stats will appear once scores are entered.</p>';
+
+        statsElement.innerHTML =
+            '<p class="empty-state">' +
+            'Stats will appear once scores are entered.' +
+            '</p>';
+
         return;
+
     }
 
-    const roundScores = players
-        .flatMap(([player, data]) => data.rounds.map(round => ({ player, ...round })))
-        .sort((a, b) => a.gross - b.gross);
-    const lowestGross = roundScores[0];
-    const highestGross = roundScores[roundScores.length - 1];
-    const lowestNet = roundScores
-        .slice()
-        .sort((a, b) => a.net - b.net)[0];
-    const mostBirdies = players
-        .slice()
-        .sort((a, b) => b[1].birdies - a[1].birdies)[0];
-    const mostDoubleBogeysPlus = players
-        .slice()
-        .sort((a, b) => b[1].doubleBogeysPlus - a[1].doubleBogeysPlus)[0];
-    const courseAverages = Object.entries(courseStats)
-        .filter(([, data]) => data.count)
-        .map(([name, data]) => ({ name, average: data.total / data.count }))
-        .sort((a, b) => b.average - a.average);
-    const hardestCourse = courseAverages[0];
-    const easiestCourse = courseAverages[courseAverages.length - 1];
-    const holeAverages = holeStats
-        .map((data, index) => ({ hole: index + 1, average: data.count ? data.total / data.count : 0, count: data.count }))
-        .filter(data => data.count)
-        .sort((a, b) => b.average - a.average);
-    const hardestHole = holeAverages[0];
-    const easiestHole = holeAverages[holeAverages.length - 1];
-    const totalScoredHoles = holeStats.reduce((sum, data) => sum + data.count, 0);
-    const totalStrokes = holeStats.reduce((sum, data) => sum + data.total, 0);
+
+    /*
+     * Individual round awards.
+     */
+    const roundScores =
+        players
+            .flatMap(
+                ([player, data]) =>
+                    data.rounds.map(
+                        round => ({
+                            player,
+                            ...round
+                        })
+                    )
+            );
+
+
+    const lowestGrossScore =
+        Math.min(
+            ...roundScores.map(
+                round => round.gross
+            )
+        );
+
+
+    const highestGrossScore =
+        Math.max(
+            ...roundScores.map(
+                round => round.gross
+            )
+        );
+
+
+    /*
+     * Include ALL players tied for
+     * the lowest / highest gross score.
+     */
+    const lowestGross =
+        roundScores.filter(
+            round =>
+                round.gross ===
+                lowestGrossScore
+        );
+
+
+    const highestGross =
+        roundScores.filter(
+            round =>
+                round.gross ===
+                highestGrossScore
+        );
+
+
+    /*
+     * Best net score.
+     */
+    const lowestNetScore =
+        Math.min(
+            ...roundScores.map(
+                round => round.net
+            )
+        );
+
+
+    const lowestNet =
+        roundScores.filter(
+            round =>
+                round.net ===
+                lowestNetScore
+        );
+
+
+    const mostBirdies =
+        players
+            .slice()
+            .sort(
+                (a, b) =>
+                    b[1].birdies -
+                    a[1].birdies
+            )[0];
+
+
+    const mostDoubleBogeysPlus =
+        players
+            .slice()
+            .sort(
+                (a, b) =>
+                    b[1].doubleBogeysPlus -
+                    a[1].doubleBogeysPlus
+            )[0];
+
+
+    /*
+     * Course scoring averages.
+     */
+    const courseAverages =
+        Object.entries(courseStats)
+            .filter(
+                ([, data]) =>
+                    data.count
+            )
+            .map(
+                ([name, data]) => ({
+                    name,
+                    average:
+                        data.total /
+                        data.count
+                })
+            )
+            .sort(
+                (a, b) =>
+                    b.average -
+                    a.average
+            );
+
+
+    const hardestCourse =
+        courseAverages[0];
+
+
+    const easiestCourse =
+        courseAverages[
+            courseAverages.length - 1
+        ];
+
+
+    /*
+     * Hole scoring averages.
+     */
+    const holeAverages =
+        Object.values(courseHoleStats)
+            .map(data => ({
+
+                course:
+                    data.course,
+
+                hole:
+                    data.hole,
+
+                average:
+                    data.total /
+                    data.count,
+
+                count:
+                    data.count
+
+            }))
+            .filter(
+                data =>
+                    data.count
+            )
+            .sort(
+                (a, b) =>
+                    b.average -
+                    a.average
+            );
+
+
+    const hardestHole =
+        holeAverages[0];
+
+
+    const easiestHole =
+        holeAverages[
+            holeAverages.length - 1
+        ];
+
+
+    /*
+     * Group scoring average over 18 holes.
+     *
+     * We calculate the average strokes
+     * per scored hole and multiply by 18.
+     */
+    const totalScoredHoles =
+        Object.values(courseHoleStats)
+            .reduce(
+                (sum, data) =>
+                    sum + data.count,
+                0
+            );
+
+
+    const totalStrokes =
+        Object.values(courseHoleStats)
+            .reduce(
+                (sum, data) =>
+                    sum + data.total,
+                0
+            );
+
+
     const groupScoringAverage =
-    totalScoredHoles
-        ? (totalStrokes / totalScoredHoles) * 18
-        : 0;
-    const ryderPoints = Object.values(ryderPlayerPoints);
-    const bestRyderPoints = Math.max(...ryderPoints);
-    const worstRyderPoints = Math.min(...ryderPoints);
-    const bestRyderPlayers = Object.entries(ryderPlayerPoints)
-        .filter(([, points]) => points === bestRyderPoints)
-        .map(([player]) => player).join(', ');
-    const worstRyderPlayers = Object.entries(ryderPlayerPoints)
-        .filter(([, points]) => points === worstRyderPoints)
-        .map(([player]) => player).join(', ');
+        totalScoredHoles
+            ? (
+                totalStrokes /
+                totalScoredHoles
+            ) * 18
+            : 0;
+
+
+    /*
+     * Ryder Cup statistics.
+     */
+    const ryderPoints =
+        Object.values(
+            ryderPlayerPoints
+        );
+
+
+    const bestRyderPoints =
+        ryderPoints.length
+            ? Math.max(
+                ...ryderPoints
+            )
+            : 0;
+
+
+    const worstRyderPoints =
+        ryderPoints.length
+            ? Math.min(
+                ...ryderPoints
+            )
+            : 0;
+
+
+    const bestRyderPlayers =
+        Object.entries(
+            ryderPlayerPoints
+        )
+            .filter(
+                ([, points]) =>
+                    points ===
+                    bestRyderPoints
+            )
+            .map(
+                ([player]) =>
+                    player
+            )
+            .join(', ');
+
+
+    const worstRyderPlayers =
+        Object.entries(
+            ryderPlayerPoints
+        )
+            .filter(
+                ([, points]) =>
+                    points ===
+                    worstRyderPoints
+            )
+            .map(
+                ([player]) =>
+                    player
+            )
+            .join(', ');
+
+
+    /*
+     * Format tied gross award winners.
+     */
+    const formatGrossWinners =
+        winners =>
+            winners
+                .map(
+                    winner =>
+                        `${winner.player} · ${winner.name} · ${winner.gross}`
+                )
+                .join('<br>');
+
+
+    /*
+     * Format tied net award winners.
+     */
+    const formatNetWinners =
+        winners =>
+            winners
+                .map(
+                    winner =>
+                        `${winner.player} · ${winner.name} · ${winner.net}`
+                )
+                .join('<br>');
+
 
     statsElement.innerHTML = `
+
         <div class="stats-highlights">
+
             <div class="stat-highlight">
-                <span class="stat-label">Lowest Gross</span>
-                <strong>${lowestGross.player}</strong>
-                <span>${lowestGross.name} · ${lowestGross.gross}</span>
+
+                <span class="stat-label">
+                    Lowest Gross
+                </span>
+
+                <strong>
+                    ${lowestGross
+                        .map(
+                            winner =>
+                                winner.player
+                        )
+                        .join('<br>')}
+                </strong>
+
+                <span>
+                    ${formatGrossWinners(
+                        lowestGross
+                    )}
+                </span>
+
             </div>
+
+
             <div class="stat-highlight">
-                <span class="stat-label">Highest Gross</span>
-                <strong>${highestGross.player}</strong>
-                <span>${highestGross.name} · ${highestGross.gross}</span>
+
+                <span class="stat-label">
+                    Highest Gross
+                </span>
+
+                <strong>
+                    ${highestGross
+                        .map(
+                            winner =>
+                                winner.player
+                        )
+                        .join('<br>')}
+                </strong>
+
+                <span>
+                    ${formatGrossWinners(
+                        highestGross
+                    )}
+                </span>
+
             </div>
+
+
             <div class="stat-highlight">
-                <span class="stat-label">Best Net Score</span>
-                <strong>${lowestNet.player}</strong>
-                <span>${lowestNet.name} · ${lowestNet.net}</span>
+
+                <span class="stat-label">
+                    Best Net Score
+                </span>
+
+                <strong>
+                    ${lowestNet
+                        .map(
+                            winner =>
+                                winner.player
+                        )
+                        .join('<br>')}
+                </strong>
+
+                <span>
+                    ${formatNetWinners(
+                        lowestNet
+                    )}
+                </span>
+
             </div>
+
+
             <div class="stat-highlight">
-                <span class="stat-label">Most Birdies</span>
-                <strong>${mostBirdies[0]}</strong>
-                <span>${mostBirdies[1].birdies} birdies</span>
+
+                <span class="stat-label">
+                    Most Birdies
+                </span>
+
+                <strong>
+                    ${mostBirdies[0]}
+                </strong>
+
+                <span>
+                    ${mostBirdies[1].birdies}
+                    birdies
+                </span>
+
             </div>
+
+
             <div class="stat-highlight">
-                <span class="stat-label">Most Doubles or Worse</span>
-                <strong>${mostDoubleBogeysPlus[0]}</strong>
-                <span>${mostDoubleBogeysPlus[1].doubleBogeysPlus} double bogeys or worse</span>
+
+                <span class="stat-label">
+                    Most Doubles or Worse
+                </span>
+
+                <strong>
+                    ${mostDoubleBogeysPlus[0]}
+                </strong>
+
+                <span>
+                    ${mostDoubleBogeysPlus[1].doubleBogeysPlus}
+                    double bogeys or worse
+                </span>
+
             </div>
+
+
             <div class="stat-highlight stat-highlight-ryder">
-                <span class="stat-label">Best Ryder Cup Player</span>
-                <strong>${bestRyderPlayers || 'No completed matches'}</strong>
-                <span>${bestRyderPoints} point${bestRyderPoints === 1 ? '' : 's'} secured</span>
+
+                <span class="stat-label">
+                    Best Ryder Cup Player
+                </span>
+
+                <strong>
+                    ${bestRyderPlayers ||
+                        'No completed matches'}
+                </strong>
+
+                <span>
+                    ${bestRyderPoints}
+                    point${bestRyderPoints === 1 ? '' : 's'}
+                    secured
+                </span>
+
             </div>
+
+
             <div class="stat-highlight stat-highlight-ryder">
-                <span class="stat-label">Worst Ryder Cup Player</span>
-                <strong>${worstRyderPlayers || 'No completed matches'}</strong>
-                <span>${worstRyderPoints} point${worstRyderPoints === 1 ? '' : 's'} secured</span>
+
+                <span class="stat-label">
+                    Worst Ryder Cup Player
+                </span>
+
+                <strong>
+                    ${worstRyderPlayers ||
+                        'No completed matches'}
+                </strong>
+
+                <span>
+                    ${worstRyderPoints}
+                    point${worstRyderPoints === 1 ? '' : 's'}
+                    secured
+                </span>
+
             </div>
+
+
             <div class="stat-highlight stat-highlight-group">
-                <span class="stat-label">Biggest Winning Margin</span>
-                <strong>${biggestRyderWin ? biggestRyderWin.players : 'No completed matches'}</strong>
-                <span>${biggestRyderWin ? `${biggestRyderWin.team} · ${biggestRyderWin.result}` : ''}</span>
+
+                <span class="stat-label">
+                    Biggest Winning Margin
+                </span>
+
+                <strong>
+                    ${
+                        biggestRyderWin
+                            ? biggestRyderWin.players
+                            : 'No completed matches'
+                    }
+                </strong>
+
+                <span>
+                    ${
+                        biggestRyderWin
+                            ? `${biggestRyderWin.team} · ${biggestRyderWin.result}`
+                            : ''
+                    }
+                </span>
+
             </div>
+
         </div>
+
+
         <div class="stats-group">
+
             <h3>Group Stats</h3>
-            <div class="stats-highlights">
-                <div class="stat-highlight stat-highlight-group">
-                    <span class="stat-label">Group Scoring Average</span>
-                    <strong>${groupScoringAverage.toFixed(2)}</strong>
-                    <span>strokes per scored hole</span>
-                </div>
-                <div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Eagles</span>
-    <strong>${groupScoringStats.eagles}</strong>
-    <span>eagles or better</span>
-</div>
 
-<div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Birdies</span>
-    <strong>${groupScoringStats.birdies}</strong>
-    <span>birdies</span>
-</div>
 
-<div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Pars</span>
-    <strong>${groupScoringStats.pars}</strong>
-    <span>pars</span>
-</div>
+            <div class="stat-scoring-grid">
 
-<div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Bogeys</span>
-    <strong>${groupScoringStats.bogeys}</strong>
-    <span>bogeys</span>
-</div>
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">
+                        Eagles
+                    </span>
+                    <strong>
+                        ${groupScoringStats.eagles}
+                    </strong>
+                </div>
 
-<div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Double Bogeys</span>
-    <strong>${groupScoringStats.doubleBogeys}</strong>
-    <span>double bogeys</span>
-</div>
 
-<div class="stat-highlight stat-highlight-group">
-    <span class="stat-label">Triples or Worse</span>
-    <strong>${groupScoringStats.triplesOrWorse}</strong>
-    <span>triple bogey or worse</span>
-</div>
                 <div class="stat-highlight stat-highlight-group">
-                    <span class="stat-label">Hardest Course</span>
-                    <strong>${hardestCourse.name}</strong>
-                    <span>${hardestCourse.average.toFixed(1)} average strokes</span>
+                    <span class="stat-label">
+                        Birdies
+                    </span>
+                    <strong>
+                        ${groupScoringStats.birdies}
+                    </strong>
                 </div>
+
+
                 <div class="stat-highlight stat-highlight-group">
-                    <span class="stat-label">Easiest Course</span>
-                    <strong>${easiestCourse.name}</strong>
-                    <span>${easiestCourse.average.toFixed(1)} average strokes</span>
+                    <span class="stat-label">
+                        Pars
+                    </span>
+                    <strong>
+                        ${groupScoringStats.pars}
+                    </strong>
                 </div>
+
+
                 <div class="stat-highlight stat-highlight-group">
-                    <span class="stat-label">Hardest Hole</span>
-                    <strong>Hole ${hardestHole.hole}</strong>
-                    <span>${hardestHole.average.toFixed(2)} average strokes</span>
+                    <span class="stat-label">
+                        Bogeys
+                    </span>
+                    <strong>
+                        ${groupScoringStats.bogeys}
+                    </strong>
                 </div>
+
+
                 <div class="stat-highlight stat-highlight-group">
-                    <span class="stat-label">Easiest Hole</span>
-                    <strong>Hole ${easiestHole.hole}</strong>
-                    <span>${easiestHole.average.toFixed(2)} average strokes</span>
+                    <span class="stat-label">
+                        Double Bogeys
+                    </span>
+                    <strong>
+                        ${groupScoringStats.doubleBogeys}
+                    </strong>
                 </div>
+
+
+                <div class="stat-highlight stat-highlight-group">
+                    <span class="stat-label">
+                        Triples+
+                    </span>
+                    <strong>
+                        ${groupScoringStats.triplesOrWorse}
+                    </strong>
+                </div>
+
             </div>
+
+
+            <div class="stats-highlights">
+
+                <div class="stat-highlight stat-highlight-group">
+
+                    <span class="stat-label">
+                        Group Scoring Average
+                    </span>
+
+                    <strong>
+                        ${groupScoringAverage.toFixed(1)}
+                    </strong>
+
+                    <span>
+                        per round
+                    </span>
+
+                </div>
+
+
+                <div class="stat-highlight stat-highlight-group">
+
+                    <span class="stat-label">
+                        Hardest Course
+                    </span>
+
+                    <strong>
+                        ${hardestCourse.name}
+                    </strong>
+
+                    <span>
+                        ${hardestCourse.average.toFixed(1)}
+                        scoring average
+                    </span>
+
+                </div>
+
+
+                <div class="stat-highlight stat-highlight-group">
+
+                    <span class="stat-label">
+                        Easiest Course
+                    </span>
+
+                    <strong>
+                        ${easiestCourse.name}
+                    </strong>
+
+                    <span>
+                        ${easiestCourse.average.toFixed(1)}
+                        scoring average
+                    </span>
+
+                </div>
+
+
+                <div class="stat-highlight stat-highlight-group">
+
+                    <span class="stat-label">
+                        Hardest Hole
+                    </span>
+
+                    <strong>
+                        ${hardestHole.course}
+                        · Hole ${hardestHole.hole}
+                    </strong>
+
+                    <span>
+                        ${hardestHole.average.toFixed(1)}
+                        scoring average
+                    </span>
+
+                </div>
+
+
+                <div class="stat-highlight stat-highlight-group">
+
+                    <span class="stat-label">
+                        Easiest Hole
+                    </span>
+
+                    <strong>
+                        ${easiestHole.course}
+                        · Hole ${easiestHole.hole}
+                    </strong>
+
+                    <span>
+                        ${easiestHole.average.toFixed(1)}
+                        scoring average
+                    </span>
+
+                </div>
+
+            </div>
+
         </div>
+
+
         <div class="stats-table-wrap">
+
             <table class="stats-table">
-                <tr><th>Player</th><th>Holes</th><th>Gross</th><th>To par</th></tr>
-                ${players.map(([player, data]) => `
-                    <tr>
-                        <td>${player}</td>
-                        <td>${data.holes}</td>
-                        <td><strong>${data.gross}</strong></td>
-                        <td>${-data.underPar > 0 ? '+' : ''}${-data.underPar}</td>
-                    </tr>
-                `).join('')}
+
+                <tr>
+                    <th>Player</th>
+                    <th>Gross</th>
+                    <th>To par</th>
+                    <th>Net Score</th>
+                </tr>
+
+
+                ${players.map(
+                    ([player, data]) => `
+
+                        <tr>
+
+                            <td>
+                                ${player}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${data.gross}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${
+                                    -data.underPar > 0
+                                        ? '+'
+                                        : ''
+                                }${-data.underPar}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${data.net}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    `
+                ).join('')}
+
             </table>
+
         </div>
+
     `;
 }
 
