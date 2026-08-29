@@ -64,8 +64,8 @@ document.getElementById('eventTeams').innerHTML =
 }
 
 let sideCompetitionWinners = {
-    ctp: new Set(),
-    drive: new Set()
+    ctp: {},
+    drive: {}
 };
 
 function loadVillaInfo() {
@@ -648,26 +648,29 @@ function renderLeaderboard() {
             let playerBadges = '';
 
 
-            if (
-                sideCompetitionWinners.ctp
-                    .has(player)
-            ) {
+            const ctpWins =
+    sideCompetitionWinners.ctp[player] || 0;
 
-                playerBadges +=
-                    ' 🎯';
-
-            }
+const driveWins =
+    sideCompetitionWinners.drive[player] || 0;
 
 
-            if (
-                sideCompetitionWinners.drive
-                    .has(player)
-            ) {
+if (ctpWins > 0) {
 
-                playerBadges +=
-                    ' 🚀';
+    playerBadges +=
+        ' ' +
+        '🎯'.repeat(ctpWins);
 
-            }
+}
+
+
+if (driveWins > 0) {
+
+    playerBadges +=
+        ' ' +
+        '🚀'.repeat(driveWins);
+
+}
 
 
             html += `
@@ -4450,9 +4453,9 @@ async function loadSideCompetitions() {
 
 
     sideCompetitionWinners = {
-        ctp: new Set(),
-        drive: new Set()
-    };
+    ctp: {},
+    drive: {}
+};
 
 
     let html = '';
@@ -4485,32 +4488,33 @@ async function loadSideCompetitions() {
             /*
              * Record the CTP winners.
              */
-            if (cols[1])
-                sideCompetitionWinners.ctp.add(
-                    cols[1]
-                );
+            if (cols[1]) {
 
-            if (cols[2])
-                sideCompetitionWinners.ctp.add(
-                    cols[2]
-                );
+    sideCompetitionWinners.ctp[cols[1]] =
+        (sideCompetitionWinners.ctp[cols[1]] || 0) + 1;
 
+}
 
-            /*
-             * Record the Longest Drive winners.
-             */
-            if (cols[3])
-                sideCompetitionWinners.drive.add(
-                    cols[3]
-                );
+if (cols[2]) {
 
-            if (cols[4])
-                sideCompetitionWinners.drive.add(
-                    cols[4]
-                );
+    sideCompetitionWinners.ctp[cols[2]] =
+        (sideCompetitionWinners.ctp[cols[2]] || 0) + 1;
 
-        }
+}
 
+if (cols[3]) {
+
+    sideCompetitionWinners.drive[cols[3]] =
+        (sideCompetitionWinners.drive[cols[3]] || 0) + 1;
+
+}
+
+if (cols[4]) {
+
+    sideCompetitionWinners.drive[cols[4]] =
+        (sideCompetitionWinners.drive[cols[4]] || 0) + 1;
+
+}
 
         const courseName =
             settings[
