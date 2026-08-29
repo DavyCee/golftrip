@@ -683,9 +683,19 @@ const r3 =
         settings['Course 3 Name']
     );
 
+    console.log(
+    'ROUND 3 ROWS:',
+    roundData[settings['Course 3 Name']]
+);
+
 console.log(
-    'ROUND DATA KEYS',
-    Object.keys(roundData)
+    'ROUND 3 SCORES:',
+    r3
+);
+
+console.log(
+    'PLAYERS:',
+    Object.keys(leaderboard)
 );
 
     Object.keys(leaderboard).forEach(player => {
