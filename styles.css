@@ -169,14 +169,10 @@ header p {
    ========================================================= */
 
 .quick-nav {
-    position: sticky;
-
-    top: 0;
-
+    position: relative;
     z-index: 1000;
 
     display: flex;
-
     gap: 0.5rem;
 
     overflow-x: auto;
@@ -215,65 +211,25 @@ header p {
     -webkit-backdrop-filter: blur(8px);
 }
 
-.quick-nav::-webkit-scrollbar {
+.quick-nav.nav-fixed {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+
+    z-index: 1000;
+}
+
+.quick-nav-placeholder {
     display: none;
 }
 
-.quick-nav a {
-    flex: 0 0 auto;
-
-    text-decoration: none;
-
-    color: var(--text);
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.05
-        );
-
-    border:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.08
-        );
-
-    border-radius: 999px;
-
-    padding:
-        0.5rem 0.9rem;
-
-    font-size: 0.8rem;
-
-    font-weight: 600;
-
-    white-space: nowrap;
+.quick-nav-placeholder.active {
+    display: block;
 }
-
-.quick-nav a:hover,
-.quick-nav a:focus {
-    background:
-        rgba(
-            251,
-            191,
-            36,
-            0.1
-        );
-
-    border-color:
-        rgba(
-            251,
-            191,
-            36,
-            0.35
-        );
-}
-
 
 /* =========================================================
    HEADINGS
