@@ -904,6 +904,13 @@ select {
     font-size: 0.86rem;
 }
 
+.stat-scoring-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
 @media (max-width: 480px) {
     .card h2 {
         font-size: 1.18rem;
@@ -920,5 +927,23 @@ select {
 
     .stats-highlights {
         grid-template-columns: 1fr;
+
+            .stat-scoring-grid {
+        gap: 0.45rem;
+    }
+
+    .stat-scoring-grid .stat-highlight {
+        min-height: 5.5rem;
+        padding: 0.65rem 0.35rem;
+        text-align: center;
+    }
+
+    .stat-scoring-grid .stat-label {
+        font-size: 0.62rem;
+    }
+
+    .stat-scoring-grid .stat-highlight strong {
+        font-size: 1.4rem;
+    }
     }
 }
