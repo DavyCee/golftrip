@@ -1243,9 +1243,18 @@ try {
     singlesOutcome = 'not-started';
     singlesStatus = result.result;
 }
+    
 } catch (e) {
 
-    singlesStatus = 'Not Started';
+    console.error(
+        'SINGLES MATCH ERROR:',
+        cols[1],
+        'vs',
+        cols[2],
+        e
+    );
+
+    singlesStatus = 'ERROR';
 
 }
 
