@@ -65,22 +65,30 @@ function loadVillaInfo() {
     document
         .getElementById('villaInfo')
         .innerHTML = `
-            <h2>🏡 Villa Details </h2>
 
-            <p>
-                Volta da Popa 20<br>
-                8125-523 Vilamoura
-            </p>
+            <h2>🏡 Villa Details</h2>
 
-            <p>
-                <a
-                    href="https://maps.google.com/?q=Volta+da+Popa+20+8125-523+Vilamoura"
-                    target="_blank"
-                    class="villa-link"
-                >
-                    📍 Open in Google Maps
-                </a>
-            </p>
+            <div class="villa-address">
+
+                <strong>
+                    Volta da Popa 20
+                </strong>
+
+                <span>
+                    8125-523 Vilamoura
+                </span>
+
+            </div>
+
+            <a
+                href="https://maps.google.com/?q=Volta+da+Popa+20+8125-523+Vilamoura"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="villa-link"
+            >
+                📍 Open in Google Maps
+            </a>
+
         `;
 }
 
