@@ -192,7 +192,7 @@ select:focus {
 
 .handicap-header {
     font-weight: bold;
-    color: var(--gold-soft);
+    color: var(--gold);
 }
 
 .handicap-name {
@@ -548,11 +548,11 @@ main {
 }
 
 #handicapSection {
-    --section-accent: #67e8f9;
+    --section-accent: var(--gold);
 }
 
 #scorecardSection {
-    --section-accent: #a3e635;
+   --section-accent: var(--gold);
 }
 
 #leaderboardSection {
@@ -560,7 +560,7 @@ main {
 }
 
 #ryderCupSection {
-    --section-accent: #fb7185;
+    --section-accent: var(--gold);
 }
 
 .schedule-row {
