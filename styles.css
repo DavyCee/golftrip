@@ -1441,4 +1441,513 @@ select:focus {
         font-size: 1.4rem;
     }
 
+/* =========================================================
+   STICKY NAVIGATION - FINAL
+   ========================================================= */
+
+.quick-nav a {
+    flex: 0 0 auto;
+
+    display: inline-block;
+
+    text-decoration: none;
+
+    color: var(--text);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.05
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+    border-radius: 999px;
+
+    padding:
+        0.5rem 0.9rem;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.quick-nav a:hover,
+.quick-nav a:focus {
+    color: var(--text);
+
+    background:
+        rgba(
+            251,
+            191,
+            36,
+            0.1
+        );
+
+    border-color:
+        rgba(
+            251,
+            191,
+            36,
+            0.35
+        );
+}
+
+
+/* =========================================================
+   FIXED NAVIGATION
+   ========================================================= */
+
+.quick-nav.nav-fixed {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+
+    z-index: 1000;
+
+    background:
+        rgba(
+            15,
+            45,
+            32,
+            0.98
+        );
+
+    box-shadow:
+        0 4px 12px
+        rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.quick-nav-placeholder {
+    display: none;
+}
+
+.quick-nav-placeholder.active {
+    display: block;
+}
+
+
+/* =========================================================
+   RYDER CUP SCOREBOARD
+   ========================================================= */
+
+.ryder-scoreboard {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    text-align: center;
+
+    gap: 0.6rem;
+
+    margin:
+        0 0 1rem;
+
+    padding:
+        1rem 0.75rem;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(
+                103,
+                232,
+                249,
+                0.12
+            ),
+            rgba(
+                251,
+                113,
+                133,
+                0.12
+            )
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+}
+
+.ryder-team {
+    flex: 1;
+}
+
+.ryder-team-name {
+    font-weight: 700;
+
+    margin-bottom: 0.5rem;
+
+    color: var(--gold-soft);
+}
+
+.ryder-score {
+    font-size:
+        clamp(
+            2rem,
+            8vw,
+            2.8rem
+        );
+
+    font-weight: bold;
+
+    color: var(--gold);
+
+    line-height: 1;
+}
+
+.ryder-team:first-child .ryder-score {
+    color: #67e8f9;
+}
+
+.ryder-team:last-child .ryder-score {
+    color: #fb7185;
+}
+
+.ryder-vs {
+    font-size: 1.2rem;
+
+    font-weight: bold;
+
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   RYDER CUP FIXTURES
+   ========================================================= */
+
+.fixture {
+    padding: 0.8rem;
+
+    margin-top: 0.9rem;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+
+    border-radius: 8px;
+
+    background:
+        rgba(
+            4,
+            24,
+            17,
+            0.24
+        );
+}
+
+.fixture + .fixture {
+    margin-top: 0.7rem;
+}
+
+.fixture-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 0.65rem;
+
+    color: var(--muted);
+
+    font-size: 0.75rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+}
+
+.fixture-heading strong {
+    color: var(--text);
+}
+
+.match-result {
+    margin-bottom: 0.7rem;
+
+    padding: 0.55rem;
+
+    border-radius: 6px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+    color: var(--gold);
+
+    font-size: 0.82rem;
+
+    font-weight: 800;
+
+    text-align: center;
+
+    letter-spacing: 0.1em;
+}
+
+.fixture-teams {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 0.55rem;
+}
+
+.fixture-team {
+    display: flex;
+
+    min-height: 4.1rem;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 0.2rem;
+
+    padding: 0.65rem;
+
+    border-radius: 6px;
+}
+
+.fixture-team strong {
+    font-size: 0.8rem;
+}
+
+.fixture-team span {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.15rem;
+
+    font-size: 0.76rem;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   RYDER CUP TEAM COLOURS
+   ========================================================= */
+
+.fixture-team-a {
+    border:
+        1px solid
+        rgba(
+            103,
+            232,
+            249,
+            0.5
+        );
+
+    background:
+        rgba(
+            103,
+            232,
+            249,
+            0.12
+        );
+
+    color: #cffafe;
+}
+
+.fixture-team-b {
+    border:
+        1px solid
+        rgba(
+            251,
+            113,
+            133,
+            0.5
+        );
+
+    background:
+        rgba(
+            251,
+            113,
+            133,
+            0.12
+        );
+
+    color: #ffe4e6;
+}
+
+
+/* =========================================================
+   RYDER CUP MATCH RESULTS
+   ========================================================= */
+
+.match-team-a {
+    border-color:
+        rgba(
+            103,
+            232,
+            249,
+            0.8
+        );
+
+    background:
+        rgba(
+            103,
+            232,
+            249,
+            0.12
+        );
+}
+
+.match-team-a .match-result {
+    background:
+        rgba(
+            103,
+            232,
+            249,
+            0.2
+        );
+
+    color: #a5f3fc;
+}
+
+.match-team-b {
+    border-color:
+        rgba(
+            251,
+            113,
+            133,
+            0.8
+        );
+
+    background:
+        rgba(
+            251,
+            113,
+            133,
+            0.12
+        );
+}
+
+.match-team-b .match-result {
+    background:
+        rgba(
+            251,
+            113,
+            133,
+            0.2
+        );
+
+    color: #fecdd3;
+}
+
+.match-halved .match-result {
+    background:
+        rgba(
+            251,
+            191,
+            36,
+            0.15
+        );
+
+    color: var(--gold);
+}
+
+.match-not-started .match-result {
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.06
+        );
+
+    color: var(--muted);
+}
+
+.match-live .match-result {
+    background:
+        rgba(
+            251,
+            191,
+            36,
+            0.12
+        );
+
+    color: var(--gold-soft);
+}
+
+
+/* =========================================================
+   MOBILE RYDER CUP
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .quick-nav {
+        padding:
+            0.6rem
+            0.8rem;
+    }
+
+    .quick-nav a {
+        padding:
+            0.45rem
+            0.75rem;
+
+        font-size: 0.76rem;
+    }
+
+    .ryder-scoreboard {
+        padding:
+            0.9rem 0.6rem;
+    }
+
+    .fixture-team {
+        min-height: 4.5rem;
+
+        padding:
+            0.55rem;
+    }
+
+}
+    
 }
