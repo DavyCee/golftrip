@@ -571,7 +571,7 @@ select:focus {
 /* Section-specific visual hierarchy */
 header {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     padding: 2.2rem 1rem 1rem;
     background:
         linear-gradient(135deg, rgba(12, 54, 39, 0.98), rgba(8, 31, 20, 0.98)),
