@@ -315,6 +315,25 @@ async function loadCourses() {
     document.getElementById('courses').innerHTML = html;
 }
 
+function loadScorecardCourses() {
+
+    document
+        .getElementById('scorecardCourse')
+        .innerHTML = `
+            <option value="1">
+                ${settings['Course 1 Name']}
+            </option>
+
+            <option value="2">
+                ${settings['Course 2 Name']}
+            </option>
+
+            <option value="3">
+                ${settings['Course 3 Name']}
+            </option>
+        `;
+}
+
 async function buildLeaderboard() {
 
     const response = await fetch(PLAYER_CSV);
@@ -1666,6 +1685,8 @@ async function initialise() {
     await loadSettings();
 
     loadVillaInfo();
+
+    loadScorecardCourses();
 
     await loadCourseData();
 
