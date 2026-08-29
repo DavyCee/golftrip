@@ -165,6 +165,25 @@ async function loadCourseData() {
     
 }
 
+function loadCourseSelector() {
+
+    let html = '';
+
+    Object.keys(courseData)
+        .forEach(courseName => {
+
+            html += `
+                <option value="${courseName}">
+                    ${courseName}
+                </option>
+            `;
+        });
+
+    document
+        .getElementById('courseSelect')
+        .innerHTML = html;
+}
+
 function renderSchedule() {
 
     const html = `
@@ -1716,6 +1735,8 @@ async function initialise() {
     loadScorecardCourses();
 
     await loadCourseData();
+
+    loadCourseSelector();
 
     await loadScorecardPlayers();
 
