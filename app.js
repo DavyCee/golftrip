@@ -457,6 +457,26 @@ async function loadHandicaps() {
     const selectedCourse =
         document.getElementById('courseSelect').value;
 
+console.log(
+    'Selected course:',
+    selectedCourse
+);
+
+console.log(
+    'Course lookup:',
+    courseData[selectedCourse]
+);
+
+if (!courseData[selectedCourse]) {
+
+    console.error(
+        'Course not found:',
+        selectedCourse
+    );
+
+    return;
+}
+    
 const slope =
     courseData[selectedCourse].slope;
 
