@@ -911,6 +911,13 @@ select {
     margin-bottom: 1rem;
 }
 
+.round-to-par {
+    margin-left: 0.15rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 400;
+}
+
 @media (max-width: 480px) {
     .card h2 {
         font-size: 1.18rem;
