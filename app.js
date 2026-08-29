@@ -1831,9 +1831,26 @@ function renderStats() {
         { key: 'r3', name: settings['Course 3 Name'] }
     ];
 
-    const stats = {};
+   const stats = {};
+
     const courseStats = {};
-    const holeStats = Array.from({ length: 18 }, () => ({ total: 0, count: 0 }));
+
+const holeStats = Array.from(
+    { length: 18 },
+    () => ({
+        total: 0,
+        count: 0
+    })
+);
+
+const groupScoringStats = {
+    eagles: 0,
+    birdies: 0,
+    pars: 0,
+    bogeys: 0,
+    doubleBogeys: 0,
+    triplesOrWorse: 0
+};
 
     Object.keys(playerHandicaps).forEach(player => {
         stats[player] = {
@@ -1878,11 +1895,54 @@ function renderStats() {
                     parTotal += par;
                     holes += 1;
 
-                    if (score === par - 1) birdies += 1;
-                    if (score >= par + 2) doubleBogeysPlus += 1;
+                   const scoreToPar =
+    score - par;
 
-                    holeStats[hole - 1].total += score;
-                    holeStats[hole - 1].count += 1;
+
+/*
+ * Player statistics
+ */
+if (scoreToPar === -1)
+    birdies += 1;
+
+if (scoreToPar >= 2)
+    doubleBogeysPlus += 1;
+
+
+/*
+ * Group-wide scoring statistics
+ */
+if (scoreToPar <= -2) {
+
+    groupScoringStats.eagles += 1;
+
+} else if (scoreToPar === -1) {
+
+    groupScoringStats.birdies += 1;
+
+} else if (scoreToPar === 0) {
+
+    groupScoringStats.pars += 1;
+
+} else if (scoreToPar === 1) {
+
+    groupScoringStats.bogeys += 1;
+
+} else if (scoreToPar === 2) {
+
+    groupScoringStats.doubleBogeys += 1;
+
+} else if (scoreToPar >= 3) {
+
+    groupScoringStats.triplesOrWorse += 1;
+
+}
+
+
+holeStats[hole - 1].total += score;
+
+holeStats[hole - 1].count += 1;
+                    
                 }
             }
 
@@ -1937,7 +1997,10 @@ function renderStats() {
     const easiestHole = holeAverages[holeAverages.length - 1];
     const totalScoredHoles = holeStats.reduce((sum, data) => sum + data.count, 0);
     const totalStrokes = holeStats.reduce((sum, data) => sum + data.total, 0);
-    const groupScoringAverage = totalScoredHoles ? totalStrokes / totalScoredHoles : 0;
+    const groupScoringAverage =
+    totalScoredHoles
+        ? (totalStrokes / totalScoredHoles) * 18
+        : 0;
     const ryderPoints = Object.values(ryderPlayerPoints);
     const bestRyderPoints = Math.max(...ryderPoints);
     const worstRyderPoints = Math.min(...ryderPoints);
@@ -1999,6 +2062,41 @@ function renderStats() {
                     <strong>${groupScoringAverage.toFixed(2)}</strong>
                     <span>strokes per scored hole</span>
                 </div>
+                <div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Eagles</span>
+    <strong>${groupScoringStats.eagles}</strong>
+    <span>eagles or better</span>
+</div>
+
+<div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Birdies</span>
+    <strong>${groupScoringStats.birdies}</strong>
+    <span>birdies</span>
+</div>
+
+<div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Pars</span>
+    <strong>${groupScoringStats.pars}</strong>
+    <span>pars</span>
+</div>
+
+<div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Bogeys</span>
+    <strong>${groupScoringStats.bogeys}</strong>
+    <span>bogeys</span>
+</div>
+
+<div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Double Bogeys</span>
+    <strong>${groupScoringStats.doubleBogeys}</strong>
+    <span>double bogeys</span>
+</div>
+
+<div class="stat-highlight stat-highlight-group">
+    <span class="stat-label">Triples or Worse</span>
+    <strong>${groupScoringStats.triplesOrWorse}</strong>
+    <span>triple bogey or worse</span>
+</div>
                 <div class="stat-highlight stat-highlight-group">
                     <span class="stat-label">Hardest Course</span>
                     <strong>${hardestCourse.name}</strong>
