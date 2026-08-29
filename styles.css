@@ -584,11 +584,6 @@ main {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#villaInfo {
-    --section-accent: #67e8f9;
-    background: linear-gradient(145deg, rgba(13, 72, 75, 0.96), rgba(10, 46, 44, 0.98));
-}
-
 #scheduleSection {
     --section-accent: #fbbf24;
 }
