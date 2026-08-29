@@ -23,6 +23,8 @@ let settings = {};
 let courseData = {};
 let leaderboard = {};
 let playerHandicaps = {};
+let playerTeams = {};
+let ryderPlayerPoints = {};
 let ryderCupMatches = [];
 let roundData = {};
 
@@ -51,9 +53,9 @@ async function loadSettings() {
 
 document.getElementById('eventTeams').innerHTML =
     `${settings['Team A Name']} vs ${settings['Team B Name']}`;
-        
+
     }
-    
+
 }
 
 function loadVillaInfo() {
@@ -142,6 +144,9 @@ async function loadCourseData() {
             courseData[ocean].teeTimes = [
                 cols[3]
             ];
+        }
+
+        function getPlayerHoleScore(rows, playerName, holeNumber) {
 
         }
 
@@ -162,7 +167,7 @@ async function loadCourseData() {
         }
 
     });
-    
+
 }
 
 function loadCourseSelector() {
@@ -189,24 +194,24 @@ function renderSchedule() {
     const html = `
 
         <div class="schedule-row">
-            <strong>Round 1</strong><br>
-            ${settings['Round 1 Date']}<br>
-            ${settings['Course 1 Name']}<br>
-            ${courseData[settings['Course 1 Name']].teeTimes.join(' • ')}
+            <strong class="round-label">Round 1</strong>
+            <span class="schedule-date">${settings['Round 1 Date']}</span>
+            <span class="schedule-course">${settings['Course 1 Name']}</span>
+            <span class="schedule-times">${courseData[settings['Course 1 Name']].teeTimes.join(' • ')}</span>
         </div>
 
         <div class="schedule-row">
-            <strong>Round 2</strong><br>
-            ${settings['Round 2 Date']}<br>
-            ${settings['Course 2 Name']}<br>
-            ${courseData[settings['Course 2 Name']].teeTimes.join(' • ')}
+            <strong class="round-label">Round 2</strong>
+            <span class="schedule-date">${settings['Round 2 Date']}</span>
+            <span class="schedule-course">${settings['Course 2 Name']}</span>
+            <span class="schedule-times">${courseData[settings['Course 2 Name']].teeTimes.join(' • ')}</span>
         </div>
 
         <div class="schedule-row">
-            <strong>Round 3</strong><br>
-            ${settings['Round 3 Date']}<br>
-            ${settings['Course 3 Name']}<br>
-            ${courseData[settings['Course 3 Name']].teeTimes.join(' • ')}
+            <strong class="round-label">Round 3</strong>
+            <span class="schedule-date">${settings['Round 3 Date']}</span>
+            <span class="schedule-course">${settings['Course 3 Name']}</span>
+            <span class="schedule-times">${courseData[settings['Course 3 Name']].teeTimes.join(' • ')}</span>
         </div>
 
     `;
@@ -227,6 +232,7 @@ async function loadTeams() {
 
     const teamA = [];
     const teamB = [];
+    playerTeams = {};
 
     let captainA = '';
     let captainB = '';
@@ -241,6 +247,7 @@ async function loadTeams() {
 
         const playerName = cols[0];
         const teamName = cols[2];
+        playerTeams[playerName] = teamName;
 
        const isCaptain =
     cols[3]?.toLowerCase() === 'yes';
@@ -268,6 +275,13 @@ if (
 }
 
     });
+
+    const surname = player => player.trim().split(/\s+/).pop();
+    const sortBySurname = (playerA, playerB) =>
+        surname(playerA).localeCompare(surname(playerB));
+
+    teamA.sort(sortBySurname);
+    teamB.sort(sortBySurname);
 
     document
         .getElementById('teams')
@@ -472,7 +486,7 @@ async function loadHandicaps() {
     return surnameA.localeCompare(surnameB);
 
 });
-    
+
     const selectedCourse =
         document.getElementById('courseSelect').value;
 
@@ -495,7 +509,7 @@ if (!courseData[selectedCourse]) {
 
     return;
 }
-    
+
 const slope =
     courseData[selectedCourse].slope;
 
@@ -533,11 +547,11 @@ const slope =
     </div>
 `;
 
-});   
+});
 
 document.getElementById('handicapTable').innerHTML = html;
 
-}     
+}
 
 async function calculateRound(csvUrl, courseName) {
 
@@ -545,11 +559,11 @@ async function calculateRound(csvUrl, courseName) {
     const text = await response.text();
 
     const rows = text.split('\n');
-    
+
     roundData[courseName] = rows;
-    
+
     const header = rows[1].split(',');
-    
+
     const slope = courseData[courseName].slope;
 
     const roundScores = {};
@@ -661,7 +675,7 @@ console.log(
     'ROUND DATA KEYS',
     Object.keys(roundData)
 );
-    
+
     Object.keys(leaderboard).forEach(player => {
 
         leaderboard[player].r1 =
@@ -679,12 +693,12 @@ console.log(
             leaderboard[player].r3;
 
     });
-    
+
     renderLeaderboard();
 
-    loadRyderCup();
+    await loadRyderCup();
 }
-    
+
 function renderLeaderboard() {
 
     const players =
@@ -783,6 +797,17 @@ async function loadRyderCup() {
     let currentRound = null;
 
     const matches = [];
+    ryderPlayerPoints = {};
+
+    Object.keys(playerTeams).forEach(player => {
+        ryderPlayerPoints[player] = 0;
+    });
+
+    const awardPlayerPoints = (players, points) => {
+        players.forEach(player => {
+            ryderPlayerPoints[player] = (ryderPlayerPoints[player] || 0) + points;
+        });
+    };
 
     rows.forEach(row => {
 
@@ -817,6 +842,9 @@ async function loadRyderCup() {
 
         if (currentRound === 1 || currentRound === 2) {
 
+            const firstPairTeam = playerTeams[cols[1]];
+            const secondPairTeam = playerTeams[cols[3]];
+
             matches.push({
                 round: currentRound,
                 teeTime: cols[0],
@@ -825,6 +853,7 @@ async function loadRyderCup() {
             });
 
             let status = 'Not Started';
+            let matchOutcome = 'not-started';
 
 try {
 
@@ -842,19 +871,62 @@ try {
         );
 if (result.status === 'finished') {
 
-    if (result.winner === 'A') {
+    matchOutcome = result.winner === 'Halved'
+        ? 'halved'
+        : result.winner === 'A'
+            ? 'team-a'
+            : 'team-b';
 
-        ballsPoints += Number(
-            settings['Ryder Cup Points Win']
+} else if (result.status === 'live') {
+    matchOutcome = 'live';
+} else {
+    matchOutcome = 'not-started';
+}
+
+    const winningTeam = result.winner === 'A'
+        ? firstPairTeam
+        : result.winner === 'B'
+            ? secondPairTeam
+            : null;
+
+    matchOutcome = winningTeam === settings['Team A Name']
+        ? 'team-a'
+        : winningTeam === settings['Team B Name']
+            ? 'team-b'
+            : 'halved';
+
+    if (winningTeam === settings['Team A Name']) {
+
+        awardPlayerPoints(
+            firstPairTeam === settings['Team A Name']
+                ? [cols[1], cols[2]]
+                : [cols[3], cols[4]],
+            Number(settings['Ryder Cup Points Win'])
         );
-
-    } else if (result.winner === 'B') {
 
         shaftsPoints += Number(
             settings['Ryder Cup Points Win']
         );
 
+    } else if (winningTeam === settings['Team B Name']) {
+
+        awardPlayerPoints(
+            firstPairTeam === settings['Team B Name']
+                ? [cols[1], cols[2]]
+                : [cols[3], cols[4]],
+            Number(settings['Ryder Cup Points Win'])
+        );
+
+        ballsPoints += Number(
+            settings['Ryder Cup Points Win']
+        );
+
     } else if (result.winner === 'Halved') {
+
+        awardPlayerPoints(
+            [cols[1], cols[2], cols[3], cols[4]],
+            Number(settings['Ryder Cup Points Half'])
+        );
 
         ballsPoints += Number(
             settings['Ryder Cup Points Half']
@@ -864,7 +936,6 @@ if (result.status === 'finished') {
             settings['Ryder Cup Points Half']
         );
     }
-}
 
 status = result.result;
 
@@ -874,14 +945,11 @@ if (
     result.winner !== 'Halved'
 ) {
 
-   const winnerName =
-    result.winner === 'A'
-        ? settings['Team A Name']
-        : settings['Team B Name'];
+   const winnerName = winningTeam;
 
 status =
     `${winnerName} Won ${result.result}`;
-    
+
 }
 
 } catch (e) {
@@ -892,27 +960,30 @@ status =
 
 }
 
+const teamAPair = firstPairTeam === settings['Team A Name']
+    ? `${cols[1]} / ${cols[2]}`
+    : `${cols[3]} / ${cols[4]}`;
+const teamBPair = firstPairTeam === settings['Team B Name']
+    ? `${cols[1]} / ${cols[2]}`
+    : `${cols[3]} / ${cols[4]}`;
+
 html += `
-    <div class="fixture">
-        <strong>${cols[0]}</strong><br>
-
-        <strong>${settings['Team A Name']}</strong><br>
-        ${cols[1]} / ${cols[2]}
-
-        <br><br>
-
-        vs
-
-        <br><br>
-
-        <strong>${settings['Team B Name']}</strong><br>
-        ${cols[3]} / ${cols[4]}
-
-        <br>
-
-        <em>${status}</em>
-
-        <br><br>
+    <div class="fixture match-${matchOutcome}">
+        <div class="fixture-heading">
+            <strong>Fourball</strong>
+            <span>${cols[0]}</span>
+        </div>
+        <div class="match-result">${status}</div>
+        <div class="fixture-teams">
+            <div class="fixture-team fixture-team-a">
+                <strong>${settings['Team A Name']}</strong>
+                <span>${teamAPair}</span>
+            </div>
+            <div class="fixture-team fixture-team-b">
+                <strong>${settings['Team B Name']}</strong>
+                <span>${teamBPair}</span>
+            </div>
+        </div>
     </div>
 `;
 
@@ -924,8 +995,12 @@ html += `
         teamA: [cols[1]],
         teamB: [cols[2]]
     });
-            
+
+    const firstPlayerTeam = playerTeams[cols[1]];
+    const secondPlayerTeam = playerTeams[cols[2]];
+
 let singlesStatus = 'Not Started';
+let singlesOutcome = 'live';
 
 try {
 
@@ -939,27 +1014,60 @@ try {
             cols[2]
         );
 
-   if (result.status === 'finished') {
+    if (result.status === 'finished') {
 
-    if (result.winner === 'A') {
+    singlesOutcome = result.winner === 'Halved'
+        ? 'halved'
+        : result.winner === 'A'
+            ? 'team-a'
+            : 'team-b';
 
-        ballsPoints += Number(
-            settings['Ryder Cup Points Win']
+    const winningTeam = result.winner === 'A'
+        ? firstPlayerTeam
+        : result.winner === 'B'
+            ? secondPlayerTeam
+            : null;
+
+    singlesOutcome = winningTeam === settings['Team A Name']
+        ? 'team-a'
+        : winningTeam === settings['Team B Name']
+            ? 'team-b'
+            : 'halved';
+
+    if (winningTeam === settings['Team A Name']) {
+
+        awardPlayerPoints(
+            [firstPlayerTeam === settings['Team A Name'] ? cols[1] : cols[2]],
+            Number(settings['Ryder Cup Points Win'])
         );
-
-        singlesStatus =
-            `${settings['Team A Name']} Won ${result.result}`;
-
-    } else if (result.winner === 'B') {
 
         shaftsPoints += Number(
             settings['Ryder Cup Points Win']
         );
 
         singlesStatus =
-            `${settings['Team B Name']} Won ${result.result}`;
+            `${winningTeam} Won ${result.result}`;
+
+    } else if (winningTeam === settings['Team B Name']) {
+
+        awardPlayerPoints(
+            [firstPlayerTeam === settings['Team B Name'] ? cols[1] : cols[2]],
+            Number(settings['Ryder Cup Points Win'])
+        );
+
+        ballsPoints += Number(
+            settings['Ryder Cup Points Win']
+        );
+
+        singlesStatus =
+            `${winningTeam} Won ${result.result}`;
 
     } else {
+
+        awardPlayerPoints(
+            [cols[1], cols[2]],
+            Number(settings['Ryder Cup Points Half'])
+        );
 
         ballsPoints += Number(
             settings['Ryder Cup Points Half']
@@ -972,8 +1080,13 @@ try {
         singlesStatus = result.result;
     }
 
+} else if (result.status === 'live') {
+
+    singlesOutcome = 'live';
+
 } else {
 
+    singlesOutcome = 'not-started';
     singlesStatus = result.result;
 }
 } catch (e) {
@@ -982,27 +1095,30 @@ try {
 
 }
 
+const teamAPlayer = firstPlayerTeam === settings['Team A Name']
+    ? cols[1]
+    : cols[2];
+const teamBPlayer = firstPlayerTeam === settings['Team B Name']
+    ? cols[1]
+    : cols[2];
+
     html += `
-        <div class="fixture">
-            <strong>${cols[0]}</strong><br>
-
-            <strong>${settings['Team A Name']}</strong><br>
-            ${cols[1]}
-
-            <br><br>
-
-            vs
-
-            <br><br>
-
-            <strong>${settings['Team B Name']}</strong><br>
-            ${cols[2]}
-
-            <br>
-
-            <em>${singlesStatus}</em>
-
-            <br><br>
+        <div class="fixture match-${singlesOutcome}">
+            <div class="fixture-heading">
+                <strong>Singles</strong>
+                <span>${cols[0]}</span>
+            </div>
+            <div class="match-result">${singlesStatus}</div>
+            <div class="fixture-teams">
+                <div class="fixture-team fixture-team-a">
+                    <strong>${settings['Team A Name']}</strong>
+                    <span>${teamAPlayer}</span>
+                </div>
+                <div class="fixture-team fixture-team-b">
+                    <strong>${settings['Team B Name']}</strong>
+                    <span>${teamBPlayer}</span>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -1011,15 +1127,15 @@ try {
     ryderCupMatches = matches;
 
 const scoreboard = `
-    <div class="ryder-scoreboard">
+    <div class="ryder-scoreboard ${ballsPoints === shaftsPoints ? 'is-tied' : 'has-leader'}">
 
-        <div class="ryder-team">
+        <div class="ryder-team ${shaftsPoints > ballsPoints ? 'is-leader' : ''}">
             <div class="ryder-team-name">
                 ${settings['Team A Name']}
             </div>
 
             <div class="ryder-score">
-                ${ballsPoints}
+                ${shaftsPoints}
             </div>
         </div>
 
@@ -1027,13 +1143,13 @@ const scoreboard = `
             v
         </div>
 
-        <div class="ryder-team">
+        <div class="ryder-team ${ballsPoints > shaftsPoints ? 'is-leader' : ''}">
             <div class="ryder-team-name">
                 ${settings['Team B Name']}
             </div>
 
             <div class="ryder-score">
-                ${shaftsPoints}
+                ${ballsPoints}
             </div>
         </div>
 
@@ -1044,6 +1160,152 @@ const scoreboard = `
     .getElementById('rydercup')
     .innerHTML =
         scoreboard + html;
+}
+
+function renderStats() {
+    const statsElement = document.getElementById('stats');
+    if (!statsElement) return;
+
+    const rounds = [
+        { key: 'r1', name: settings['Course 1 Name'] },
+        { key: 'r2', name: settings['Course 2 Name'] },
+        { key: 'r3', name: settings['Course 3 Name'] }
+    ];
+
+    const stats = {};
+
+    Object.keys(playerHandicaps).forEach(player => {
+        stats[player] = {
+            gross: 0,
+            net: 0,
+            holes: 0,
+            underPar: 0,
+            birdies: 0,
+            doubleBogeysPlus: 0,
+            rounds: []
+        };
+
+        rounds.forEach(round => {
+            const rows = roundData[round.name];
+            const header = rows && rows[1] ? rows[1].split(',') : [];
+            const playerIndex = header.findIndex(value => value.trim() === player);
+            let gross = 0;
+            let net = 0;
+            let parTotal = 0;
+            let holes = 0;
+            let birdies = 0;
+            let doubleBogeysPlus = 0;
+
+            if (rows && playerIndex !== -1) {
+                const slope = courseData[round.name]?.slope || 113;
+                const courseHandicap = Math.round((playerHandicaps[player] * slope) / 113);
+
+                for (let hole = 1; hole <= 18; hole += 1) {
+                    const columns = rows[hole + 1]?.split(',') || [];
+                    const rawScore = columns[playerIndex]?.trim();
+                    const score = Number(rawScore);
+                    const par = Number(columns[1]);
+
+                    if (!rawScore || Number.isNaN(score) || Number.isNaN(par)) continue;
+
+                    gross += score;
+                    net += score - shotsReceived(courseHandicap, Number(columns[2]));
+                    parTotal += par;
+                    holes += 1;
+
+                    if (score === par - 1) birdies += 1;
+                    if (score >= par + 2) doubleBogeysPlus += 1;
+                }
+            }
+
+            if (holes) {
+                stats[player].gross += gross;
+                stats[player].net += net;
+                stats[player].holes += holes;
+                stats[player].underPar += parTotal - gross;
+                stats[player].birdies += birdies;
+                stats[player].doubleBogeysPlus += doubleBogeysPlus;
+                stats[player].rounds.push({ name: round.name, gross, net, holes, toPar: gross - parTotal });
+            }
+        });
+    });
+
+    const players = Object.entries(stats)
+        .filter(([, data]) => data.holes)
+        .sort((a, b) => a[1].gross - b[1].gross);
+
+    if (!players.length) {
+        statsElement.innerHTML = '<p class="empty-state">Stats will appear once scores are entered.</p>';
+        return;
+    }
+
+    const roundScores = players
+        .flatMap(([player, data]) => data.rounds.map(round => ({ player, ...round })))
+        .sort((a, b) => a.gross - b.gross);
+    const lowestGross = roundScores[0];
+    const highestGross = roundScores[roundScores.length - 1];
+    const lowestNet = roundScores
+        .slice()
+        .sort((a, b) => a.net - b.net)[0];
+    const mostBirdies = players
+        .slice()
+        .sort((a, b) => b[1].birdies - a[1].birdies)[0];
+    const mostDoubleBogeysPlus = players
+        .slice()
+        .sort((a, b) => b[1].doubleBogeysPlus - a[1].doubleBogeysPlus)[0];
+
+    statsElement.innerHTML = `
+        <div class="stats-highlights">
+            <div class="stat-highlight">
+                <span class="stat-label">Lowest Gross</span>
+                <strong>${lowestGross.player}</strong>
+                <span>${lowestGross.name} · ${lowestGross.gross}</span>
+            </div>
+            <div class="stat-highlight">
+                <span class="stat-label">Highest Gross</span>
+                <strong>${highestGross.player}</strong>
+                <span>${highestGross.name} · ${highestGross.gross}</span>
+            </div>
+            <div class="stat-highlight">
+                <span class="stat-label">Best Net Score</span>
+                <strong>${lowestNet.player}</strong>
+                <span>${lowestNet.name} · ${lowestNet.net}</span>
+            </div>
+            <div class="stat-highlight">
+                <span class="stat-label">Most Birdies</span>
+                <strong>${mostBirdies[0]}</strong>
+                <span>${mostBirdies[1].birdies} birdies</span>
+            </div>
+            <div class="stat-highlight">
+                <span class="stat-label">Most Doubles or Worse</span>
+                <strong>${mostDoubleBogeysPlus[0]}</strong>
+                <span>${mostDoubleBogeysPlus[1].doubleBogeysPlus} double bogeys or worse</span>
+            </div>
+            <div class="stat-highlight stat-highlight-ryder">
+                <span class="stat-label">Best Ryder Cup Player</span>
+                <strong>${Object.entries(ryderPlayerPoints).filter(([, points]) => points === Math.max(...Object.values(ryderPlayerPoints))).map(([player]) => player).join(', ') || 'No completed matches'}</strong>
+                <span>${Math.max(...Object.values(ryderPlayerPoints))} point${Math.max(...Object.values(ryderPlayerPoints)) === 1 ? '' : 's'} secured</span>
+            </div>
+            <div class="stat-highlight stat-highlight-ryder">
+                <span class="stat-label">Worst Ryder Cup Player</span>
+                <strong>${Object.entries(ryderPlayerPoints).filter(([, points]) => points === Math.min(...Object.values(ryderPlayerPoints))).map(([player]) => player).join(', ') || 'No completed matches'}</strong>
+                <span>${Math.min(...Object.values(ryderPlayerPoints))} point${Math.min(...Object.values(ryderPlayerPoints)) === 1 ? '' : 's'} secured</span>
+            </div>
+        </div>
+        <div class="stats-table-wrap">
+            <table class="stats-table">
+                <tr><th>Player</th><th>Holes</th><th>Gross</th><th>To par</th></tr>
+                ${players.map(([player, data]) => `
+                    <tr>
+                        <td>${player}</td>
+                        <td>${data.holes}</td>
+                        <td><strong>${data.gross}</strong></td>
+                        <td>${-data.underPar > 0 ? '+' : ''}${-data.underPar}</td>
+                    </tr>
+                `).join('')}
+            </table>
+        </div>
+    `;
 }
 
 function getPlayerHoleScore(rows, playerName, holeNumber) {
@@ -1134,7 +1396,7 @@ function calculateFourballHole(
     teamB,
     hole
 ) {
-    
+
     const teamANetScores = teamA.map(player => {
 
         const ch =
@@ -1166,7 +1428,7 @@ function calculateFourballHole(
             hole,
             ch
         );
-        
+
     });
 
     const validA =
@@ -1184,7 +1446,7 @@ const bestA =
 
 const bestB =
     Math.min(...validB);
-    
+
     if (bestA < bestB)
         return 'A';
 
@@ -1416,7 +1678,7 @@ function calculateFourballMatch(
         scores.some(
         score => score > 0
     );
-        
+
         if (!holeHasScores)
             break;
 
@@ -1434,7 +1696,7 @@ holesPlayed++;
                 teamB,
                 hole
             );
-        
+
         if (result === 'A')
             lead++;
 
@@ -1508,7 +1770,7 @@ holesPlayed++;
     result:
         `${Math.abs(lead)} Up`
     };
-    
+
 }
 
 async function loadScorecardPlayers() {
@@ -1559,6 +1821,25 @@ function getHolePar(
     return Number(
         holeRow[1]
     );
+}
+
+function formatGrossScore(score, par) {
+    if (score === null || score === undefined) return '-';
+
+    const difference = score - par;
+    const notation = difference <= -2
+        ? 'score-eagle'
+        : difference === -1
+            ? 'score-birdie'
+            : difference === 1
+                ? 'score-bogey'
+                : difference >= 2
+                    ? 'score-double-bogey'
+                    : '';
+
+    return notation
+        ? `<span class="score-symbol ${notation}">${score}</span>`
+        : `<span class="score-symbol">${score}</span>`;
 }
 
 function renderScorecard() {
@@ -1643,6 +1924,12 @@ html += `<tr><td>Score</td>`;
 
 for (let hole = 1; hole <= 9; hole++) {
 
+    const par =
+        getHolePar(
+            courseName,
+            hole
+        );
+
     const score =
         getPlayerHoleScore(
             rows,
@@ -1653,7 +1940,7 @@ for (let hole = 1; hole <= 9; hole++) {
     frontScore +=
         Number(score || 0);
 
-    html += `<td>${score || '-'}</td>`;
+    html += `<td>${formatGrossScore(score, par)}</td>`;
 }
 
 html += `<td>${frontScore}</td></tr>`;
@@ -1695,6 +1982,12 @@ html += `<tr><td>Score</td>`;
 
 for (let hole = 10; hole <= 18; hole++) {
 
+    const par =
+        getHolePar(
+            courseName,
+            hole
+        );
+
     const score =
         getPlayerHoleScore(
             rows,
@@ -1705,7 +1998,7 @@ for (let hole = 10; hole <= 18; hole++) {
     backScore +=
         Number(score || 0);
 
-    html += `<td>${score || '-'}</td>`;
+    html += `<td>${formatGrossScore(score, par)}</td>`;
 }
 
 html += `<td>${backScore}</td></tr>`;
@@ -1742,7 +2035,7 @@ async function initialise() {
 
     renderSchedule();
 
-    loadTeams();
+    await loadTeams();
 
     buildLeaderboard();
 
@@ -1750,10 +2043,10 @@ async function initialise() {
 
     await calculateRound1Leaderboard();
 
-    loadRyderCup();
+    renderStats();
 
     renderScorecard();
-    
+
     document
     .getElementById('courseSelect')
     .addEventListener(

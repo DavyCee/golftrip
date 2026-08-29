@@ -4,36 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vilamoura 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
-    <h1 id="eventTitle">🏌️ Loading...</h1>
-    <p id="eventTeams">Loading...</p>
+        <h1 id="eventTitle">🏌️ Loading...</h1>
+        <p id="eventTeams">Loading...</p>
+
+        <nav class="quick-nav" aria-label="Main navigation">
+            <a href="#villaInfo">Villa Details</a>
+            <a href="#scheduleSection">Tournament Schedule</a>
+            <a href="#handicapSection">Course Handicaps</a>
+            <a href="#leaderboardSection">Individual Stableford</a>
+            <a href="#ryderCupSection">Ryder Cup</a>
+            <a href="#scorecardSection">Player Scorecard</a>
+            <a href="#statsSection">Awards</a>
+        </nav>
     </header>
 
     <main>
-   
+
     <section class="card" id="villaInfo">
     </section>
 
         
-    <section class="card">
+    <section class="card" id="scheduleSection">
         <h2>🏆 Tournament Schedule</h2>
         <div id="schedule">
             Loading schedule...
         </div>
     </section>
 
-    <section class="card">
-        <h2>⚔️ Teams</h2>
-        <div id="teams">
-            Loading teams...
-        </div>
-    </section>
-
-<section class="card">
+    <section class="card" id="handicapSection">
     <h2>📈 Course Handicaps</h2>
 
     <select id="courseSelect"></select>
@@ -43,28 +49,41 @@
     </div>
 </section>
 
-   <section class="card">
-    <h2>📋 Player Scorecard</h2>
-
-    <select id="scorecardPlayer"></select>
-
-<select id="scorecardCourse">
-</select>
-
-    <div id="scorecard"></div>
-</section>
-        
-    <section class="card">
-        <h2>📊 Individual Leaderboard</h2>
+    <section class="card" id="leaderboardSection">
+        <h2>📊 Individual Stableford</h2>
         <div id="leaderboard">
             No scores entered yet
         </div>
     </section>
 
-    <section class="card">
+    <section class="card" id="ryderCupSection">
         <h2>🏌️ Ryder Cup</h2>
+        <div class="ryder-teams">
+            <h3>⚔️ Teams</h3>
+            <div id="teams">
+                Loading teams...
+            </div>
+        </div>
         <div id="rydercup">
             Loading...<br>
+        </div>
+    </section>
+
+    <section class="card" id="scorecardSection">
+        <h2>📋 Player Scorecard</h2>
+
+        <select id="scorecardPlayer"></select>
+
+        <select id="scorecardCourse">
+        </select>
+
+        <div id="scorecard"></div>
+    </section>
+
+    <section class="card" id="statsSection">
+        <h2>🏅 Awards</h2>
+        <div id="stats">
+            Loading stats...
         </div>
     </section>
 
