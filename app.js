@@ -1515,14 +1515,90 @@ function renderScorecard() {
             'scorecardCourse'
         ).value;
 
+    let courseName;
+
+    if (round === '1')
+        courseName =
+            settings['Course 1 Name'];
+
+    if (round === '2')
+        courseName =
+            settings['Course 2 Name'];
+
+    if (round === '3')
+        courseName =
+            settings['Course 3 Name'];
+
+    const rows =
+        roundData[courseName];
+
+    if (!rows) return;
+
+    let html = `
+        <table class="scorecard-table">
+
+            <tr>
+                <th>Hole</th>
+    `;
+
+    for (let hole = 1; hole <= 18; hole++) {
+
+        html += `<th>${hole}</th>`;
+    }
+
+    html += `<th>Total</th></tr>`;
+
+    html += `<tr><td>Par</td>`;
+
+    let parTotal = 0;
+
+    for (let hole = 1; hole <= 18; hole++) {
+
+        const par =
+            getHolePar(
+                courseName,
+                hole
+            );
+
+        parTotal += par;
+
+        html += `<td>${par}</td>`;
+    }
+
+    html += `<td>${parTotal}</td></tr>`;
+
+    html += `<tr><td>Score</td>`;
+
+    let grossTotal = 0;
+
+    for (let hole = 1; hole <= 18; hole++) {
+
+        const score =
+            getPlayerHoleScore(
+                rows,
+                player,
+                hole
+            );
+
+        grossTotal +=
+            Number(score || 0);
+
+        html += `
+            <td>
+                ${score || '-'}
+            </td>
+        `;
+    }
+
+    html += `
+        <td>${grossTotal}</td>
+        </tr>
+        </table>
+    `;
+
     document
         .getElementById('scorecard')
-        .innerHTML = `
-            <div>
-                Player: ${player}<br>
-                Round: ${round}
-            </div>
-        `;
+        .innerHTML = html;
 }
 
 async function initialise() {
