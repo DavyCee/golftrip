@@ -811,576 +811,1026 @@ async function loadRyderCup() {
     let currentRound = null;
 
     const matches = [];
+
     ryderPlayerPoints = {};
     ryderPlayerRecords = {};
     biggestRyderWin = null;
 
+    /*
+     * Initialise player Ryder Cup statistics.
+     */
     Object.keys(playerTeams).forEach(player => {
+
         ryderPlayerPoints[player] = 0;
-        ryderPlayerRecords[player] = { wins: 0, losses: 0, draws: 0 };
-    });
 
-    const awardPlayerPoints = (players, points) => {
-
-    players.forEach(player => {
-
-        ryderPlayerPoints[player] =
-            (ryderPlayerPoints[player] || 0) + points;
+        ryderPlayerRecords[player] = {
+            wins: 0,
+            losses: 0,
+            draws: 0
+        };
 
     });
 
-};
 
-const recordRyderMatch = (
-    teamAPlayers,
-    teamBPlayers,
-    winningTeam,
-    resultText
-) => {
+    /*
+     * Add Ryder Cup points to individual players.
+     */
+    const awardPlayerPoints =
+        (players, points) => {
 
-    const allPlayers = [
-        ...teamAPlayers,
-        ...teamBPlayers
-    ];
+        players.forEach(player => {
 
-    if (!winningTeam || !allPlayers.length)
-        return;
+            ryderPlayerPoints[player] =
+                (ryderPlayerPoints[player] || 0)
+                + points;
 
-    allPlayers.forEach(player => {
+        });
 
-        if (!ryderPlayerRecords[player]) {
+    };
 
-            ryderPlayerRecords[player] = {
-                wins: 0,
-                losses: 0,
-                draws: 0
+
+    /*
+     * Record individual Ryder Cup match records.
+     *
+     * teamAPlayers = actual Team A players
+     * teamBPlayers = actual Team B players
+     * winningTeam = actual Team A name,
+     *               actual Team B name,
+     *               or 'Halved'
+     */
+    const recordRyderMatch = (
+        teamAPlayers,
+        teamBPlayers,
+        winningTeam,
+        resultText
+    ) => {
+
+        const allPlayers = [
+            ...teamAPlayers,
+            ...teamBPlayers
+        ];
+
+        if (
+            !winningTeam ||
+            !allPlayers.length
+        ) {
+            return;
+        }
+
+
+        /*
+         * Make sure every player has a record object.
+         */
+        allPlayers.forEach(player => {
+
+            if (!ryderPlayerRecords[player]) {
+
+                ryderPlayerRecords[player] = {
+                    wins: 0,
+                    losses: 0,
+                    draws: 0
+                };
+
+            }
+
+        });
+
+
+        /*
+         * Halved match.
+         */
+        if (winningTeam === 'Halved') {
+
+            allPlayers.forEach(player => {
+
+                ryderPlayerRecords[player].draws += 1;
+
+            });
+
+        }
+
+
+        /*
+         * Team A win.
+         */
+        else if (
+            winningTeam ===
+            settings['Team A Name']
+        ) {
+
+            teamAPlayers.forEach(player => {
+
+                ryderPlayerRecords[player].wins += 1;
+
+            });
+
+            teamBPlayers.forEach(player => {
+
+                ryderPlayerRecords[player].losses += 1;
+
+            });
+
+        }
+
+
+        /*
+         * Team B win.
+         */
+        else if (
+            winningTeam ===
+            settings['Team B Name']
+        ) {
+
+            teamBPlayers.forEach(player => {
+
+                ryderPlayerRecords[player].wins += 1;
+
+            });
+
+            teamAPlayers.forEach(player => {
+
+                ryderPlayerRecords[player].losses += 1;
+
+            });
+
+        }
+
+
+        /*
+         * Track biggest winning margin.
+         */
+        const marginMatch =
+            resultText.match(
+                /(\d+)\s*&\s*(\d+)|^(\d+)\s+Up$/i
+            );
+
+        const margin =
+            marginMatch
+                ? Number(
+                    marginMatch[1] ||
+                    marginMatch[3]
+                )
+                : 0;
+
+
+        if (
+            margin &&
+            (
+                !biggestRyderWin ||
+                margin > biggestRyderWin.margin
+            )
+        ) {
+
+            const winningPlayers =
+                winningTeam ===
+                settings['Team A Name']
+                    ? teamAPlayers
+                    : winningTeam ===
+                        settings['Team B Name']
+                        ? teamBPlayers
+                        : [];
+
+            biggestRyderWin = {
+
+                margin,
+
+                team: winningTeam,
+
+                players:
+                    winningPlayers.join(' / '),
+
+                result:
+                    resultText
             };
 
         }
 
-    });
+    };
 
-    if (winningTeam === 'Halved') {
 
-        allPlayers.forEach(player => {
-
-            ryderPlayerRecords[player].draws += 1;
-
-        });
-
-    } else {
-
-        teamAPlayers.forEach(player => {
-
-            if (
-                winningTeam ===
-                settings['Team A Name']
-            ) {
-
-                ryderPlayerRecords[player].wins += 1;
-
-            } else {
-
-                ryderPlayerRecords[player].losses += 1;
-
-            }
-
-        });
-
-        teamBPlayers.forEach(player => {
-
-            if (
-                winningTeam ===
-                settings['Team B Name']
-            ) {
-
-                ryderPlayerRecords[player].wins += 1;
-
-            } else {
-
-                ryderPlayerRecords[player].losses += 1;
-
-            }
-
-        });
-
-    }
-
-    const marginMatch =
-        resultText.match(
-            /(\d+)\s*&\s*(\d+)|^(\d+)\s+Up$/i
-        );
-
-    const margin =
-        marginMatch
-            ? Number(
-                marginMatch[1] ||
-                marginMatch[3]
-            )
-            : 0;
-
-    if (
-        margin &&
-        (
-            !biggestRyderWin ||
-            margin > biggestRyderWin.margin
-        )
-    ) {
-
-        const winningPlayers =
-            winningTeam ===
-            settings['Team A Name']
-                ? teamAPlayers
-                : teamBPlayers;
-
-        biggestRyderWin = {
-            margin,
-            team: winningTeam,
-            players:
-                winningPlayers.join(' / '),
-            result: resultText
-        };
-
-    }
-
-};
-
+    /*
+     * Process every row in the Matchups sheet.
+     */
     rows.forEach(row => {
 
         const cols =
             row.split(',')
                 .map(x => x.trim());
 
-        const first = cols[0];
+        const first =
+            cols[0];
 
-        if (!first) return;
+        if (!first)
+            return;
 
-        if (first.includes('Round 1')) {
+
+        /*
+         * ROUND 1
+         */
+        if (
+            first.includes('Round 1')
+        ) {
+
             currentRound = 1;
-            html += '<h3>Round 1 - Fourball</h3>';
+
+            html +=
+                '<h3>Round 1 - Fourball</h3>';
+
             return;
         }
 
-        if (first.includes('Round 2')) {
+
+        /*
+         * ROUND 2
+         */
+        if (
+            first.includes('Round 2')
+        ) {
+
             currentRound = 2;
-            html += '<h3>Round 2 - Fourball</h3>';
+
+            html +=
+                '<h3>Round 2 - Fourball</h3>';
+
             return;
         }
 
-        if (first.includes('Round 3')) {
+
+        /*
+         * ROUND 3
+         */
+        if (
+            first.includes('Round 3')
+        ) {
+
             currentRound = 3;
-            html += '<h3>Round 3 - Singles</h3>';
+
+            html +=
+                '<h3>Round 3 - Singles</h3>';
+
             return;
         }
 
+
+        /*
+         * Ignore headings / blank rows.
+         */
         if (!first.match(/^\d/))
             return;
 
-        if (currentRound === 1 || currentRound === 2) {
 
-            const firstPairTeam = playerTeams[cols[1]];
-            const secondPairTeam = playerTeams[cols[3]];
+        /*
+         * =====================================================
+         * ROUND 1 / ROUND 2 - FOURBALL
+         * =====================================================
+         */
+        if (
+            currentRound === 1 ||
+            currentRound === 2
+        ) {
+
+            const player1 =
+                cols[1];
+
+            const player2 =
+                cols[2];
+
+            const player3 =
+                cols[3];
+
+            const player4 =
+                cols[4];
+
+
+            /*
+             * Work out which pair belongs to
+             * Team A and Team B.
+             */
+            const pair1Team =
+                playerTeams[player1];
+
+            const pair2Team =
+                playerTeams[player3];
+
+
+            let teamAPlayers;
+
+            let teamBPlayers;
+
+
+            if (
+                pair1Team ===
+                settings['Team A Name']
+            ) {
+
+                teamAPlayers = [
+                    player1,
+                    player2
+                ];
+
+                teamBPlayers = [
+                    player3,
+                    player4
+                ];
+
+            } else {
+
+                teamAPlayers = [
+                    player3,
+                    player4
+                ];
+
+                teamBPlayers = [
+                    player1,
+                    player2
+                ];
+
+            }
+
 
             matches.push({
+
                 round: currentRound,
+
                 teeTime: cols[0],
-                teamA: [cols[1], cols[2]],
-                teamB: [cols[3], cols[4]]
+
+                teamA: teamAPlayers,
+
+                teamB: teamBPlayers
+
             });
 
-            let status = 'Not Started';
-            let matchOutcome = 'not-started';
-
-try {
-
-   const courseName =
-    currentRound === 1
-        ? settings['Course 1 Name']
-        : settings['Course 2 Name'];
-
-    const result =
-        calculateFourballMatch(
-            roundData[courseName],
-            courseName,
-            [cols[1], cols[2]],
-            [cols[3], cols[4]]
-        );
-if (result.status === 'finished') {
-
-    matchOutcome = result.winner === 'Halved'
-        ? 'halved'
-        : result.winner === 'A'
-            ? 'team-a'
-            : 'team-b';
-
-} else if (result.status === 'live') {
-    matchOutcome = 'live';
-} else {
-    matchOutcome = 'not-started';
-}
-
-    const winningTeam = result.winner === 'A'
-        ? firstPairTeam
-        : result.winner === 'B'
-            ? secondPairTeam
-            : null;
-
-    if (result.status === 'finished') {
-        recordRyderMatch(
-            firstPairTeam === settings['Team A Name'] ? [cols[1], cols[2]] : [cols[3], cols[4]],
-            firstPairTeam === settings['Team B Name'] ? [cols[1], cols[2]] : [cols[3], cols[4]],
-            winningTeam || 'Halved',
-            result.result
-        );
-    }
-
-    matchOutcome = winningTeam === settings['Team A Name']
-        ? 'team-a'
-        : winningTeam === settings['Team B Name']
-            ? 'team-b'
-            : 'halved';
-
-    if (winningTeam === settings['Team A Name']) {
-
-        awardPlayerPoints(
-            firstPairTeam === settings['Team A Name']
-                ? [cols[1], cols[2]]
-                : [cols[3], cols[4]],
-            Number(settings['Ryder Cup Points Win'])
-        );
-
-        shaftsPoints += Number(
-            settings['Ryder Cup Points Win']
-        );
-
-    } else if (winningTeam === settings['Team B Name']) {
-
-        awardPlayerPoints(
-            firstPairTeam === settings['Team B Name']
-                ? [cols[1], cols[2]]
-                : [cols[3], cols[4]],
-            Number(settings['Ryder Cup Points Win'])
-        );
-
-        ballsPoints += Number(
-            settings['Ryder Cup Points Win']
-        );
-
-    } else if (result.winner === 'Halved') {
-
-        awardPlayerPoints(
-            [cols[1], cols[2], cols[3], cols[4]],
-            Number(settings['Ryder Cup Points Half'])
-        );
-
-        ballsPoints += Number(
-            settings['Ryder Cup Points Half']
-        );
-
-        shaftsPoints += Number(
-            settings['Ryder Cup Points Half']
-        );
-    }
-
-status = result.result;
-
-if (
-    result.status === 'finished' &&
-    result.winner &&
-    result.winner !== 'Halved'
-) {
-
-   const winnerName = winningTeam;
-
-status =
-    `${winnerName} Won ${result.result}`;
-
-}
-
-} catch (e) {
-
-    console.error(e);
-
-    status = 'ERROR';
-
-}
-
-const teamAPair = firstPairTeam === settings['Team A Name']
-    ? `${cols[1]} / ${cols[2]}`
-    : `${cols[3]} / ${cols[4]}`;
-const teamBPair = firstPairTeam === settings['Team B Name']
-    ? `${cols[1]} / ${cols[2]}`
-    : `${cols[3]} / ${cols[4]}`;
-
-html += `
-    <div class="fixture match-${matchOutcome}">
-        <div class="fixture-heading">
-            <strong>Fourball</strong>
-            <span>${cols[0]}</span>
-        </div>
-        <div class="match-result">${status}</div>
-        <div class="fixture-teams">
-            <div class="fixture-team fixture-team-a">
-                <strong>${settings['Team A Name']}</strong>
-                <span>${teamAPair}</span>
-            </div>
-            <div class="fixture-team fixture-team-b">
-                <strong>${settings['Team B Name']}</strong>
-                <span>${teamBPair}</span>
-            </div>
-        </div>
-    </div>
-`;
-
-       } else {
-
-    matches.push({
-        round: currentRound,
-        teeTime: cols[0],
-        teamA: [cols[1]],
-        teamB: [cols[2]]
-    });
-
-    const firstPlayerTeam = playerTeams[cols[1]];
-    const secondPlayerTeam = playerTeams[cols[2]];
-
-let singlesStatus = 'Not Started';
-let singlesOutcome = 'live';
-
-try {
-
-    const result =
-        calculateSinglesMatch(
-            roundData[
-                settings['Course 3 Name']
-            ],
-            settings['Course 3 Name'],
-            cols[1],
-            cols[2]
-        );
-
-    /*
-     * Display the match calculation immediately.
-     * This means a problem recording player statistics
-     * cannot hide a valid match result.
-     */
-    if (result.status === 'finished') {
-
-        singlesStatus =
-            result.winner === 'A'
-                ? `${settings['Team A Name']} Won ${result.result}`
-                : result.winner === 'B'
-                    ? `${settings['Team B Name']} Won ${result.result}`
-                    : result.result;
-
-    } else {
-
-        singlesStatus =
-            result.result;
-
-    }
-
-    /*
-     * Handle the visual state separately.
-     */
-    if (result.status === 'finished') {
-
-        singlesOutcome =
-            result.winner === 'Halved'
-                ? 'halved'
-                : result.winner === 'A'
-                    ? 'team-a'
-                    : 'team-b';
-
-    } else if (result.status === 'live') {
-
-        singlesOutcome = 'live';
-
-    } else {
-
-        singlesOutcome = 'not-started';
-
-    }
-
-    /*
-     * Only record statistics after the result
-     * has already been safely established.
-     */
-    if (result.status === 'finished') {
-
-        const winningTeam =
-            result.winner === 'A'
-                ? firstPlayerTeam
-                : result.winner === 'B'
-                    ? secondPlayerTeam
-                    : 'Halved';
-
-        recordRyderMatch(
-            firstPlayerTeam === settings['Team A Name']
-                ? [cols[1]]
-                : [cols[2]],
-
-            firstPlayerTeam === settings['Team B Name']
-                ? [cols[1]]
-                : [cols[2]],
-
-            winningTeam,
-
-            result.result
-        );
-
-        if (
-            winningTeam ===
-            settings['Team A Name']
-        ) {
-
-            awardPlayerPoints(
-                [firstPlayerTeam === settings['Team A Name']
-                    ? cols[1]
-                    : cols[2]],
-
-                Number(
-                    settings['Ryder Cup Points Win']
-                )
-            );
-
-            ballsPoints += Number(
-                settings['Ryder Cup Points Win']
-            );
-
-        } else if (
-            winningTeam ===
-            settings['Team B Name']
-        ) {
-
-            awardPlayerPoints(
-                [firstPlayerTeam === settings['Team B Name']
-                    ? cols[1]
-                    : cols[2]],
-
-                Number(
-                    settings['Ryder Cup Points Win']
-                )
-            );
-
-            shaftsPoints += Number(
-                settings['Ryder Cup Points Win']
-            );
-
-        } else {
-
-            awardPlayerPoints(
-                [cols[1], cols[2]],
-
-                Number(
-                    settings['Ryder Cup Points Half']
-                )
-            );
-
-            ballsPoints += Number(
-                settings['Ryder Cup Points Half']
-            );
-
-            shaftsPoints += Number(
-                settings['Ryder Cup Points Half']
-            );
+
+            let status =
+                'Not Started';
+
+            let matchOutcome =
+                'not-started';
+
+
+            try {
+
+                const courseName =
+                    currentRound === 1
+                        ? settings['Course 1 Name']
+                        : settings['Course 2 Name'];
+
+
+                /*
+                 * IMPORTANT:
+                 * The calculator now ALWAYS receives
+                 * Team A first and Team B second.
+                 */
+                const result =
+                    calculateFourballMatch(
+                        roundData[courseName],
+                        courseName,
+                        teamAPlayers,
+                        teamBPlayers
+                    );
+
+
+                /*
+                 * Match status / visual state.
+                 */
+                if (
+                    result.status ===
+                    'finished'
+                ) {
+
+                    matchOutcome =
+                        result.winner === 'Halved'
+                            ? 'halved'
+                            : result.winner === 'A'
+                                ? 'team-a'
+                                : 'team-b';
+
+                }
+
+                else if (
+                    result.status ===
+                    'live'
+                ) {
+
+                    matchOutcome =
+                        'live';
+
+                }
+
+                else {
+
+                    matchOutcome =
+                        'not-started';
+
+                }
+
+
+                /*
+                 * FINISHED MATCH
+                 */
+                if (
+                    result.status ===
+                    'finished'
+                ) {
+
+                    /*
+                     * A = Team A
+                     * B = Team B
+                     */
+                    const winningTeam =
+                        result.winner === 'A'
+                            ? settings['Team A Name']
+                            : result.winner === 'B'
+                                ? settings['Team B Name']
+                                : 'Halved';
+
+
+                    /*
+                     * Record player win/loss/draw.
+                     */
+                    recordRyderMatch(
+                        teamAPlayers,
+                        teamBPlayers,
+                        winningTeam,
+                        result.result
+                    );
+
+
+                    /*
+                     * Award the team point.
+                     */
+                    if (
+                        result.winner === 'A'
+                    ) {
+
+                        awardPlayerPoints(
+                            teamAPlayers,
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            )
+                        );
+
+                        ballsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            );
+
+                    }
+
+                    else if (
+                        result.winner === 'B'
+                    ) {
+
+                        awardPlayerPoints(
+                            teamBPlayers,
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            )
+                        );
+
+                        shaftsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            );
+
+                    }
+
+                    else {
+
+                        awardPlayerPoints(
+                            [
+                                ...teamAPlayers,
+                                ...teamBPlayers
+                            ],
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            )
+                        );
+
+                        ballsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            );
+
+                        shaftsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            );
+
+                    }
+
+
+                    /*
+                     * Display result.
+                     */
+                    if (
+                        result.winner === 'A'
+                    ) {
+
+                        status =
+                            `${settings['Team A Name']} Won ${result.result}`;
+
+                    }
+
+                    else if (
+                        result.winner === 'B'
+                    ) {
+
+                        status =
+                            `${settings['Team B Name']} Won ${result.result}`;
+
+                    }
+
+                    else {
+
+                        status =
+                            result.result;
+
+                    }
+
+                }
+
+
+                /*
+                 * LIVE MATCH
+                 */
+                else {
+
+                    status =
+                        result.result;
+
+                }
+
+
+            } catch (e) {
+
+                console.error(
+                    'FOURBALL ERROR:',
+                    teamAPlayers,
+                    'vs',
+                    teamBPlayers,
+                    e
+                );
+
+                status =
+                    'ERROR';
+
+            }
+
+
+            /*
+             * Display Team A and Team B
+             * in the correct order regardless
+             * of how they appeared in the sheet.
+             */
+            html += `
+                <div class="fixture match-${matchOutcome}">
+
+                    <div class="fixture-heading">
+                        <strong>Fourball</strong>
+                        <span>${cols[0]}</span>
+                    </div>
+
+                    <div class="match-result">
+                        ${status}
+                    </div>
+
+                    <div class="fixture-teams">
+
+                        <div class="fixture-team fixture-team-a">
+
+                            <strong>
+                                ${settings['Team A Name']}
+                            </strong>
+
+                            <span>
+                                ${teamAPlayers.join(' / ')}
+                            </span>
+
+                        </div>
+
+                        <div class="fixture-team fixture-team-b">
+
+                            <strong>
+                                ${settings['Team B Name']}
+                            </strong>
+
+                            <span>
+                                ${teamBPlayers.join(' / ')}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
 
         }
 
-    }
 
-} catch (e) {
+        /*
+         * =====================================================
+         * ROUND 3 - SINGLES
+         * =====================================================
+         */
+        else {
 
-    console.error(
-        'SINGLES ERROR:',
-        cols[1],
-        'vs',
-        cols[2],
-        e
-    );
+            const player1 =
+                cols[1];
 
-    /*
-     * Do NOT hide the match calculation.
-     */
-    if (
-        typeof singlesStatus ===
-        'undefined' ||
-        singlesStatus === 'Not Started'
-    ) {
+            const player2 =
+                cols[2];
 
-        singlesStatus = 'ERROR';
 
-    }
+            const player1Team =
+                playerTeams[player1];
 
-}
+            const player2Team =
+                playerTeams[player2];
 
-const teamAPlayer = firstPlayerTeam === settings['Team A Name']
-    ? cols[1]
-    : cols[2];
-const teamBPlayer = firstPlayerTeam === settings['Team B Name']
-    ? cols[1]
-    : cols[2];
 
-    html += `
-        <div class="fixture match-${singlesOutcome}">
-            <div class="fixture-heading">
-                <strong>Singles</strong>
-                <span>${cols[0]}</span>
-            </div>
-            <div class="match-result">${singlesStatus}</div>
-            <div class="fixture-teams">
-                <div class="fixture-team fixture-team-a">
-                    <strong>${settings['Team A Name']}</strong>
-                    <span>${teamAPlayer}</span>
+            let teamAPlayer;
+
+            let teamBPlayer;
+
+
+            /*
+             * Normalize the players so
+             * A is ALWAYS Team A and
+             * B is ALWAYS Team B.
+             */
+            if (
+                player1Team ===
+                settings['Team A Name']
+            ) {
+
+                teamAPlayer =
+                    player1;
+
+                teamBPlayer =
+                    player2;
+
+            } else {
+
+                teamAPlayer =
+                    player2;
+
+                teamBPlayer =
+                    player1;
+
+            }
+
+
+            matches.push({
+
+                round: currentRound,
+
+                teeTime: cols[0],
+
+                teamA: [teamAPlayer],
+
+                teamB: [teamBPlayer]
+
+            });
+
+
+            let singlesStatus =
+                'Not Started';
+
+            let singlesOutcome =
+                'not-started';
+
+
+            try {
+
+                const result =
+                    calculateSinglesMatch(
+                        roundData[
+                            settings['Course 3 Name']
+                        ],
+                        settings['Course 3 Name'],
+                        teamAPlayer,
+                        teamBPlayer
+                    );
+
+
+                /*
+                 * FINISHED
+                 */
+                if (
+                    result.status ===
+                    'finished'
+                ) {
+
+                    singlesOutcome =
+                        result.winner === 'Halved'
+                            ? 'halved'
+                            : result.winner === 'A'
+                                ? 'team-a'
+                                : 'team-b';
+
+
+                    /*
+                     * A = actual Team A
+                     * B = actual Team B
+                     */
+                    if (
+                        result.winner === 'A'
+                    ) {
+
+                        singlesStatus =
+                            `${settings['Team A Name']} Won ${result.result}`;
+
+
+                        awardPlayerPoints(
+                            [teamAPlayer],
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            )
+                        );
+
+
+                        ballsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            );
+
+
+                    }
+
+                    else if (
+                        result.winner === 'B'
+                    ) {
+
+                        singlesStatus =
+                            `${settings['Team B Name']} Won ${result.result}`;
+
+
+                        awardPlayerPoints(
+                            [teamBPlayer],
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            )
+                        );
+
+
+                        shaftsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Win'
+                                ]
+                            );
+
+
+                    }
+
+                    else {
+
+                        singlesStatus =
+                            result.result;
+
+
+                        awardPlayerPoints(
+                            [
+                                teamAPlayer,
+                                teamBPlayer
+                            ],
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            )
+                        );
+
+
+                        ballsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            );
+
+
+                        shaftsPoints +=
+                            Number(
+                                settings[
+                                    'Ryder Cup Points Half'
+                                ]
+                            );
+
+                    }
+
+
+                    /*
+                     * Record the match.
+                     */
+                    const winningTeam =
+                        result.winner === 'A'
+                            ? settings['Team A Name']
+                            : result.winner === 'B'
+                                ? settings['Team B Name']
+                                : 'Halved';
+
+
+                    recordRyderMatch(
+                        [teamAPlayer],
+                        [teamBPlayer],
+                        winningTeam,
+                        result.result
+                    );
+
+                }
+
+
+                /*
+                 * LIVE
+                 */
+                else if (
+                    result.status ===
+                    'live'
+                ) {
+
+                    singlesOutcome =
+                        'live';
+
+                    singlesStatus =
+                        result.result;
+
+                }
+
+
+                /*
+                 * NOT STARTED
+                 */
+                else {
+
+                    singlesOutcome =
+                        'not-started';
+
+                    singlesStatus =
+                        result.result;
+
+                }
+
+
+            } catch (e) {
+
+                console.error(
+                    'SINGLES ERROR:',
+                    teamAPlayer,
+                    'vs',
+                    teamBPlayer,
+                    e
+                );
+
+                singlesStatus =
+                    'ERROR';
+
+            }
+
+
+            /*
+             * Render the Singles match.
+             */
+            html += `
+                <div class="fixture match-${singlesOutcome}">
+
+                    <div class="fixture-heading">
+                        <strong>Singles</strong>
+                        <span>${cols[0]}</span>
+                    </div>
+
+                    <div class="match-result">
+                        ${singlesStatus}
+                    </div>
+
+                    <div class="fixture-teams">
+
+                        <div class="fixture-team fixture-team-a">
+
+                            <strong>
+                                ${settings['Team A Name']}
+                            </strong>
+
+                            <span>
+                                ${teamAPlayer}
+                            </span>
+
+                        </div>
+
+                        <div class="fixture-team fixture-team-b">
+
+                            <strong>
+                                ${settings['Team B Name']}
+                            </strong>
+
+                            <span>
+                                ${teamBPlayer}
+                            </span>
+
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="fixture-team fixture-team-b">
-                    <strong>${settings['Team B Name']}</strong>
-                    <span>${teamBPlayer}</span>
-                </div>
-            </div>
-        </div>
-    `;
-}
+            `;
+
+        }
+
     });
 
-    ryderCupMatches = matches;
 
-const scoreboard = `
-    <div class="ryder-scoreboard ${ballsPoints === shaftsPoints ? 'is-tied' : 'has-leader'}">
+    /*
+     * Save matches for use elsewhere.
+     */
+    ryderCupMatches =
+        matches;
 
-        <div class="ryder-team ${shaftsPoints > ballsPoints ? 'is-leader' : ''}">
-            <div class="ryder-team-name">
-                ${settings['Team A Name']}
+
+    /*
+     * Ryder Cup scoreboard.
+     *
+     * Team A = ballsPoints
+     * Team B = shaftsPoints
+     */
+    const scoreboard = `
+        <div class="ryder-scoreboard ${
+            ballsPoints === shaftsPoints
+                ? 'is-tied'
+                : 'has-leader'
+        }">
+
+            <div class="ryder-team ${
+                ballsPoints > shaftsPoints
+                    ? 'is-leader'
+                    : ''
+            }">
+
+                <div class="ryder-team-name">
+                    ${settings['Team A Name']}
+                </div>
+
+                <div class="ryder-score">
+                    ${ballsPoints}
+                </div>
+
             </div>
 
-            <div class="ryder-score">
-                ${shaftsPoints}
+
+            <div class="ryder-vs">
+                v
             </div>
+
+
+            <div class="ryder-team ${
+                shaftsPoints > ballsPoints
+                    ? 'is-leader'
+                    : ''
+            }">
+
+                <div class="ryder-team-name">
+                    ${settings['Team B Name']}
+                </div>
+
+                <div class="ryder-score">
+                    ${shaftsPoints}
+                </div>
+
+            </div>
+
         </div>
+    `;
 
-        <div class="ryder-vs">
-            v
-        </div>
-
-        <div class="ryder-team ${ballsPoints > shaftsPoints ? 'is-leader' : ''}">
-            <div class="ryder-team-name">
-                ${settings['Team B Name']}
-            </div>
-
-            <div class="ryder-score">
-                ${ballsPoints}
-            </div>
-        </div>
-
-    </div>
-`;
 
     document
-    .getElementById('rydercup')
-    .innerHTML =
-        scoreboard + html;
+        .getElementById('rydercup')
+        .innerHTML =
+            scoreboard + html;
+
 
     renderTeamRecords();
+
 }
 
 function renderStats() {
