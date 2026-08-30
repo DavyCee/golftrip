@@ -2244,6 +2244,14 @@ select:focus {
     text-align: center;
 }
 
+.biggest-win-side {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
 .biggest-win-player {
     color: #d9f99d;
 
@@ -2260,8 +2268,6 @@ select:focus {
 }
 
 .biggest-win-team {
-    margin-top: 0.1rem;
-
     color: var(--muted);
 
     font-size: 0.75rem;
@@ -2282,8 +2288,6 @@ select:focus {
 }
 
 
-/* Mobile */
-
 @media (max-width: 480px) {
 
     .biggest-win-player {
@@ -2291,8 +2295,7 @@ select:focus {
     }
 
     .biggest-win-result {
-        margin:
-            0.55rem 0;
+        margin: 0.55rem 0;
 
         font-size: 0.82rem;
     }
