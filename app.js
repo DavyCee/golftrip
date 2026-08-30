@@ -2710,14 +2710,18 @@ function renderStats() {
      * Format tied gross award winners.
      */
     const formatGrossWinners =
-        winners =>
-            winners
-                .map(
-                    winner =>
-                        `${winner.player} · ${winner.name} · ${winner.gross}`
-                )
-                .join('<br>');
-
+    winners =>
+        winners
+            .map(
+                winner =>
+                    `
+                    <div class="award-winner">
+                        <strong>${winner.player}</strong>
+                        <span>${winner.name} · ${winner.gross}</span>
+                    </div>
+                    `
+            )
+            .join('');
 
     /*
      * Format tied net award winners.
@@ -2742,20 +2746,9 @@ function renderStats() {
                     Lowest Gross
                 </span>
 
-                <strong>
-                    ${lowestGross
-                        .map(
-                            winner =>
-                                winner.player
-                        )
-                        .join('<br>')}
-                </strong>
-
-                <span>
-                    ${formatGrossWinners(
-                        lowestGross
-                    )}
-                </span>
+               ${formatGrossWinners(
+                lowestGross
+                )}
 
             </div>
 
@@ -2766,22 +2759,10 @@ function renderStats() {
                     Highest Gross
                 </span>
 
-                <strong>
-                    ${highestGross
-                        .map(
-                            winner =>
-                                winner.player
-                        )
-                        .join('<br>')}
-                </strong>
-
-                <span>
-                    ${formatGrossWinners(
-                        highestGross
-                    )}
-                </span>
-
-            </div>
+                ${formatGrossWinners(
+                highestGross
+                )}
+                </div>
 
 
             <div class="stat-highlight">
