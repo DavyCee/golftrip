@@ -2233,5 +2233,70 @@ select:focus {
     }
 
 }
+    /* =========================================================
+   BIGGEST RYDER CUP WIN
+   ========================================================= */
+
+.biggest-win {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.biggest-win-player {
+    color: #d9f99d;
+
+    font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+    font-size: 1.2rem;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+}
+
+.biggest-win-team {
+    margin-top: 0.1rem;
+
+    color: var(--muted);
+
+    font-size: 0.75rem;
+
+    font-weight: 600;
+}
+
+.biggest-win-result {
+    margin: 0.65rem 0;
+
+    color: var(--gold);
+
+    font-size: 0.9rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.04em;
+}
+
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .biggest-win-player {
+        font-size: 1.05rem;
+    }
+
+    .biggest-win-result {
+        margin:
+            0.55rem 0;
+
+        font-size: 0.82rem;
+    }
+
+}
     
 }
