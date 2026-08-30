@@ -4440,21 +4440,69 @@ function renderScorecard() {
 async function loadSideCompetitions() {
 
     const response =
-        await fetch(freshUrl(SIDE_COMPETITIONS_CSV));
+        await fetch(
+            SIDE_COMPETITIONS_CSV
+        );
 
     const text =
         await response.text();
 
+
+    /*
+     * Keep blank rows because the sheet contains
+     * two separate tables with an empty row between them.
+     */
     const rows =
         text
-            .split('\n')
-            .filter(
-                row => row.trim()
-            );
+            .split(/\r?\n/);
 
 
     /*
-     * Reset the side-competition win counters.
+     * Find the two table headers.
+     *
+     * First table:
+     * Round | Front 9 Closest to the Pin | ...
+     *
+     * Second table:
+     * Round | CTP Front 9 | CTP Back 9 | ...
+     */
+    const winnersHeaderIndex =
+        rows.findIndex(
+            row =>
+                row
+                    .toLowerCase()
+                    .includes(
+                        'closest to pin'
+                    )
+        );
+
+
+    const holesHeaderIndex =
+        rows.findIndex(
+            row =>
+                row
+                    .toLowerCase()
+                    .includes(
+                        'ctp front 9'
+                    )
+        );
+
+
+    if (
+        winnersHeaderIndex === -1 ||
+        holesHeaderIndex === -1
+    ) {
+
+        console.error(
+            'Side competition tables could not be found.'
+        );
+
+        return;
+    }
+
+
+    /*
+     * Reset winner counters.
      */
     sideCompetitionWinners = {
         ctp: {},
@@ -4462,86 +4510,224 @@ async function loadSideCompetitions() {
     };
 
 
+    /*
+     * Read the winner table.
+     */
+    const winnerRows =
+        rows
+            .slice(
+                winnersHeaderIndex + 1,
+                holesHeaderIndex
+            )
+            .map(
+                row =>
+                    row
+                        .split(',')
+                        .map(
+                            value =>
+                                value.trim()
+                        )
+            )
+            .filter(
+                cols =>
+                    cols[0] &&
+                    !Number.isNaN(
+                        Number(cols[0])
+                    )
+            );
+
+
+    /*
+     * Read the hole-number table.
+     */
+    const holeRows =
+        rows
+            .slice(
+                holesHeaderIndex + 1
+            )
+            .map(
+                row =>
+                    row
+                        .split(',')
+                        .map(
+                            value =>
+                                value.trim()
+                        )
+            )
+            .filter(
+                cols =>
+                    cols[0] &&
+                    !Number.isNaN(
+                        Number(cols[0])
+                    )
+            );
+
+
+    /*
+     * Store hole numbers by round.
+     *
+     * round 1:
+     * CTP Front 9 = cols[1]
+     * CTP Back 9  = cols[2]
+     * LD Front 9  = cols[3]
+     * LD Back 9   = cols[4]
+     */
+    const holesByRound = {};
+
+
+    holeRows.forEach(cols => {
+
+        const round =
+            Number(cols[0]);
+
+        if (
+            Number.isNaN(round)
+        ) {
+            return;
+        }
+
+        holesByRound[round] = {
+            ctpFront:
+                cols[1] || '-',
+
+            ctpBack:
+                cols[2] || '-',
+
+            driveFront:
+                cols[3] || '-',
+
+            driveBack:
+                cols[4] || '-'
+        };
+
+    });
+
+
     let html = '';
 
 
     /*
-     * Process each competition row.
+     * Build each course section.
      */
-    rows.slice(1).forEach(row => {
-
-        const cols =
-            row
-                .split(',')
-                .map(
-                    value =>
-                        value.trim()
-                );
-
-
-        if (!cols[0])
-            return;
-
+    winnerRows.forEach(cols => {
 
         const round =
             Number(cols[0]);
 
 
+        if (
+            Number.isNaN(round)
+        ) {
+            return;
+        }
+
+
+        const courseName =
+            settings[
+                `Course ${round} Name`
+            ] ||
+            `Round ${round}`;
+
+
+        const holes =
+            holesByRound[round] || {
+
+                ctpFront: '-',
+                ctpBack: '-',
+                driveFront: '-',
+                driveBack: '-'
+
+            };
+
+
         /*
-         * Record the CTP and Longest Drive
-         * wins for the leaderboard badges.
-         *
-         * There are two opportunities for each
-         * category per round, so repeat wins
-         * are deliberately counted.
+         * Winner names.
          */
-        if (!Number.isNaN(round)) {
+        const ctpFrontWinner =
+            cols[1] || '-';
 
-            if (cols[1]) {
+        const ctpBackWinner =
+            cols[2] || '-';
 
-                sideCompetitionWinners.ctp[cols[1]] =
-                    (sideCompetitionWinners.ctp[cols[1]] || 0) + 1;
+        const driveFrontWinner =
+            cols[3] || '-';
 
-            }
-
-
-            if (cols[2]) {
-
-                sideCompetitionWinners.ctp[cols[2]] =
-                    (sideCompetitionWinners.ctp[cols[2]] || 0) + 1;
-
-            }
+        const driveBackWinner =
+            cols[4] || '-';
 
 
-            if (cols[3]) {
+        /*
+         * Count CTP wins.
+         */
+        if (
+            ctpFrontWinner !== '-'
+        ) {
 
-                sideCompetitionWinners.drive[cols[3]] =
-                    (sideCompetitionWinners.drive[cols[3]] || 0) + 1;
+            sideCompetitionWinners.ctp[
+                ctpFrontWinner
+            ] =
+                (
+                    sideCompetitionWinners.ctp[
+                        ctpFrontWinner
+                    ] || 0
+                ) + 1;
 
-            }
+        }
 
 
-            if (cols[4]) {
+        if (
+            ctpBackWinner !== '-'
+        ) {
 
-                sideCompetitionWinners.drive[cols[4]] =
-                    (sideCompetitionWinners.drive[cols[4]] || 0) + 1;
-
-            }
+            sideCompetitionWinners.ctp[
+                ctpBackWinner
+            ] =
+                (
+                    sideCompetitionWinners.ctp[
+                        ctpBackWinner
+                    ] || 0
+                ) + 1;
 
         }
 
 
         /*
-         * Use the course name from Settings.
+         * Count Longest Drive wins.
          */
-        const courseName =
-            settings[
-                `Course ${round} Name`
-            ] || `Round ${round}`;
+        if (
+            driveFrontWinner !== '-'
+        ) {
+
+            sideCompetitionWinners.drive[
+                driveFrontWinner
+            ] =
+                (
+                    sideCompetitionWinners.drive[
+                        driveFrontWinner
+                    ] || 0
+                ) + 1;
+
+        }
+
+
+        if (
+            driveBackWinner !== '-'
+        ) {
+
+            sideCompetitionWinners.drive[
+                driveBackWinner
+            ] =
+                (
+                    sideCompetitionWinners.drive[
+                        driveBackWinner
+                    ] || 0
+                ) + 1;
+
+        }
 
 
         /*
-         * Render the round.
+         * Render the compact course section.
          */
         html += `
 
@@ -4552,73 +4738,75 @@ async function loadSideCompetitions() {
                 </h3>
 
 
-                <div class="side-competition-grid">
+                <div class="side-competition-compact">
 
 
-                    <div class="side-competition-item">
+                    <div class="side-competition-column">
 
-                        <span class="side-competition-label">
-                            Closest to Pin
-                        </span>
-
-                        <span class="side-competition-hole">
-                            Front 9
-                        </span>
-
-                        <strong>
-                            ${cols[1] || '-'}
-                        </strong>
-
-                    </div>
+                        <div class="side-competition-title">
+                            Closest to Pin 🎯
+                        </div>
 
 
-                    <div class="side-competition-item">
+                        <div class="side-competition-result">
 
-                        <span class="side-competition-label">
-                            Closest to Pin
-                        </span>
+                            <span>
+                                Hole ${holes.ctpFront}:
+                            </span>
 
-                        <span class="side-competition-hole">
-                            Back 9
-                        </span>
+                            <strong>
+                                ${ctpFrontWinner}
+                            </strong>
 
-                        <strong>
-                            ${cols[2] || '-'}
-                        </strong>
-
-                    </div>
+                        </div>
 
 
-                    <div class="side-competition-item">
+                        <div class="side-competition-result">
 
-                        <span class="side-competition-label">
-                            Longest Drive
-                        </span>
+                            <span>
+                                Hole ${holes.ctpBack}:
+                            </span>
 
-                        <span class="side-competition-hole">
-                            Front 9
-                        </span>
+                            <strong>
+                                ${ctpBackWinner}
+                            </strong>
 
-                        <strong>
-                            ${cols[3] || '-'}
-                        </strong>
+                        </div>
 
                     </div>
 
 
-                    <div class="side-competition-item">
+                    <div class="side-competition-column">
 
-                        <span class="side-competition-label">
-                            Longest Drive
-                        </span>
+                        <div class="side-competition-title">
+                            Longest Drive 🚀
+                        </div>
 
-                        <span class="side-competition-hole">
-                            Back 9
-                        </span>
 
-                        <strong>
-                            ${cols[4] || '-'}
-                        </strong>
+                        <div class="side-competition-result">
+
+                            <span>
+                                Hole ${holes.driveFront}:
+                            </span>
+
+                            <strong>
+                                ${driveFrontWinner}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="side-competition-result">
+
+                            <span>
+                                Hole ${holes.driveBack}:
+                            </span>
+
+                            <strong>
+                                ${driveBackWinner}
+                            </strong>
+
+                        </div>
 
                     </div>
 
@@ -4632,16 +4820,17 @@ async function loadSideCompetitions() {
     });
 
 
-    /*
-     * Display the completed section.
-     */
     document
         .getElementById(
             'sideCompetitions'
         )
         .innerHTML =
             html ||
-            '<p class="empty-state">No side competition results yet.</p>';
+            `
+                <p class="empty-state">
+                    No side competition results yet.
+                </p>
+            `;
 
 }
 
