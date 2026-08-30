@@ -1213,8 +1213,16 @@ biggestRyderWin = {
     winner:
         winningPlayers.join(' / '),
 
+    winnerTeam:
+        winningTeam,
+
     loser:
         losingPlayers.join(' / '),
+
+    loserTeam:
+        winningTeam === settings['Team A Name']
+            ? settings['Team B Name']
+            : settings['Team A Name'],
 
     result:
         resultText
@@ -2867,21 +2875,47 @@ function renderStats() {
 
             <div class="stat-highlight stat-highlight-group">
 
-                <span class="stat-label">
-                    Biggest Winning Margin
-                </span>
+    <span class="stat-label">
+        Biggest Winning Margin
+    </span>
 
-               <strong>
     ${
         biggestRyderWin
-            ? `${biggestRyderWin.winner} beat ${biggestRyderWin.loser} by ${biggestRyderWin.result}`
-            : 'No completed matches'
+            ? `
+                <div class="biggest-win">
+
+                    <div class="biggest-win-player">
+                        ${biggestRyderWin.winner}
+                    </div>
+
+                    <div class="biggest-win-team">
+                        (${biggestRyderWin.winnerTeam})
+                    </div>
+
+
+                    <div class="biggest-win-result">
+                        Won by ${biggestRyderWin.result} vs
+                    </div>
+
+
+                    <div class="biggest-win-player">
+                        ${biggestRyderWin.loser}
+                    </div>
+
+                    <div class="biggest-win-team">
+                        (${biggestRyderWin.loserTeam})
+                    </div>
+
+                </div>
+              `
+            : `
+                <div class="biggest-win-player">
+                    No completed matches
+                </div>
+              `
     }
-</strong>
 
-            </div>
-
-        </div>
+</div>
 
 
         <div class="stats-group">
