@@ -2727,30 +2727,32 @@ function renderStats() {
      * Format tied net award winners.
      */
     const formatNetWinners =
-        winners =>
-            winners
-                .map(
-                    winner =>
-                        `${winner.player} · ${winner.name} · ${winner.net}`
-                )
-                .join('<br>');
-
+    winners =>
+        winners
+            .map(
+                winner =>
+                    `
+                    <div class="award-winner">
+                        <strong>${winner.player}</strong>
+                        <span>${winner.name} · ${winner.net}</span>
+                    </div>
+                    `
+            )
+            .join('');
 
     statsElement.innerHTML = `
 
-        <div class="stats-highlights">
+        <div class="stat-highlight">
 
-            <div class="stat-highlight">
+    <span class="stat-label">
+        Best Net Score
+    </span>
 
-                <span class="stat-label">
-                    Lowest Gross
-                </span>
+    ${formatNetWinners(
+        lowestNet
+    )}
 
-               ${formatGrossWinners(
-                lowestGross
-                )}
-
-            </div>
+</div>
 
 
             <div class="stat-highlight">
