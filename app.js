@@ -841,46 +841,104 @@ document.getElementById('handicapTable').innerHTML = html;
 
 async function calculateRound(csvUrl, courseName) {
 
-    const response = await fetch(csvUrl);
-    const text = await response.text();
+    const response =
+        await fetch(
+            freshUrl(csvUrl),
+            {
+                cache: 'no-store'
+            }
+        );
 
-    const rows = text.split('\n');
 
-    roundData[courseName] = rows;
+    const text =
+        await response.text();
 
-    const header = rows[1].split(',');
 
-    const slope = courseData[courseName].slope;
+    const rows =
+        text.split('\n');
+
+
+    /*
+     * Store the freshly loaded score data.
+     * Ryder Cup, scorecards and stats all use
+     * this same roundData object.
+     */
+    roundData[courseName] =
+        rows;
+
+
+    const header =
+        rows[1].split(',');
+
+
+    const slope =
+        courseData[courseName].slope;
+
 
     const roundScores = {};
 
-    for (let playerCol = 3; playerCol < header.length; playerCol++) {
 
-        const player = header[playerCol]?.trim();
+    for (
+        let playerCol = 3;
+        playerCol < header.length;
+        playerCol++
+    ) {
 
-        if (!player) continue;
+        const player =
+            header[playerCol]?.trim();
 
-        const hi = playerHandicaps[player];
+
+        if (!player)
+            continue;
+
+
+        const hi =
+            playerHandicaps[player];
+
 
         const courseHandicap =
-            Math.round((hi * slope) / 113);
+            Math.round(
+                (hi * slope) / 113
+            );
+
 
         let totalPoints = 0;
 
-        for (let row = 2; row <= 19; row++) {
 
-            const cols = rows[row].split(',');
+        for (
+            let row = 2;
+            row <= 19;
+            row++
+        ) {
+
+            const cols =
+                rows[row].split(',');
+
 
             const par =
-                parseInt(cols[1]);
+                parseInt(
+                    cols[1]
+                );
+
 
             const strokeIndex =
-                parseInt(cols[2]);
+                parseInt(
+                    cols[2]
+                );
+
 
             const gross =
-                parseInt(cols[playerCol]);
+                parseInt(
+                    cols[playerCol]
+                );
 
-            if (isNaN(gross)) continue;
+
+            if (
+                isNaN(gross)
+            ) {
+                continue;
+            }
+
 
             const shots =
                 shotsReceived(
@@ -888,20 +946,28 @@ async function calculateRound(csvUrl, courseName) {
                     strokeIndex
                 );
 
+
             const netScore =
                 gross - shots;
+
 
             totalPoints +=
                 stablefordPoints(
                     par,
                     netScore
                 );
+
         }
 
-        roundScores[player] = totalPoints;
+
+        roundScores[player] =
+            totalPoints;
+
     }
 
+
     return roundScores;
+
 }
 
 async function calculateRound1Leaderboard() {
