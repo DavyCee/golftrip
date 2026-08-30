@@ -1197,18 +1197,28 @@ async function loadRyderCup() {
                         ? teamBPlayers
                         : [];
 
-            biggestRyderWin = {
+            const losingPlayers =
+    winningTeam ===
+    settings['Team A Name']
+        ? teamBPlayers
+        : winningTeam ===
+            settings['Team B Name']
+            ? teamAPlayers
+            : [];
 
-                margin,
 
-                team: winningTeam,
+biggestRyderWin = {
+    margin,
 
-                players:
-                    winningPlayers.join(' / '),
+    winner:
+        winningPlayers.join(' / '),
 
-                result:
-                    resultText
-            };
+    loser:
+        losingPlayers.join(' / '),
+
+    result:
+        resultText
+};
 
         }
 
@@ -2861,21 +2871,13 @@ function renderStats() {
                     Biggest Winning Margin
                 </span>
 
-                <strong>
-                    ${
-                        biggestRyderWin
-                            ? biggestRyderWin.players
-                            : 'No completed matches'
-                    }
-                </strong>
-
-                <span>
-                    ${
-                        biggestRyderWin
-                            ? `${biggestRyderWin.team} · ${biggestRyderWin.result}`
-                            : ''
-                    }
-                </span>
+               <strong>
+    ${
+        biggestRyderWin
+            ? `${biggestRyderWin.winner} beat ${biggestRyderWin.loser} by ${biggestRyderWin.result}`
+            : 'No completed matches'
+    }
+</strong>
 
             </div>
 
