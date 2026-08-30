@@ -34,13 +34,7 @@ let ryderCupMatches = [];
 let roundData = {};
 
 function freshUrl(url) {
-    const separator =
-        url.includes('?')
-            ? '&'
-            : '?';
 
-    return `${url}${separator}_=${Date.now()}`;
-}function freshUrl(url) {
     const separator =
         url.includes('?')
             ? '&'
@@ -4440,9 +4434,11 @@ function renderScorecard() {
 async function loadSideCompetitions() {
 
     const response =
-        await fetch(
+    await fetch(
+        freshUrl(
             SIDE_COMPETITIONS_CSV
-        );
+        )
+    );
 
     const text =
         await response.text();
@@ -5022,36 +5018,55 @@ async function initialise() {
 
     loadHandicaps();
 
-    await loadSideCompetitions();
-    
+
+    try {
+
+        await loadSideCompetitions();
+
+    } catch (error) {
+
+        console.error(
+            'Side competitions failed to load:',
+            error
+        );
+
+    }
+
+
     await calculateRound1Leaderboard();
-    
+
     renderStats();
 
     renderScorecard();
 
-    document
-    .getElementById('courseSelect')
-    .addEventListener(
-        'change',
-        () => loadHandicaps()
-    );
 
     document
-    .getElementById('scorecardPlayer')
-    .addEventListener(
-        'change',
-        () => renderScorecard()
-    );
+        .getElementById('courseSelect')
+        .addEventListener(
+            'change',
+            () => loadHandicaps()
+        );
+
 
     document
-    .getElementById('scorecardCourse')
-    .addEventListener(
-        'change',
-        () => renderScorecard()
-    );
-    
+        .getElementById('scorecardPlayer')
+        .addEventListener(
+            'change',
+            () => renderScorecard()
+        );
+
+
+    document
+        .getElementById('scorecardCourse')
+        .addEventListener(
+            'change',
+            () => renderScorecard()
+        );
+
+
     initialiseStickyNavigation();
 }
+
+initialise();
 
 initialise();         
