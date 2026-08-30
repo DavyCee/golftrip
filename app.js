@@ -2745,11 +2745,11 @@ function renderStats() {
         <div class="stat-highlight">
 
     <span class="stat-label">
-        Best Net Score
+        Lowest Gross
     </span>
 
-    ${formatNetWinners(
-        lowestNet
+    ${formatGrossWinners(
+        lowestGross
     )}
 
 </div>
@@ -2778,8 +2778,7 @@ function renderStats() {
         lowestNet
     )}
 
-    </div>
-
+</div>
 
             <div class="stat-highlight">
 
