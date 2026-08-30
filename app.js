@@ -478,8 +478,15 @@ if (
 
                 <h3>${settings['Team A Name']}</h3>
 
-                <div class="captain">
+                <div
+                class="captain"
+                data-player="${captainA}"
+                >
+                <span>
                 ${captainA} (C)
+                </span>
+
+                <span class="team-record"></span>
                 </div>
 
                 ${teamA
@@ -495,8 +502,15 @@ if (
 
                 <h3>${settings['Team B Name']}</h3>
 
-               <div class="captain">
+               <div
+                class="captain"
+                data-player="${captainB}"
+                >
+                <span>
                 ${captainB} (C)
+                </span>
+
+                <span class="team-record"></span>
                 </div>
 
                ${teamB
