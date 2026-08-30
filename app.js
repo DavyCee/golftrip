@@ -1149,14 +1149,6 @@ async function loadRyderCup() {
             ] =
                 freshRows;
 
-
-            console.log(
-                'RYDER FRESH DATA:',
-                round.course,
-                freshRows.length,
-                'rows'
-            );
-
         }
 
         catch (error) {
