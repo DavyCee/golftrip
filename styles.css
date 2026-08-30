@@ -2310,10 +2310,10 @@ select:focus {
     gap: 0.5rem;
 }
 
-    .award-winner {
+   .award-winner {
     display: flex;
     flex-direction: column;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.9rem;
 }
 
 .award-winner:last-child {
