@@ -1397,8 +1397,9 @@ select:focus {
     }
 
     .stat-scoring-grid {
-        gap: 0.45rem;
-    }
+    column-gap: 0.45rem;
+    row-gap: 0.75rem;
+}
 
     .stat-scoring-grid .stat-highlight {
         min-height: 5.5rem;
@@ -2335,14 +2336,14 @@ select:focus {
     margin-top: 0.1rem;
 }
 
-/* Add breathing room between Group Stats boxes */
+/* Group Stats spacing */
 .stats-group .stat-scoring-grid {
-    row-gap: 0.7rem;
+    row-gap: 0.9rem;
 }
 
-    @media (max-width: 480px) {
+@media (max-width: 480px) {
     .stats-group .stat-scoring-grid {
-        row-gap: 0.5rem;
+        row-gap: 0.75rem;
     }
 }
     
