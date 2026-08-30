@@ -2898,22 +2898,33 @@ function renderStats() {
                     </div>
 
 
-                    <div class="biggest-win-player">
-                        ${biggestRyderWin.loser}
-                    </div>
+                    <div class="biggest-win">
 
-                    <div class="biggest-win-team">
-                        (${biggestRyderWin.loserTeam})
-                    </div>
+    <div class="biggest-win-side">
+        <span class="biggest-win-player">
+            ${biggestRyderWin.winner}
+        </span>
 
-                </div>
-              `
-            : `
-                <div class="biggest-win-player">
-                    No completed matches
-                </div>
-              `
-    }
+        <span class="biggest-win-team">
+            (${biggestRyderWin.winnerTeam})
+        </span>
+    </div>
+
+
+    <div class="biggest-win-result">
+        Won by ${biggestRyderWin.result} vs
+    </div>
+
+
+    <div class="biggest-win-side">
+        <span class="biggest-win-player">
+            ${biggestRyderWin.loser}
+        </span>
+
+        <span class="biggest-win-team">
+            (${biggestRyderWin.loserTeam})
+        </span>
+    </div>
 
 </div>
 
