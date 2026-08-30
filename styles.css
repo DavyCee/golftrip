@@ -1289,7 +1289,7 @@ select:focus {
 
 .stats-table td:nth-child(n + 2),
 .stats-table th:nth-child(n + 2) {
-    text-align: right;
+    text-align: centre;
 }
 
 .round-to-par {
