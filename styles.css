@@ -2335,6 +2335,15 @@ select:focus {
     margin-top: 0.1rem;
 }
 
+/* Add breathing room between Group Stats boxes */
+.stats-group .stat-scoring-grid {
+    row-gap: 0.7rem;
+}
 
+    @media (max-width: 480px) {
+    .stats-group .stat-scoring-grid {
+        row-gap: 0.5rem;
+    }
+}
     
 }
