@@ -2308,5 +2308,33 @@ select:focus {
     justify-content: space-between;
     gap: 0.5rem;
 }
+
+    .award-winner {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.45rem;
+}
+
+.award-winner:last-child {
+    margin-bottom: 0;
+}
+
+.award-winner strong {
+    color: #d9f99d;
+    font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.award-winner span {
+    color: var(--text);
+    font-size: 0.78rem;
+    margin-top: 0.1rem;
+}
+
+
     
 }
