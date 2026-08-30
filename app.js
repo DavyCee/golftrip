@@ -1078,14 +1078,124 @@ function stablefordPoints(par, netScore) {
 
 async function loadRyderCup() {
 
+    /*
+     * ================================================
+     * FORCE-FRESH ROUND DATA FOR RYDER CUP
+     * ================================================
+     *
+     * Do not rely on the round data loaded by the
+     * Stableford calculation. Fetch the score sheets
+     * again here with cache-busting.
+     */
+
+    const ryderRounds = [
+        {
+            course:
+                settings['Course 1 Name'],
+
+            url:
+                ROUND1_CSV
+        },
+
+        {
+            course:
+                settings['Course 2 Name'],
+
+            url:
+                ROUND2_CSV
+        },
+
+        {
+            course:
+                settings['Course 3 Name'],
+
+            url:
+                ROUND3_CSV
+        }
+    ];
+
+
+    for (
+        const round of ryderRounds
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    freshUrl(
+                        round.url
+                    ),
+                    {
+                        cache: 'no-store'
+                    }
+                );
+
+
+            const text =
+                await response.text();
+
+
+            const freshRows =
+                text.split('\n');
+
+
+            /*
+             * Replace the global roundData entry
+             * with the freshly fetched scores.
+             */
+            roundData[
+                round.course
+            ] =
+                freshRows;
+
+
+            console.log(
+                'RYDER FRESH DATA:',
+                round.course,
+                freshRows.length,
+                'rows'
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                'RYDER ROUND LOAD ERROR:',
+                round.course,
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * ================================================
+     * LOAD MATCHUPS
+     * ================================================
+     */
+
     const response =
-        await fetch(freshUrl(MATCHUPS_CSV));
+        await fetch(
+            freshUrl(
+                MATCHUPS_CSV
+            ),
+            {
+                cache: 'no-store'
+            }
+        );
+
 
     const text =
         await response.text();
 
+
     const rows =
         text.split('\n');
+
 
     let ballsPoints = 0;
     let shaftsPoints = 0;
@@ -3717,9 +3827,6 @@ function calculateFourballMatch(
         scores.some(
         score => score > 0
     );
-
-        if (!holeHasScores)
-            break;
 
         if (!holeHasScores)
     break;
