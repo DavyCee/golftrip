@@ -33,9 +33,25 @@ let biggestRyderWin = null;
 let ryderCupMatches = [];
 let roundData = {};
 
+function freshUrl(url) {
+    const separator =
+        url.includes('?')
+            ? '&'
+            : '?';
+
+    return `${url}${separator}_=${Date.now()}`;
+}function freshUrl(url) {
+    const separator =
+        url.includes('?')
+            ? '&'
+            : '?';
+
+    return `${url}${separator}_=${Date.now()}`;
+}
+
 async function loadSettings() {
 
-    const response = await fetch(SETTINGS_CSV);
+    const response = await fetch(freshUrl(SETTINGS_CSV));
     const text = await response.text();
 
     const rows = text.split('\n').slice(1);
@@ -103,7 +119,7 @@ function loadVillaInfo() {
 async function loadCourseData() {
 
     const response =
-        await fetch(COURSE_CSV);
+        await fetch(freshUrl(COURSE_CSV));
 
     const text =
         await response.text();
@@ -401,7 +417,7 @@ function renderSchedule() {
 async function loadTeams() {
 
     const response =
-        await fetch(PLAYER_CSV);
+        await fetch(freshUrl(PLAYER_CSV));
 
     const text =
         await response.text();
@@ -517,7 +533,7 @@ function renderTeamRecords() {
 
 async function loadCourses() {
 
-    const response = await fetch(COURSE_CSV);
+    const response = await fetch(freshUrl(COURSE_CSV));
     const text = await response.text();
 
     const rows = text.split('\n');
@@ -558,7 +574,7 @@ function loadScorecardCourses() {
 
 async function buildLeaderboard() {
 
-    const response = await fetch(PLAYER_CSV);
+    const response = await fetch(freshUrl(PLAYER_CSV));
     const text = await response.text();
 
     const rows = text.split('\n').slice(1);
@@ -737,7 +753,7 @@ if (driveWins > 0) {
 
 async function loadHandicaps() {
 
-    const response = await fetch(PLAYER_CSV);
+    const response = await fetch(freshUrl(PLAYER_CSV));
     const text = await response.text();
 
     const rows = text.split('\n').slice(1);
@@ -888,7 +904,7 @@ async function calculateRound1Leaderboard() {
     leaderboard = {};
 
     const playerResponse =
-        await fetch(PLAYER_CSV);
+        await fetch(freshUrl(PLAYER_CSV));
 
     const playerText =
         await playerResponse.text();
@@ -992,7 +1008,7 @@ function stablefordPoints(par, netScore) {
 async function loadRyderCup() {
 
     const response =
-        await fetch(MATCHUPS_CSV);
+        await fetch(freshUrl(MATCHUPS_CSV));
 
     const text =
         await response.text();
@@ -3725,7 +3741,7 @@ holesPlayed++;
 async function loadScorecardPlayers() {
 
     const response =
-        await fetch(PLAYER_CSV);
+        await fetch(freshUrl(PLAYER_CSV));
 
     const text =
         await response.text();
@@ -4437,9 +4453,7 @@ function renderScorecard() {
 async function loadSideCompetitions() {
 
     const response =
-        await fetch(
-            SIDE_COMPETITIONS_CSV
-        );
+        await fetch(freshUrl(SIDE_COMPETITIONS_CSV));
 
     const text =
         await response.text();
