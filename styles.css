@@ -724,22 +724,19 @@ select:focus {
 
 .leaderboard-table th:nth-child(1),
 .leaderboard-table td:nth-child(1) {
-    width: 9%;
-
+    width: 8%;
     text-align: center;
 }
 
 .leaderboard-table th:nth-child(2),
 .leaderboard-table td:nth-child(2) {
-    width: 43%;
-
+    width: 47%;
     text-align: left;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
     white-space: nowrap;
+}
+
+.leaderboard-table td:nth-child(2) {
+    letter-spacing: -0.01em;
 }
 
 .leaderboard-table th:nth-child(3),
@@ -747,32 +744,14 @@ select:focus {
 .leaderboard-table th:nth-child(4),
 .leaderboard-table td:nth-child(4),
 .leaderboard-table th:nth-child(5),
-.leaderboard-table td:nth-child(5),
-.leaderboard-table th:nth-child(6),
-.leaderboard-table td:nth-child(6) {
-    width: 12%;
-
+.leaderboard-table td:nth-child(5) {
+    width: 11%;
     text-align: center;
 }
 
-.leaderboard-table tr:first-child td {
-    font-weight: bold;
-}
-
-.leaderboard-table tr:nth-child(even) td {
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.025
-        );
-}
-
-.leaderboard-table td:last-child,
-.leaderboard-table th:last-child {
-    color: var(--gold);
-
+.leaderboard-table th:nth-child(6),
+.leaderboard-table td:nth-child(6) {
+    width: 12%;
     text-align: right;
 }
 
@@ -2107,6 +2086,19 @@ select:focus {
 
     .side-competition-item strong {
         font-size: 0.8rem;
+    }
+
+}
+    @media (max-width: 480px) {
+
+    .leaderboard-table {
+        font-size: 0.74rem;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding-left: 0.12rem;
+        padding-right: 0.12rem;
     }
 
 }
