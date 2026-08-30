@@ -4449,52 +4449,97 @@ async function loadSideCompetitions() {
 
 
     /*
-     * Keep blank rows because the sheet contains
-     * two separate tables with an empty row between them.
+     * Split into lines but KEEP blank rows.
+     * The sheet deliberately has a blank row
+     * between the two tables.
      */
     const rows =
         text
-            .split(/\r?\n/);
+            .split(/\r?\n/)
+            .map(row => row.trim());
 
 
     /*
-     * Find the two table headers.
+     * Convert a CSV row into clean cells.
+     * Also removes any quotes or BOM that Google
+     * Sheets may add to the first cell.
+     */
+    const parseRow =
+        row =>
+            row
+                .split(',')
+                .map(
+                    value =>
+                        value
+                            .replace(/^\uFEFF/, '')
+                            .replace(/^"|"$/g, '')
+                            .trim()
+                );
+
+
+    /*
+     * Find the FIRST table header.
      *
-     * First table:
-     * Round | Front 9 Closest to the Pin | ...
-     *
-     * Second table:
-     * Round | CTP Front 9 | CTP Back 9 | ...
+     * We identify it by:
+     *   Round
+     *   Front 9 Closest to the Pin
      */
     const winnersHeaderIndex =
-        rows.findIndex(
-            row =>
-                row
-                    .toLowerCase()
+        rows.findIndex(row => {
+
+            const cells =
+                parseRow(row);
+
+            return (
+                cells[0]?.toLowerCase() === 'round' &&
+                cells[1]
+                    ?.toLowerCase()
                     .includes(
-                        'closest to pin'
+                        'closest to the pin'
                     )
-        );
+            );
+
+        });
 
 
+    /*
+     * Find the SECOND table header.
+     *
+     * We identify it by:
+     *   Round
+     *   CTP Front 9
+     */
     const holesHeaderIndex =
-        rows.findIndex(
-            row =>
-                row
-                    .toLowerCase()
-                    .includes(
-                        'ctp front 9'
-                    )
-        );
+        rows.findIndex(row => {
+
+            const cells =
+                parseRow(row);
+
+            return (
+                cells[0]?.toLowerCase() === 'round' &&
+                cells[1]
+                    ?.toLowerCase() ===
+                    'ctp front 9'
+            );
+
+        });
 
 
+    /*
+     * Safety check.
+     */
     if (
         winnersHeaderIndex === -1 ||
         holesHeaderIndex === -1
     ) {
 
         console.error(
-            'Side competition tables could not be found.'
+            'Side competition tables could not be found.',
+            {
+                winnersHeaderIndex,
+                holesHeaderIndex,
+                rows
+            }
         );
 
         return;
@@ -4502,7 +4547,7 @@ async function loadSideCompetitions() {
 
 
     /*
-     * Reset winner counters.
+     * Reset the winner counters.
      */
     sideCompetitionWinners = {
         ctp: {},
@@ -4511,7 +4556,15 @@ async function loadSideCompetitions() {
 
 
     /*
-     * Read the winner table.
+     * =====================================================
+     * FIRST TABLE — WINNERS
+     * =====================================================
+     *
+     * Round
+     * Front 9 Closest to the Pin
+     * Back 9 Closest to the Pin
+     * Front 9 Longest Drive
+     * Back 9 Longest Drive
      */
     const winnerRows =
         rows
@@ -4519,307 +4572,316 @@ async function loadSideCompetitions() {
                 winnersHeaderIndex + 1,
                 holesHeaderIndex
             )
-            .map(
-                row =>
-                    row
-                        .split(',')
-                        .map(
-                            value =>
-                                value.trim()
-                        )
-            )
+            .map(parseRow)
             .filter(
-                cols =>
-                    cols[0] &&
-                    !Number.isNaN(
-                        Number(cols[0])
+                cells =>
+                    cells[0] &&
+                    /^\d+$/.test(
+                        cells[0]
                     )
             );
 
 
     /*
-     * Read the hole-number table.
+     * =====================================================
+     * SECOND TABLE — HOLE NUMBERS
+     * =====================================================
+     *
+     * Round
+     * CTP Front 9
+     * CTP Back 9
+     * LD Front 9
+     * LD Back 9
      */
     const holeRows =
         rows
             .slice(
                 holesHeaderIndex + 1
             )
-            .map(
-                row =>
-                    row
-                        .split(',')
-                        .map(
-                            value =>
-                                value.trim()
-                        )
-            )
+            .map(parseRow)
             .filter(
-                cols =>
-                    cols[0] &&
-                    !Number.isNaN(
-                        Number(cols[0])
+                cells =>
+                    cells[0] &&
+                    /^\d+$/.test(
+                        cells[0]
                     )
             );
 
 
     /*
-     * Store hole numbers by round.
+     * Create a simple lookup:
      *
-     * round 1:
-     * CTP Front 9 = cols[1]
-     * CTP Back 9  = cols[2]
-     * LD Front 9  = cols[3]
-     * LD Back 9   = cols[4]
+     * holesByRound[1]
+     * holesByRound[2]
+     * holesByRound[3]
      */
     const holesByRound = {};
 
 
-    holeRows.forEach(cols => {
+    holeRows.forEach(
+        cells => {
 
-        const round =
-            Number(cols[0]);
+            const round =
+                Number(cells[0]);
 
-        if (
-            Number.isNaN(round)
-        ) {
-            return;
+
+            if (
+                Number.isNaN(round)
+            ) {
+                return;
+            }
+
+
+            holesByRound[round] = {
+
+                ctpFront:
+                    cells[1] || '-',
+
+                ctpBack:
+                    cells[2] || '-',
+
+                driveFront:
+                    cells[3] || '-',
+
+                driveBack:
+                    cells[4] || '-'
+
+            };
+
         }
-
-        holesByRound[round] = {
-            ctpFront:
-                cols[1] || '-',
-
-            ctpBack:
-                cols[2] || '-',
-
-            driveFront:
-                cols[3] || '-',
-
-            driveBack:
-                cols[4] || '-'
-        };
-
-    });
+    );
 
 
     let html = '';
 
 
     /*
-     * Build each course section.
+     * =====================================================
+     * BUILD EACH ROUND
+     * =====================================================
      */
-    winnerRows.forEach(cols => {
+    winnerRows.forEach(
+        cells => {
 
-        const round =
-            Number(cols[0]);
-
-
-        if (
-            Number.isNaN(round)
-        ) {
-            return;
-        }
+            const round =
+                Number(cells[0]);
 
 
-        const courseName =
-            settings[
-                `Course ${round} Name`
-            ] ||
-            `Round ${round}`;
+            if (
+                Number.isNaN(round)
+            ) {
+                return;
+            }
 
 
-        const holes =
-            holesByRound[round] || {
-
-                ctpFront: '-',
-                ctpBack: '-',
-                driveFront: '-',
-                driveBack: '-'
-
-            };
+            const courseName =
+                settings[
+                    `Course ${round} Name`
+                ] ||
+                `Round ${round}`;
 
 
-        /*
-         * Winner names.
-         */
-        const ctpFrontWinner =
-            cols[1] || '-';
+            const holes =
+                holesByRound[round] || {
 
-        const ctpBackWinner =
-            cols[2] || '-';
+                    ctpFront: '-',
+                    ctpBack: '-',
+                    driveFront: '-',
+                    driveBack: '-'
 
-        const driveFrontWinner =
-            cols[3] || '-';
-
-        const driveBackWinner =
-            cols[4] || '-';
+                };
 
 
-        /*
-         * Count CTP wins.
-         */
-        if (
-            ctpFrontWinner !== '-'
-        ) {
+            /*
+             * Winners.
+             */
+            const ctpFrontWinner =
+                cells[1] || '-';
 
-            sideCompetitionWinners.ctp[
-                ctpFrontWinner
-            ] =
-                (
-                    sideCompetitionWinners.ctp[
-                        ctpFrontWinner
-                    ] || 0
-                ) + 1;
+            const ctpBackWinner =
+                cells[2] || '-';
 
-        }
+            const driveFrontWinner =
+                cells[3] || '-';
+
+            const driveBackWinner =
+                cells[4] || '-';
 
 
-        if (
-            ctpBackWinner !== '-'
-        ) {
+            /*
+             * =================================================
+             * COUNT CTP WINS
+             * =================================================
+             */
+            if (
+                ctpFrontWinner !== '-'
+            ) {
 
-            sideCompetitionWinners.ctp[
-                ctpBackWinner
-            ] =
-                (
-                    sideCompetitionWinners.ctp[
-                        ctpBackWinner
-                    ] || 0
-                ) + 1;
+                sideCompetitionWinners.ctp[
+                    ctpFrontWinner
+                ] =
+                    (
+                        sideCompetitionWinners.ctp[
+                            ctpFrontWinner
+                        ] || 0
+                    ) + 1;
 
-        }
-
-
-        /*
-         * Count Longest Drive wins.
-         */
-        if (
-            driveFrontWinner !== '-'
-        ) {
-
-            sideCompetitionWinners.drive[
-                driveFrontWinner
-            ] =
-                (
-                    sideCompetitionWinners.drive[
-                        driveFrontWinner
-                    ] || 0
-                ) + 1;
-
-        }
+            }
 
 
-        if (
-            driveBackWinner !== '-'
-        ) {
+            if (
+                ctpBackWinner !== '-'
+            ) {
 
-            sideCompetitionWinners.drive[
-                driveBackWinner
-            ] =
-                (
-                    sideCompetitionWinners.drive[
-                        driveBackWinner
-                    ] || 0
-                ) + 1;
+                sideCompetitionWinners.ctp[
+                    ctpBackWinner
+                ] =
+                    (
+                        sideCompetitionWinners.ctp[
+                            ctpBackWinner
+                        ] || 0
+                    ) + 1;
 
-        }
-
-
-        /*
-         * Render the compact course section.
-         */
-        html += `
-
-            <div class="side-competition-round">
-
-                <h3>
-                    ${courseName}
-                </h3>
+            }
 
 
-                <div class="side-competition-compact">
+            /*
+             * =================================================
+             * COUNT LONGEST DRIVE WINS
+             * =================================================
+             */
+            if (
+                driveFrontWinner !== '-'
+            ) {
+
+                sideCompetitionWinners.drive[
+                    driveFrontWinner
+                ] =
+                    (
+                        sideCompetitionWinners.drive[
+                            driveFrontWinner
+                        ] || 0
+                    ) + 1;
+
+            }
 
 
-                    <div class="side-competition-column">
+            if (
+                driveBackWinner !== '-'
+            ) {
 
-                        <div class="side-competition-title">
-                            Closest to Pin 🎯
+                sideCompetitionWinners.drive[
+                    driveBackWinner
+                ] =
+                    (
+                        sideCompetitionWinners.drive[
+                            driveBackWinner
+                        ] || 0
+                    ) + 1;
+
+            }
+
+
+            /*
+             * =================================================
+             * RENDER COMPACT SIDE COMPETITION
+             * =================================================
+             */
+            html += `
+
+                <div class="side-competition-round">
+
+                    <h3>
+                        ${courseName}
+                    </h3>
+
+
+                    <div class="side-competition-compact">
+
+
+                        <div class="side-competition-column">
+
+                            <div class="side-competition-title">
+                                Closest to Pin 🎯
+                            </div>
+
+
+                            <div class="side-competition-result">
+
+                                <span>
+                                    Hole ${holes.ctpFront}:
+                                </span>
+
+                                <strong>
+                                    ${ctpFrontWinner}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="side-competition-result">
+
+                                <span>
+                                    Hole ${holes.ctpBack}:
+                                </span>
+
+                                <strong>
+                                    ${ctpBackWinner}
+                                </strong>
+
+                            </div>
+
                         </div>
 
 
-                        <div class="side-competition-result">
+                        <div class="side-competition-column">
 
-                            <span>
-                                Hole ${holes.ctpFront}:
-                            </span>
+                            <div class="side-competition-title">
+                                Longest Drive 🚀
+                            </div>
 
-                            <strong>
-                                ${ctpFrontWinner}
-                            </strong>
+
+                            <div class="side-competition-result">
+
+                                <span>
+                                    Hole ${holes.driveFront}:
+                                </span>
+
+                                <strong>
+                                    ${driveFrontWinner}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="side-competition-result">
+
+                                <span>
+                                    Hole ${holes.driveBack}:
+                                </span>
+
+                                <strong>
+                                    ${driveBackWinner}
+                                </strong>
+
+                            </div>
 
                         </div>
 
-
-                        <div class="side-competition-result">
-
-                            <span>
-                                Hole ${holes.ctpBack}:
-                            </span>
-
-                            <strong>
-                                ${ctpBackWinner}
-                            </strong>
-
-                        </div>
 
                     </div>
-
-
-                    <div class="side-competition-column">
-
-                        <div class="side-competition-title">
-                            Longest Drive 🚀
-                        </div>
-
-
-                        <div class="side-competition-result">
-
-                            <span>
-                                Hole ${holes.driveFront}:
-                            </span>
-
-                            <strong>
-                                ${driveFrontWinner}
-                            </strong>
-
-                        </div>
-
-
-                        <div class="side-competition-result">
-
-                            <span>
-                                Hole ${holes.driveBack}:
-                            </span>
-
-                            <strong>
-                                ${driveBackWinner}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
 
                 </div>
 
-            </div>
+            `;
 
-        `;
+        }
+    );
 
-    });
 
-
+    /*
+     * Put the finished section on the page.
+     */
     document
         .getElementById(
             'sideCompetitions'
