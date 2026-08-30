@@ -2102,5 +2102,136 @@ select:focus {
     }
 
 }
+    /* =========================================================
+   COMPACT SIDE COMPETITIONS
+   ========================================================= */
+
+.side-competition-round {
+    padding:
+        0.7rem 0;
+
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+}
+
+.side-competition-round:first-child {
+    padding-top: 0;
+}
+
+.side-competition-round:last-child {
+    border-bottom: 0;
+}
+
+
+.side-competition-round h3 {
+    margin:
+        0 0 0.55rem;
+
+    color: var(--gold);
+
+    font-size: 1rem;
+}
+
+
+.side-competition-compact {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 0.7rem;
+}
+
+
+.side-competition-column {
+    padding: 0.25rem 0;
+}
+
+
+.side-competition-title {
+    margin-bottom: 0.35rem;
+
+    color: var(--gold);
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.side-competition-result {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 0.3rem;
+
+    padding:
+        0.18rem 0;
+
+    line-height: 1.3;
+}
+
+
+.side-competition-result span {
+    color: var(--muted);
+
+    font-size: 0.72rem;
+
+    white-space: nowrap;
+}
+
+
+.side-competition-result strong {
+    color: var(--text);
+
+    font-size: 0.78rem;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SIDE COMPETITIONS - MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .side-competition-compact {
+        gap: 0.5rem;
+    }
+
+
+    .side-competition-title {
+        font-size: 0.7rem;
+    }
+
+
+    .side-competition-result {
+        gap: 0.2rem;
+    }
+
+
+    .side-competition-result span {
+        font-size: 0.68rem;
+    }
+
+
+    .side-competition-result strong {
+        font-size: 0.72rem;
+    }
+
+}
     
 }
