@@ -2769,24 +2769,13 @@ function renderStats() {
 
             <div class="stat-highlight">
 
-                <span class="stat-label">
-                    Best Net Score
-                </span>
+            <span class="stat-label">
+            Best Net Score
+            </span>
 
-                <strong>
-                    ${lowestNet
-                        .map(
-                            winner =>
-                                winner.player
-                        )
-                        .join('<br>')}
-                </strong>
-
-                <span>
-                    ${formatNetWinners(
-                        lowestNet
-                    )}
-                </span>
+            ${formatNetWinners(
+            lowestNet
+            )}
 
             </div>
 
