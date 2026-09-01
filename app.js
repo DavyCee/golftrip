@@ -3465,6 +3465,60 @@ function getNetScore(
     return gross - shots;
 }
 
+function getMatchPlayNetScore(
+    rows,
+    playerName,
+    opponentName,
+    holeNumber,
+    courseName
+) {
+
+    const gross =
+        getPlayerHoleScore(
+            rows,
+            playerName,
+            holeNumber
+        );
+
+    if (gross === null)
+        return null;
+
+    const playerCH =
+        getCourseHandicap(
+            playerName,
+            courseName
+        );
+
+    const opponentCH =
+        getCourseHandicap(
+            opponentName,
+            courseName
+        );
+
+    const strokeIndex =
+        getStrokeIndex(
+            rows,
+            holeNumber
+        );
+
+    let shots = 0;
+
+    if (playerCH > opponentCH) {
+
+        const difference =
+            playerCH - opponentCH;
+
+        shots =
+            shotsReceived(
+                difference,
+                strokeIndex
+            );
+
+    }
+
+    return gross - shots;
+}
+
 function getCourseHandicap(
     playerName,
     courseName
@@ -3489,55 +3543,67 @@ function calculateFourballHole(
     hole
 ) {
 
-    const teamANetScores = teamA.map(player => {
+    const allPlayers = [
+        ...teamA,
+        ...teamB
+    ];
 
-        const ch =
-            getCourseHandicap(
-                player,
-                courseName
-            );
+    const lowestHandicap =
+        Math.min(
+            ...allPlayers.map(player =>
+                getCourseHandicap(
+                    player,
+                    courseName
+                )
+            )
+        );
 
-        return getNetScore(
+    const teamANetScores = teamA.map(player =>
+
+        getFourballNetScore(
             rows,
             player,
             hole,
-            ch
-        );
+            courseName,
+            lowestHandicap
+        )
 
-    });
+    );
 
-    const teamBNetScores = teamB.map(player => {
+    const teamBNetScores = teamB.map(player =>
 
-        const ch =
-            getCourseHandicap(
-                player,
-                courseName
-            );
-
-        return getNetScore(
+        getFourballNetScore(
             rows,
             player,
             hole,
-            ch
-        );
+            courseName,
+            lowestHandicap
+        )
 
-    });
+    );
 
     const validA =
-    teamANetScores.filter(
-        score => score !== null
-    );
+        teamANetScores.filter(
+            score => score !== null
+        );
 
-const validB =
-    teamBNetScores.filter(
-        score => score !== null
-    );
+    const validB =
+        teamBNetScores.filter(
+            score => score !== null
+        );
 
-const bestA =
-    Math.min(...validA);
+    if (
+        validA.length === 0 ||
+        validB.length === 0
+    ) {
+        return 'HALVED';
+    }
 
-const bestB =
-    Math.min(...validB);
+    const bestA =
+        Math.min(...validA);
+
+    const bestB =
+        Math.min(...validB);
 
     if (bestA < bestB)
         return 'A';
@@ -3547,6 +3613,52 @@ const bestB =
 
     return 'HALVED';
 }
+
+function getFourballNetScore(
+    rows,
+    playerName,
+    holeNumber,
+    courseName,
+    lowestHandicap
+) {
+
+    const gross =
+        getPlayerHoleScore(
+            rows,
+            playerName,
+            holeNumber
+        );
+
+    if (gross === null)
+        return null;
+
+    const playerCH =
+        getCourseHandicap(
+            playerName,
+            courseName
+        );
+
+    const allowance =
+        Math.max(
+            0,
+            playerCH - lowestHandicap
+        );
+
+    const strokeIndex =
+        getStrokeIndex(
+            rows,
+            holeNumber
+        );
+
+    const shots =
+        shotsReceived(
+            allowance,
+            strokeIndex
+        );
+
+    return gross - shots;
+}
+
 
 function calculateSinglesHole(
     rows,
@@ -3568,21 +3680,23 @@ function calculateSinglesHole(
             courseName
         );
 
-    const netA =
-        getNetScore(
-            rows,
-            playerA,
-            hole,
-            chA
-        );
+   const netA =
+    getMatchPlayNetScore(
+        rows,
+        playerA,
+        playerB,
+        hole,
+        courseName
+    );
 
-    const netB =
-        getNetScore(
-            rows,
-            playerB,
-            hole,
-            chB
-        );
+const netB =
+    getMatchPlayNetScore(
+        rows,
+        playerB,
+        playerA,
+        hole,
+        courseName
+    );
 
     if (
         netA === null ||
